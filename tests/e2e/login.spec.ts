@@ -20,4 +20,5 @@ test("login con usuario seed y acceso a dashboard", async ({ page }) => {
   await expect(
     page.getByText("Organización", { exact: false }).first()
   ).toBeVisible();
+  await expect(page.getByText("Pedidos")).toBeVisible();
 });
