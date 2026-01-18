@@ -20,6 +20,7 @@ export default defineConfig({
         "src/modules/attachments/data/**",
         "src/modules/attachments/domain/**",
         "src/modules/events/data/**",
+        "src/modules/dashboard/data/**",
         "src/modules/auth/data/auth-client.server.ts",
         "src/modules/shared/ui/app-shell.tsx",
         "src/modules/shared/ui/page-header.tsx",
