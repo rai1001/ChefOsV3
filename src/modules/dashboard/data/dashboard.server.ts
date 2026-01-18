@@ -20,7 +20,7 @@ export const getDashboardHighlights = async (
   orgId: string
 ): Promise<DashboardHighlights> => {
   const supabase = createSupabaseServerClient();
-  const { data, error } = await supabase.rpc("dashboard_event_highlights", {
+  const { data, error } = await (supabase as any).rpc("dashboard_event_highlights", {
     p_org: orgId
   });
 
@@ -45,7 +45,7 @@ export const getDashboardGrid = async (
   orgId: string
 ): Promise<DashboardGridItem[]> => {
   const supabase = createSupabaseServerClient();
-  const { data, error } = await supabase.rpc("dashboard_rolling_grid", {
+  const { data, error } = await (supabase as any).rpc("dashboard_rolling_grid", {
     p_org: orgId
   });
 

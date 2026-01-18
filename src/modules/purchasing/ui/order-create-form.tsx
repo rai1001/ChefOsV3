@@ -3,7 +3,6 @@
 
 import { useState } from "react";
 import { createBrowserClient } from "@/lib/supabase/client";
-import type { Database } from "@/lib/supabase/types";
 import { useRouter } from "next/navigation";
 
 type HotelOption = {
@@ -16,11 +15,13 @@ type Props = {
   hotels: HotelOption[];
 };
 
+type PurchaseStatus = "draft" | "approved" | "ordered" | "received";
+
 export const OrderCreateForm = ({ orgId, hotels }: Props) => {
-  const supabase = createBrowserClient<Database>();
+  const supabase = createBrowserClient();
   const router = useRouter();
   const [hotelId, setHotelId] = useState("");
-  const [status, setStatus] = useState("draft");
+  const [status, setStatus] = useState<PurchaseStatus>("draft");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -85,7 +86,7 @@ export const OrderCreateForm = ({ orgId, hotels }: Props) => {
           <select
             className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
             value={status}
-            onChange={(e) => setStatus(e.target.value)}
+            onChange={(e) => setStatus(e.target.value as PurchaseStatus)}
           >
             <option value="draft">Borrador</option>
             <option value="approved">Aprobado</option>

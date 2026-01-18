@@ -1,11 +1,11 @@
-import { createBrowserClient as createSupabaseBrowserClient } from "@supabase/ssr";
+import { createBrowserClient as createSsrBrowserClient } from "@supabase/ssr";
 import { loadClientEnv } from "../env";
 import type { Database } from "./types";
 
 const env = loadClientEnv();
 
 const createClient = () =>
-  createSupabaseBrowserClient<Database>(
+  createSsrBrowserClient<Database>(
     env.NEXT_PUBLIC_SUPABASE_URL,
     env.NEXT_PUBLIC_SUPABASE_ANON_KEY
   );

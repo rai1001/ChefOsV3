@@ -4,14 +4,13 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserClient } from "@/lib/supabase/client";
-import type { Database } from "@/lib/supabase/types";
 
 type Props = {
   orgId: string;
 };
 
 export const HotelCreateForm = ({ orgId }: Props) => {
-  const supabase = createBrowserClient<Database>();
+  const supabase = createBrowserClient();
   const router = useRouter();
   const [name, setName] = useState("");
   const [error, setError] = useState<string | null>(null);

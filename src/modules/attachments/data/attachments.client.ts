@@ -1,6 +1,5 @@
 import { createBrowserClient } from "@/lib/supabase/client";
 import type { Attachment } from "../domain/types";
-import type { Database } from "@/lib/supabase/types";
 
 const BUCKET_ID = "attachments";
 
@@ -15,7 +14,8 @@ const mapRow = (row: any): Attachment => ({
 });
 
 export const listAttachments = async (orgId: string, eventId?: string) => {
-  const supabase = createBrowserClient<Database>();
+  // Supabase types are not refreshed for attachments yet; cast for access.
+  const supabase = createBrowserClient() as any;
   let query = supabase
     .from("event_attachments")
     .select("*")
@@ -39,7 +39,8 @@ export const uploadAttachment = async ({
   eventId?: string;
   file: File;
 }) => {
-  const supabase = createBrowserClient<Database>();
+  // Supabase types are not refreshed for attachments yet; cast for access.
+  const supabase = createBrowserClient() as any;
   const path = `${orgId}/${crypto.randomUUID()}-${file.name}`;
 
   const { error: uploadError } = await supabase.storage
@@ -65,7 +66,8 @@ export const uploadAttachment = async ({
 };
 
 export const deleteAttachment = async (id: string, path: string) => {
-  const supabase = createBrowserClient<Database>();
+  // Supabase types are not refreshed for attachments yet; cast for access.
+  const supabase = createBrowserClient() as any;
 
   const { error: deleteStorageError } = await supabase.storage
     .from(BUCKET_ID)

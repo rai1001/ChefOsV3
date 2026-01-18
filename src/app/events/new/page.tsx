@@ -25,18 +25,19 @@ const createEvent = async (formData: FormData, orgId: string) => {
   });
 
   if (!parsed.success) {
-    return { error: "Datos inválidos" };
+    throw new Error("Datos invalidos");
   }
 
   const startsAt = new Date(parsed.data.startsAt);
   const endsAt = new Date(parsed.data.endsAt);
 
   if (Number.isNaN(startsAt.getTime()) || Number.isNaN(endsAt.getTime())) {
-    return { error: "Fechas inválidas" };
+    throw new Error("Fechas invalidas");
   }
 
   const supabase = createSupabaseServerClient();
-  const { error } = await supabase.from("events").insert({
+  // Supabase types are not refreshed for events yet; cast for insert.
+  const { error } = await (supabase as any).from("events").insert({
     org_id: orgId,
     hotel_id: parsed.data.hotelId,
     title: parsed.data.title,
@@ -46,7 +47,7 @@ const createEvent = async (formData: FormData, orgId: string) => {
   });
 
   if (error) {
-    return { error: error.message };
+    throw new Error(error.message);
   }
 
   revalidatePath("/events");
@@ -61,7 +62,7 @@ const NewEventPage = async () => {
     <AppShell userEmail={user.email ?? ""} orgName={membership.orgName}>
       <PageHeader
         title="Nuevo evento"
-        subtitle="Crear evento básico"
+        subtitle="Crear evento basico"
         actions={
           <Link
             href="/events"
@@ -75,7 +76,7 @@ const NewEventPage = async () => {
         <form action={(fd) => createEvent(fd, membership.orgId)} className="space-y-4">
           <div className="space-y-1">
             <label className="text-sm font-semibold text-slate-800" htmlFor="title">
-              Título
+              Titulo
             </label>
             <input
               id="title"

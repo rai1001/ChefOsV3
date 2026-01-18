@@ -12,7 +12,8 @@ export type EventListItem = {
 
 export const listOrgEvents = async (orgId: string): Promise<EventListItem[]> => {
   const supabase = createSupabaseServerClient();
-  const response = await supabase
+  // Supabase types are not refreshed for events yet; cast for query.
+  const response = await (supabase as any)
     .from("events")
     .select("id,title,status,starts_at,ends_at,hotels(name)")
     .eq("org_id", orgId)
@@ -25,13 +26,13 @@ export const listOrgEvents = async (orgId: string): Promise<EventListItem[]> => 
   }
 
   return (
-    response.data?.map((row) => ({
+    (response.data as any[] | null)?.map((row) => ({
       id: row.id,
       title: row.title,
       status: row.status,
       startsAt: row.starts_at,
       endsAt: row.ends_at,
-      hotelName: (row as any).hotels?.name ?? null
+      hotelName: row.hotels?.name ?? null
     })) ?? []
   );
 };
