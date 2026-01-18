@@ -87,7 +87,8 @@ export async function POST(request: Request) {
       throw new AppError("UnknownError", "No se pudo crear el usuario");
     }
 
-    const { data: orgId, error: orgError } = await supabase.rpc(
+    // Supabase generated types do not include this RPC yet; cast for the call.
+    const { data: orgId, error: orgError } = await (supabase as any).rpc(
       "onboard_user_org",
       {
         p_user_id: userId,

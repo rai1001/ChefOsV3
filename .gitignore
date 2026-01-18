@@ -12,3 +12,6 @@ test-results/
 supabase/.temp/
 .supabase/
 *.log
+
+.vercel
+.env*.local

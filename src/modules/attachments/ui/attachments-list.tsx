@@ -1,3 +1,4 @@
+"use client";
 /* istanbul ignore file */
 /* UI mínima para listar y subir adjuntos por org/evento */
 import { useState } from "react";
