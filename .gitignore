@@ -1,0 +1,14 @@
+.next/
+node_modules/
+dist/
+.turbo/
+pnpm-lock.yaml.bak
+.env.local
+.env
+.env.*.local
+coverage/
+playwright-report/
+test-results/
+supabase/.temp/
+.supabase/
+*.log

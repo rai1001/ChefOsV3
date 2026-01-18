@@ -1,0 +1,104 @@
+# ChefOS (reescritura) — Reglas de Oro para IA (Cursor/Copilot/Windsurf)
+
+## 0) Fuente de verdad (orden de prioridad)
+1) `ARCHITECTURE.md` (capas/módulos)
+2) `CONVENTIONS.md` + `ERROR_HANDLING.md` + `SECURITY.md` (cómo construir con calidad)
+3) `SPRINT.md` (qué hacer ahora)
+4) `docs/reference/DECISIONS.md` (mandatos históricos)
+5) `docs/reference/SLICES.md` + `docs/reference/ROADMAP.md` (metodología)
+6) `docs/reference/SPEC_RLS.md`, `docs/reference/SPEC_API.md`, `docs/reference/SPEC_APP_ARCH.md`, `docs/reference/DEPLOY.md` (contratos y operación)
+7) `docs/reference/SPEC_SUPABASE_SCHEMA.sql` + `supabase/migrations/*` (DB real)
+
+**Si hay conflicto entre docs, gana lo más reciente y/o `docs/reference/DECISIONS.md`.**
+
+## 1) Objetivo del repo
+Reconstruir ChefOS como SaaS multi-tenant (por `org_id`) con Supabase (Postgres + RLS + Storage + Edge Functions) y frontend TypeScript.
+
+**Requisito de negocio no negociable:** la app debe estar **operativa desde minuto 1**:
+- Existe un flujo de **login** funcional.
+- Existe al menos **1 usuario inicial** y **1 organización** (seed de desarrollo) para entrar al dashboard.
+- La app está conectada a Supabase desde el inicio (sin mocks de DB).
+
+## 2) Stack (no inventar)
+- **DB/Backend:** Supabase Postgres + **RLS** en todas las tablas de negocio.
+- **Frontend:** React + TypeScript + Tailwind.
+- **Datos en UI:** TanStack Query.
+- **Forms/validación:** React Hook Form + Zod.
+- **Testing:**
+  - DB: pgTAP (`npx supabase test db`)
+  - Unit/Integration: Vitest
+  - E2E: Playwright
+- **Paquetes:** pnpm.
+
+> Si en el repo existe Next.js (App Router) úsalo; si existe Vite/React úsalo. **No migres de framework en un MR salvo que el Sprint lo pida explícitamente.**
+
+## 3) Arquitectura obligatoria (Clean/Hexagonal ligero)
+- Código organizado por módulos: `src/modules/<modulo>/{domain,data,ui}`.
+- **domain:** lógica pura, tipos, casos de uso. Sin dependencias de Supabase/React.
+- **data:** adaptadores (Supabase/HTTP/Storage), mapeos DTO↔Domain, errores.
+- **ui:** componentes/páginas, hooks React Query, formularios.
+
+**Prohibido mezclar lógica de negocio entre módulos.** Si un cambio toca 2 módulos, crea 2 slices o documenta la razón en `docs/reference/DECISIONS.md`.
+
+## 4) Reglas de seguridad (Supabase)
+- **Nunca** exponer `service_role` en el cliente.
+- El cliente browser usa `anon` key y depende de **RLS**.
+- Cualquier escritura privilegiada (si existe) va por server-side (server actions/route handlers) o RPC/Edge Function con validación estricta.
+- **Todas** las tablas de negocio tienen:
+  - columna `org_id`
+  - RLS habilitada
+  - políticas basadas en `auth.uid()` + membership.
+
+## 5) Trabajo por slices (vertical slicing)
+Cada slice (entrega) debe incluir, cuando aplique:
+- Migración SQL + RLS + seed idempotente
+- Adaptadores `data` + tipos `domain`
+- UI mínima funcional
+- Tests (DB + unit/integration + e2e según criticidad)
+- Documentación: actualizar `docs/inventory/*` + `SPRINT.md`
+
+**DoD obligatorio (local, antes de hacer merge):**
+- `npx supabase db reset`
+- `npx supabase test db`
+- `pnpm test --coverage` (umbral >= 90% en líneas global, salvo excepción documentada)
+- `pnpm exec playwright test`
+
+**Testing “DB real” (regla):**
+- Los tests deben correr contra un **Supabase real** (local con CLI o un proyecto de staging). No se aceptan tests que mockeen Postgres/RLS.
+- **Nunca** ejecutar tests destructivos contra producción.
+
+## 6) Cómo actuar (procedimiento para IA)
+Antes de tocar código:
+1) Leer `SPRINT.md` y ubicar tarea.
+2) Localizar módulo objetivo en `src/modules/<modulo>`.
+3) Identificar tablas/funciones afectadas (mirar `docs/reference/SPEC_SUPABASE_SCHEMA.sql` + `supabase/migrations`).
+4) Proponer plan corto (máx 10 bullets).
+
+Al implementar:
+- Mantén commits atómicos (ver `CONVENTIONS.md`).
+- Añade/actualiza tests en el mismo MR.
+- No rompas seeds idempotentes.
+- No dejes `TODO` sin ticket o tarea en `SPRINT.md`.
+
+Al terminar:
+- Actualiza `SPRINT.md` (marcar checkboxes).
+- Registra cambios en `docs/inventory/` (qué, por qué, cómo probar).
+
+## 7) Estándares de código
+- TypeScript estricto: sin `any` (salvo justificación + comentario).
+- Preferir funciones pequeñas y puras en `domain`.
+- Validar inputs de usuario con Zod.
+- Manejo de errores centralizado (ver `ERROR_HANDLING.md`).
+- UI en español y moneda EUR.
+
+## 8) Anti-patrones (NO hacer)
+- No hardcodear API keys (ej: Gemini). Si falta un secret: fallar rápido con error claro.
+- No `console.log` en producción; usar logger estructurado.
+- No saltarse RLS "porque es más fácil".
+- No queries N+1 en UI si hay alternativa razonable (RPC/joins).
+
+## 9) Seeds y usuario inicial (minuto 1)
+- Seed **idempotente** crea la organización de desarrollo.
+- Un script de bootstrap (dev/CI) crea el usuario inicial vía Admin API (service role **solo** en server/CLI), o mecanismo equivalente local.
+- Credenciales del seed **no** se commitean: se parametrizan con `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD` en `.env.local`.
+
