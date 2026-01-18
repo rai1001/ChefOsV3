@@ -6,7 +6,7 @@
 | Protección de rutas (middleware) | todas las protegidas | auth.sessions, org_members | n/a | todos | implementado (no documentado en refs) |
 | Dashboard base (org + hoteles) | /dashboard | orgs, hotels | n/a | admin/planner | implementado (mínimo) |
 | Dashboard KPIs + timeline | /dashboard | events, event_services, purchase_orders | dashboard_rolling_grid, dashboard_event_highlights | admin/planner | documentado (sin código) |
-| Listado de eventos | /events | events, hotels, spaces | n/a | planner | documentado (placeholder UI) |
+| Listado de eventos | /events | events, hotels, spaces | n/a | planner | implementado (listado mÃ­nimo RLS) |
 | Wizard creación de evento | /events/new | events, space_bookings, event_services | desconocido | planner | documentado (sin ruta) |
 | Gestión de pedidos | /orders | purchase_orders, event_purchase_orders | receive_purchase_order | purchasing | documentado (placeholder UI) |
 | Inventario y caducidades | /inventory | products (u otras tablas de inventario), hoteles | desconocido | chef/kitchen | documentado (placeholder UI) |
