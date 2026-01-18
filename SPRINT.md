@@ -43,6 +43,12 @@ Dejar el SaaS usable desde el minuto 1 (login + usuario seed + org seed + dashbo
 - [x] UI en `/settings` para crear hoteles e invitar usuarios
 - [x] Tests pgTAP para escrituras admin en org
 
+### 2) Calidad y consistencia
+- [x] Onboarding atomico via RPC `onboard_user_org`
+- [x] Manejo de errores con AppError + logging estructurado en `/api/admin/onboard`
+- [x] Password minimo 8 caracteres en login (alineado con onboarding)
+- [x] Ajuste de e2e login para selectores estables
+
 ## Regla de testing (importante)
 - DB/RLS se valida con `npx supabase test db` (pgTAP).
 - Tests de integracion deben hablar con Supabase real (local CLI o proyecto de staging), sin mocks de Postgres/RLS.
