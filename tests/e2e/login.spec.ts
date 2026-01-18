@@ -14,6 +14,10 @@ test("login con usuario seed y acceso a dashboard", async ({ page }) => {
   await page.getByRole("button", { name: "Entrar" }).click();
 
   await page.waitForURL("**/dashboard");
-  await expect(page.getByText("Dashboard")).toBeVisible();
-  await expect(page.getByText("Organización")).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Dashboard", exact: true })
+  ).toBeVisible();
+  await expect(
+    page.getByText("Organización", { exact: false }).first()
+  ).toBeVisible();
 });

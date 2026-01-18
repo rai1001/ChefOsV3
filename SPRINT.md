@@ -13,13 +13,13 @@ Dejar el SaaS **usable desde el minuto 1** (login + usuario seed + org seed + da
 ### 1.1) Usuario y organización seed (minuto 1)
 - [x] Seed idempotente crea `org` de desarrollo y datos mínimos
 - [x] Script crea **usuario inicial** (email+password) y lo asigna a la org
-- [ ] Login con credenciales de dev entra a `/dashboard`
+- [x] Login con credenciales de dev entra a `/dashboard`
 
 ### 2) Base multi-tenant (orgs/members/hotels)
 - [x] Tablas base creadas (`orgs`, `org_members`, `hotels`)
 - [x] RLS habilitada + policies por `org_id`
-- [ ] Helpers RLS (`current_org_id`, checks de rol)
-- [ ] Tests pgTAP para aislamiento por org
+- [x] Helpers RLS (`current_org_id`, checks de rol)
+- [x] Tests pgTAP para aislamiento por org
 
 ### 3) App Shell + Auth mínimo
 - [x] Ruta `/login` funcional (UI en español)
@@ -33,7 +33,7 @@ Dejar el SaaS **usable desde el minuto 1** (login + usuario seed + org seed + da
 ### 5) Tooling y calidad
 - [x] `pnpm test` verde
 - [x] `pnpm test --coverage` con umbral global >= 90% (o excepción documentada)
-- [ ] Playwright smoke (al menos login + dashboard) verde
+- [x] Playwright smoke (al menos login + dashboard) verde
 - [x] Documentación de setup en `docs/inventory/`
 
 ## Regla de testing (importante)
