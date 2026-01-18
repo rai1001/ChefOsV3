@@ -1,16 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { loadClientEnv } from "@/lib/env";
+import { PROTECTED_PATHS } from "@/lib/routes";
 import type { Database } from "@/lib/supabase/types";
-
-const PROTECTED_PATHS = [
-  "/dashboard",
-  "/events",
-  "/orders",
-  "/inventory",
-  "/staff",
-  "/settings"
-];
 
 export async function middleware(request: NextRequest) {
   const response = NextResponse.next({

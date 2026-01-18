@@ -6,8 +6,7 @@ import {
   getDashboardGrid,
   getDashboardHighlights
 } from "@/modules/dashboard/data/dashboard.server";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { formatEventTime } from "@/lib/date-format";
 
 const DashboardPage = async () => {
   const { user, membership } = await requireUserContext();
@@ -115,8 +114,7 @@ const DashboardPage = async () => {
                       {item.hotelName ?? "Sin hotel"}
                     </td>
                     <td className="px-4 py-3 text-sm text-slate-700">
-                      {format(new Date(item.startsAt), "d MMM HH:mm", { locale: es })} -{" "}
-                      {format(new Date(item.endsAt), "HH:mm", { locale: es })}
+                      {formatEventTime(item.startsAt, item.endsAt)}
                     </td>
                     <td className="px-4 py-3 text-sm">
                       {item.purchaseOrderId ? (
