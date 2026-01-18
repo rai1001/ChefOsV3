@@ -11,7 +11,7 @@
 | Gestión de pedidos | /orders | purchase_orders, event_purchase_orders | receive_purchase_order | purchasing | implementado (lectura + alta básica) |
 | Inventario y caducidades | /inventory | products (u otras tablas de inventario), hotels | desconocido | chef/kitchen | documentado (placeholder UI) |
 | Staff scheduling semanal | /staff | desconocido | desconocido | planner/staff | documentado (placeholder UI) |
-| Ajustes maestros | /settings | orgs, org_members (suppliers, menús) | desconocido | admin | documentado (placeholder UI) |
+| Ajustes maestros | /settings | orgs, org_members, hotels | desconocido | admin | implementado (hoteles + invitaciones basicas) |
 | Importación/OCR | ImporterPage (no creada) | import_jobs, import_rows | import_commit | purchasing | documentado (sin código) |
 | Planificación de producción | detalle evento/servicio | production_plans, production_tasks | desconocido | chef/kitchen | documentado (sin código) |
 | Adjuntos/Storage por org | /events (sección adjuntos) | event_attachments | bucket `attachments` | admin/planner | implementado (UI mínima + RLS) |
@@ -24,6 +24,7 @@
 - Seed SQL para org/hotel base (`supabase/seed.sql`) y RLS inicial en migración `20260118160000_init.sql`.
 - Formulario de creación de eventos en `/events/new`.
 - Alta rápida de pedidos en `/orders`.
+- Formulario de hoteles e invitaciones en `/settings`.
 
 ## Planned only (documentado pero no implementado)
 - Inventario FEFO, alertas de caducidad y reservas.
