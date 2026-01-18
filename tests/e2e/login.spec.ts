@@ -9,16 +9,12 @@ if (!email || !password) {
 
 test("login con usuario seed y acceso a dashboard", async ({ page }) => {
   await page.goto("/login");
-  await page.getByLabel("Correo").fill(email);
-  await page.getByLabel("Contraseña").fill(password);
-  await page.getByRole("button", { name: "Entrar" }).click();
+  await page.getByLabel(/correo/i).fill(email);
+  await page.getByLabel(/contra/i).fill(password);
+  await page.getByRole("button", { name: /entrar/i }).click();
 
   await page.waitForURL("**/dashboard");
-  await expect(
-    page.getByRole("heading", { name: "Dashboard", exact: true })
-  ).toBeVisible();
-  await expect(
-    page.getByText("Organización", { exact: false }).first()
-  ).toBeVisible();
-  await expect(page.getByText("Pedidos")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Dashboard" })).toBeVisible();
+  await expect(page.getByText("Hoteles activos")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Pedidos" })).toBeVisible();
 });
