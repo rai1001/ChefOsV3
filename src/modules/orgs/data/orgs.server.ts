@@ -1,5 +1,6 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { AppError } from "@/modules/shared/domain/errors";
+import type { Database } from "@/lib/supabase/types";
 
 type Membership = {
   orgId: string;
@@ -7,6 +8,8 @@ type Membership = {
   orgName?: string;
   orgSlug?: string;
 };
+
+type HotelSummary = Pick<Database["public"]["Tables"]["hotels"]["Row"], "id" | "name">;
 
 export const getActiveMembership = async (
   userId: string
@@ -36,11 +39,11 @@ export const getActiveMembership = async (
   };
 };
 
-export const getOrgHotels = async (orgId: string) => {
+export const getOrgHotels = async (orgId: string): Promise<HotelSummary[]> => {
   const supabase = createSupabaseServerClient();
   const response = await supabase
     .from("hotels")
-    .select("id, name")
+    .select("id,name")
     .eq("org_id", orgId);
 
   if (response.error) {
@@ -49,5 +52,10 @@ export const getOrgHotels = async (orgId: string) => {
     });
   }
 
-  return response.data ?? [];
+  if (!response.data) return [];
+
+  return response.data.map((hotel) => ({
+    id: hotel.id,
+    name: hotel.name
+  }));
 };

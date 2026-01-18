@@ -2,6 +2,7 @@ import { requireUserContext } from "@/modules/shared/data/server-context";
 import { AppShell } from "@/modules/shared/ui/app-shell";
 import { PageHeader } from "@/modules/shared/ui/page-header";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import type { Database } from "@/lib/supabase/types";
 
 type PurchaseOrderRow = {
   id: string;
@@ -17,7 +18,7 @@ const fetchPurchaseOrders = async (
   const supabase = createSupabaseServerClient();
   const response = await supabase
     .from("purchase_orders")
-    .select("id, status, total_estimated, suppliers(name), hotels(name)")
+    .select("id,status,total_estimated,suppliers(name),hotels(name)")
     .eq("org_id", orgId)
     .order("id", { ascending: true });
 
@@ -26,7 +27,19 @@ const fetchPurchaseOrders = async (
     return [];
   }
 
-  return response.data ?? [];
+  const rows = (response.data ?? []) as any[];
+
+  return rows.map((row) => ({
+    id: row.id as string,
+    status: row.status as string | null,
+    total_estimated: row.total_estimated as string | null,
+    suppliers: Array.isArray(row.suppliers)
+      ? (row.suppliers[0] as { name: string | null } | undefined) ?? null
+      : ((row.suppliers as { name: string | null } | null) ?? null),
+    hotels: Array.isArray(row.hotels)
+      ? (row.hotels[0] as { name: string | null } | undefined) ?? null
+      : ((row.hotels as { name: string | null } | null) ?? null)
+  }));
 };
 
 const formatStatus = (status: string | null) => {
