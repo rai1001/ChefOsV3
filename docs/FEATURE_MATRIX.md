@@ -16,7 +16,7 @@
 | Planificación de producción | detalle evento/servicio | production_plans, production_tasks | desconocido | chef/kitchen | documentado (sin código) |
 | Adjuntos/Storage por org | /events (sección adjuntos) | event_attachments | bucket `attachments` | admin/planner | implementado (UI mínima + RLS) |
 | Seed org + hotel base | seed.sql | orgs, hotels | n/a | admin | implementado (script) |
-| Bootstrap usuario admin | scripts/bootstrap-admin.ts | auth.users, org_members | Admin API (Supabase) | admin | falta (pendiente) |
+| Bootstrap usuario/admin y org | /api/admin/onboard | auth.users, orgs, org_members | Admin API (Supabase) | admin | implementado (server-side) |
 
 ## Missing from docs (existe en código)
 - Protección de rutas via `middleware.ts` (redirección a `/login` si no hay sesión).
