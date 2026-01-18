@@ -3,6 +3,7 @@ import { z } from "zod";
 import { createServiceRoleClient } from "@/lib/supabase/server";
 import { getServerUser } from "@/modules/auth/data/session.server";
 import { getActiveMembership } from "@/modules/orgs/data/orgs.server";
+import { logger } from "@/lib/logger";
 
 const roles = ["admin", "planner", "purchasing", "chef", "viewer"] as const;
 
@@ -42,6 +43,10 @@ export async function POST(request: Request) {
     const inviteResult = await supabase.auth.admin.inviteUserByEmail(parsed.data.email);
 
     if (inviteResult.error) {
+      logger.warn("admin.invite.error", {
+        code: inviteResult.error.code,
+        status: inviteResult.error.status
+      });
       return NextResponse.json(
         { error: inviteResult.error.message },
         { status: inviteResult.error.status ?? 400 }
@@ -64,6 +69,7 @@ export async function POST(request: Request) {
     );
 
     if (memberError) {
+      logger.warn("admin.invite.membership_error", { code: memberError.code });
       return NextResponse.json({ error: memberError.message }, { status: 400 });
     }
 
@@ -73,6 +79,7 @@ export async function POST(request: Request) {
     );
   } catch (err) {
     const message = err instanceof Error ? err.message : "Error desconocido";
+    logger.error("admin.invite.unknown_error", { message });
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
