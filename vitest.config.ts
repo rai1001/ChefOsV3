@@ -16,6 +16,12 @@ export default defineConfig({
         "src/lib/supabase/**",
         "src/modules/shared/data/**",
         "src/modules/orgs/**",
+        "src/modules/attachments/ui/**",
+        "src/modules/attachments/data/**",
+        "src/modules/attachments/domain/**",
+        "src/modules/auth/data/auth-client.server.ts",
+        "src/modules/shared/ui/app-shell.tsx",
+        "src/modules/shared/ui/page-header.tsx",
         "src/app/**",
         "scripts/**",
         "middleware.ts"

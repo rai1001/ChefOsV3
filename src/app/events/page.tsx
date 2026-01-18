@@ -1,6 +1,7 @@
 import { requireUserContext } from "@/modules/shared/data/server-context";
 import { AppShell } from "@/modules/shared/ui/app-shell";
 import { PageHeader } from "@/modules/shared/ui/page-header";
+import { AttachmentsList } from "@/modules/attachments/ui/attachments-list";
 
 const EventsPage = async () => {
   const { user, membership } = await requireUserContext();
@@ -21,6 +22,9 @@ const EventsPage = async () => {
           Este módulo usará TanStack Query y Supabase RLS para eventos por hotel.
           Añade aquí tu slice cuando definas el flujo.
         </p>
+      </div>
+      <div className="mt-4">
+        <AttachmentsList orgId={membership.orgId} />
       </div>
     </AppShell>
   );

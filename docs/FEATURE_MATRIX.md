@@ -14,6 +14,7 @@
 | Ajustes maestros | /settings | orgs, org_members (suppliers, menús) | desconocido | admin | documentado (placeholder UI) |
 | Importación/OCR | ImporterPage (no creada) | import_jobs, import_rows | import_commit | purchasing | documentado (sin código) |
 | Planificación de producción | detalle evento/servicio | production_plans, production_tasks | desconocido | chef/kitchen | documentado (sin código) |
+| Adjuntos/Storage por org | /events (sección adjuntos) | event_attachments | bucket `attachments` | admin/planner | implementado (UI mínima + RLS) |
 | Seed org + hotel base | seed.sql | orgs, hotels | n/a | admin | implementado (script) |
 | Bootstrap usuario admin | scripts/bootstrap-admin.ts | auth.users, org_members | Admin API (Supabase) | admin | falta (pendiente) |
 
