@@ -36,8 +36,7 @@ const createEvent = async (formData: FormData, orgId: string) => {
   }
 
   const supabase = createSupabaseServerClient();
-  // Supabase types are not refreshed for events yet; cast for insert.
-  const { error } = await (supabase as any).from("events").insert({
+  const { error } = await supabase.from("events").insert({
     org_id: orgId,
     hotel_id: parsed.data.hotelId,
     title: parsed.data.title,

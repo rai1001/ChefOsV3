@@ -80,6 +80,178 @@ export interface Database {
           }
         ];
       };
+      events: {
+        Row: {
+          id: string;
+          org_id: string;
+          hotel_id: string;
+          title: string;
+          starts_at: string;
+          ends_at: string;
+          status: Database["public"]["Enums"]["event_status"];
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          org_id: string;
+          hotel_id: string;
+          title: string;
+          starts_at: string;
+          ends_at: string;
+          status?: Database["public"]["Enums"]["event_status"];
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          org_id?: string;
+          hotel_id?: string;
+          title?: string;
+          starts_at?: string;
+          ends_at?: string;
+          status?: Database["public"]["Enums"]["event_status"];
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "events_hotel_id_fkey";
+            columns: ["hotel_id"];
+            referencedRelation: "hotels";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "events_org_id_fkey";
+            columns: ["org_id"];
+            referencedRelation: "orgs";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      spaces: {
+        Row: {
+          id: string;
+          org_id: string;
+          hotel_id: string;
+          name: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          org_id: string;
+          hotel_id: string;
+          name: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          org_id?: string;
+          hotel_id?: string;
+          name?: string;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "spaces_hotel_id_fkey";
+            columns: ["hotel_id"];
+            referencedRelation: "hotels";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "spaces_org_id_fkey";
+            columns: ["org_id"];
+            referencedRelation: "orgs";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      space_bookings: {
+        Row: {
+          id: string;
+          org_id: string;
+          event_id: string;
+          space_id: string;
+          starts_at: string;
+          ends_at: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          org_id: string;
+          event_id: string;
+          space_id: string;
+          starts_at: string;
+          ends_at: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          org_id?: string;
+          event_id?: string;
+          space_id?: string;
+          starts_at?: string;
+          ends_at?: string;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "space_bookings_event_id_fkey";
+            columns: ["event_id"];
+            referencedRelation: "events";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "space_bookings_org_id_fkey";
+            columns: ["org_id"];
+            referencedRelation: "orgs";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "space_bookings_space_id_fkey";
+            columns: ["space_id"];
+            referencedRelation: "spaces";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      event_services: {
+        Row: {
+          id: string;
+          org_id: string;
+          event_id: string;
+          service_type: Database["public"]["Enums"]["event_service_type"];
+          format: Database["public"]["Enums"]["event_service_format"];
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          org_id: string;
+          event_id: string;
+          service_type: Database["public"]["Enums"]["event_service_type"];
+          format: Database["public"]["Enums"]["event_service_format"];
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          org_id?: string;
+          event_id?: string;
+          service_type?: Database["public"]["Enums"]["event_service_type"];
+          format?: Database["public"]["Enums"]["event_service_format"];
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "event_services_event_id_fkey";
+            columns: ["event_id"];
+            referencedRelation: "events";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "event_services_org_id_fkey";
+            columns: ["org_id"];
+            referencedRelation: "orgs";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
       suppliers: {
         Row: {
           id: string;
@@ -183,6 +355,9 @@ export interface Database {
     Views: Record<string, never>;
     Functions: Record<string, never>;
     Enums: {
+      event_status: "draft" | "confirmed" | "cancelled";
+      event_service_type: "coffee_break" | "dinner" | "production";
+      event_service_format: "de_pie" | "sentado";
       purchase_status: "draft" | "approved" | "ordered" | "received";
     };
   };
