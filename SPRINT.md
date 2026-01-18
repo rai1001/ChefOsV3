@@ -36,7 +36,7 @@ Dejar el SaaS usable desde el minuto 1 (login + usuario seed + org seed + dashbo
 - [x] Playwright smoke (al menos login + dashboard) verde
 - [x] Documentacion de setup en `docs/inventory/`
 
-## Sprint P1 - Ajustes y usuarios (en progreso)
+## Sprint P1 - Ajustes y usuarios (cerrado)
 
 ### 1) Admins pueden gestionar maestros y usuarios
 - [x] Policies RLS para admins en `hotels`, `org_members`, `suppliers` y `products`
