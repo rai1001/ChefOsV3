@@ -49,7 +49,7 @@ Dejar el SaaS usable desde el minuto 1 (login + usuario seed + org seed + dashbo
 - [x] Password minimo 8 caracteres en login (alineado con onboarding)
 - [x] Ajuste de e2e login para selectores estables
 
-## Sprint 2 - Mantenibilidad
+## Sprint 2 - Mantenibilidad (cerrado)
 
 ### 1) Rutas protegidas y helpers
 - [x] Constantes de rutas protegidas en `src/lib/routes.ts`
