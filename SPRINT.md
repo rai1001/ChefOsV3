@@ -49,6 +49,16 @@ Dejar el SaaS usable desde el minuto 1 (login + usuario seed + org seed + dashbo
 - [x] Password minimo 8 caracteres en login (alineado con onboarding)
 - [x] Ajuste de e2e login para selectores estables
 
+## Sprint 2 - Mantenibilidad
+
+### 1) Rutas protegidas y helpers
+- [x] Constantes de rutas protegidas en `src/lib/routes.ts`
+- [x] Helper `formatEventTime` para dashboard
+
+### 2) Logging y cobertura
+- [x] Logging en `/api/admin/invite`
+- [x] Tests unitarios para nuevos helpers
+
 ## Regla de testing (importante)
 - DB/RLS se valida con `npx supabase test db` (pgTAP).
 - Tests de integracion deben hablar con Supabase real (local CLI o proyecto de staging), sin mocks de Postgres/RLS.
