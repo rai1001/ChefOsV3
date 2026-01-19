@@ -189,25 +189,84 @@ language plpgsql
 as $$
 declare
   v_po_org uuid;
+  v_po_hotel uuid;
   v_line jsonb;
   v_line_id uuid;
   v_rcvd numeric;
-  v_req numeric;
   v_pending int;
+  v_location uuid;
+  v_batch uuid;
+  v_unit text;
 begin
-  select org_id into v_po_org from public.purchase_orders where id = p_order_id;
+  select org_id, hotel_id into v_po_org, v_po_hotel from public.purchase_orders where id = p_order_id;
   if not found then
     raise exception 'purchase order % not found', p_order_id;
   end if;
+
+  -- Location fallback: primer inventory_locations de la org (si existe)
+  select id into v_location
+  from public.inventory_locations
+  where org_id = v_po_org
+  order by created_at
+  limit 1;
 
   for v_line in select * from jsonb_array_elements(p_lines)
   loop
     v_line_id := (v_line->>'line_id')::uuid;
     v_rcvd := coalesce((v_line->>'received_qty')::numeric, 0);
+    select purchase_unit into v_unit from public.purchase_order_lines where id = v_line_id;
     update public.purchase_order_lines
       set received_qty = greatest(0, coalesce(received_qty, 0) + v_rcvd)
       where id = v_line_id
         and purchase_order_id = p_order_id;
+
+    -- Crear batch y movimiento si hay qty recibida
+    if v_rcvd > 0 then
+      select gen_random_uuid() into v_batch;
+      insert into public.stock_batches (
+        id, org_id, hotel_id, location_id, supplier_item_id, source, qty, unit
+      )
+      select
+        v_batch,
+        pol.org_id,
+        v_po_hotel,
+        v_location,
+        pol.supplier_item_id,
+        'purchase',
+        v_rcvd,
+        v_unit
+      from public.purchase_order_lines pol
+      where pol.id = v_line_id;
+
+      insert into public.stock_movements (
+        org_id, hotel_id, location_id, supplier_item_id, batch_id, reason, qty, unit
+      )
+      select
+        pol.org_id,
+        v_po_hotel,
+        v_location,
+        pol.supplier_item_id,
+        v_batch,
+        'receive',
+        v_rcvd,
+        v_unit
+      from public.purchase_order_lines pol
+      where pol.id = v_line_id;
+
+      -- Upsert stock_levels
+      insert into public.stock_levels (org_id, hotel_id, location_id, supplier_item_id, on_hand_qty, unit)
+      select
+        pol.org_id,
+        v_po_hotel,
+        v_location,
+        pol.supplier_item_id,
+        v_rcvd,
+        v_unit
+      from public.purchase_order_lines pol
+      where pol.id = v_line_id
+      on conflict (location_id, supplier_item_id) do update
+        set on_hand_qty = public.stock_levels.on_hand_qty + excluded.on_hand_qty;
+    end if;
   end loop;
 
   -- Recalcular estado recibido
