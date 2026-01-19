@@ -134,23 +134,53 @@ for each row execute function public.refresh_po_total();
 alter table public.supplier_items enable row level security;
 alter table public.purchase_order_lines enable row level security;
 
-create policy if not exists "Supplier items select by membership" on public.supplier_items
-  for select using (is_org_member(org_id));
-create policy if not exists "Supplier items insert by membership" on public.supplier_items
-  for insert with check (is_org_member(org_id));
-create policy if not exists "Supplier items update by membership" on public.supplier_items
-  for update using (is_org_member(org_id)) with check (is_org_member(org_id));
-create policy if not exists "Supplier items delete by membership" on public.supplier_items
-  for delete using (is_org_member(org_id));
+do $$
+begin
+  if not exists (
+    select 1 from pg_policies where schemaname='public' and tablename='supplier_items' and policyname='Supplier items select by membership'
+  ) then
+    execute 'create policy "Supplier items select by membership" on public.supplier_items for select using (is_org_member(org_id))';
+  end if;
+  if not exists (
+    select 1 from pg_policies where schemaname='public' and tablename='supplier_items' and policyname='Supplier items insert by membership'
+  ) then
+    execute 'create policy "Supplier items insert by membership" on public.supplier_items for insert with check (is_org_member(org_id))';
+  end if;
+  if not exists (
+    select 1 from pg_policies where schemaname='public' and tablename='supplier_items' and policyname='Supplier items update by membership'
+  ) then
+    execute 'create policy "Supplier items update by membership" on public.supplier_items for update using (is_org_member(org_id)) with check (is_org_member(org_id))';
+  end if;
+  if not exists (
+    select 1 from pg_policies where schemaname='public' and tablename='supplier_items' and policyname='Supplier items delete by membership'
+  ) then
+    execute 'create policy "Supplier items delete by membership" on public.supplier_items for delete using (is_org_member(org_id))';
+  end if;
+end $$;
 
-create policy if not exists "PO lines select by membership" on public.purchase_order_lines
-  for select using (is_org_member(org_id));
-create policy if not exists "PO lines insert by membership" on public.purchase_order_lines
-  for insert with check (is_org_member(org_id));
-create policy if not exists "PO lines update by membership" on public.purchase_order_lines
-  for update using (is_org_member(org_id)) with check (is_org_member(org_id));
-create policy if not exists "PO lines delete by membership" on public.purchase_order_lines
-  for delete using (is_org_member(org_id));
+do $$
+begin
+  if not exists (
+    select 1 from pg_policies where schemaname='public' and tablename='purchase_order_lines' and policyname='PO lines select by membership'
+  ) then
+    execute 'create policy "PO lines select by membership" on public.purchase_order_lines for select using (is_org_member(org_id))';
+  end if;
+  if not exists (
+    select 1 from pg_policies where schemaname='public' and tablename='purchase_order_lines' and policyname='PO lines insert by membership'
+  ) then
+    execute 'create policy "PO lines insert by membership" on public.purchase_order_lines for insert with check (is_org_member(org_id))';
+  end if;
+  if not exists (
+    select 1 from pg_policies where schemaname='public' and tablename='purchase_order_lines' and policyname='PO lines update by membership'
+  ) then
+    execute 'create policy "PO lines update by membership" on public.purchase_order_lines for update using (is_org_member(org_id)) with check (is_org_member(org_id))';
+  end if;
+  if not exists (
+    select 1 from pg_policies where schemaname='public' and tablename='purchase_order_lines' and policyname='PO lines delete by membership'
+  ) then
+    execute 'create policy "PO lines delete by membership" on public.purchase_order_lines for delete using (is_org_member(org_id))';
+  end if;
+end $$;
 
 -- Función simple de recepción (actualiza cantidades y estado)
 create or replace function public.receive_purchase_order(p_order_id uuid, p_lines jsonb)
@@ -159,14 +189,13 @@ language plpgsql
 as $$
 declare
   v_po_org uuid;
-  v_status public.purchase_order_status;
   v_line jsonb;
   v_line_id uuid;
   v_rcvd numeric;
   v_req numeric;
   v_pending int;
 begin
-  select org_id, status into v_po_org, v_status from public.purchase_orders where id = p_order_id;
+  select org_id into v_po_org from public.purchase_orders where id = p_order_id;
   if not found then
     raise exception 'purchase order % not found', p_order_id;
   end if;
