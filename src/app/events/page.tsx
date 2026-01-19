@@ -23,47 +23,47 @@ const EventsPage = async () => {
         title="Eventos"
         subtitle="Listado de eventos por hotel"
         actions={
-          <span className="rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-700">
+          <span className="rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs text-slate-100">
             {events.length} eventos
           </span>
         }
       />
-      <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
+      <div className="rounded-2xl border border-white/10 bg-slate-900 p-4 shadow-sm">
         {events.length === 0 ? (
-          <p className="text-sm text-slate-700">
-            Aún no hay eventos. Usa el seed o crea uno nuevo.
+          <p className="text-sm text-slate-300">
+            Aτ no hay eventos. Usa el seed o crea uno nuevo.
           </p>
         ) : (
-          <div className="overflow-hidden rounded-xl border border-slate-100">
-            <table className="min-w-full divide-y divide-slate-100">
-              <thead className="bg-slate-50">
+          <div className="overflow-hidden rounded-xl border border-white/10">
+            <table className="min-w-full divide-y divide-white/5">
+              <thead className="bg-white/5">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600">
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-200">
                     Evento
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600">
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-200">
                     Hotel
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600">
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-200">
                     Horario
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600">
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-200">
                     Estado
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 bg-white">
+              <tbody className="divide-y divide-white/5 bg-slate-950/40">
                 {events.map((event) => (
                   <tr key={event.id}>
-                    <td className="px-4 py-3 text-sm text-slate-800">{event.title}</td>
-                    <td className="px-4 py-3 text-sm text-slate-700">
+                    <td className="px-4 py-3 text-sm text-slate-100">{event.title}</td>
+                    <td className="px-4 py-3 text-sm text-slate-200">
                       {event.hotelName ?? "Sin hotel"}
                     </td>
-                    <td className="px-4 py-3 text-sm text-slate-700">
+                    <td className="px-4 py-3 text-sm text-slate-200">
                       {formatRange(event.startsAt, event.endsAt)}
                     </td>
                     <td className="px-4 py-3 text-sm">
-                      <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
+                      <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-slate-100">
                         {event.status}
                       </span>
                     </td>
