@@ -31,9 +31,11 @@ export const OrderCreateForm = ({ orgId, hotels }: Props) => {
 
     setLoading(true);
     setError(null);
+    const orderNumber = `PO-${Date.now()}`;
     const { error: insertError } = await supabase.from("purchase_orders").insert({
       org_id: orgId,
       hotel_id: hotelId,
+      order_number: orderNumber,
       status,
       total_estimated: null
     });
