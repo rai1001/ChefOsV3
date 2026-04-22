@@ -25,27 +25,30 @@ Este documento es normativo.
 
 ---
 
-## Módulos oficiales (15)
+## Módulos oficiales (16)
 
 | # | Módulo | Responsabilidad principal | Sprint |
 |---|---|---|---|
 | 1 | `identity` | Auth, sesión, memberships (consulta), roles, perfiles UX, active hotel context | sprint-01 |
 | 2 | `commercial` | Eventos, clientes, BEO, calendario comercial | sprint-02 |
 | 3 | `tenant-admin` | Tenants, hoteles (creación), memberships (mutación), invites email+token | sprint-02b |
-| 4 | `recipes` | Recetas, ingredientes, pasos, costeo, menús | sprint-03 |
-| 5 | `catalog` | Productos, categorías, proveedores, ofertas, alias | sprint-04 |
-| 6 | `procurement` | PR / PO / GR, consolidación, OCR albaranes | sprint-05 |
-| 7 | `inventory` | Lotes FIFO, reservations, counts, waste, forensics | sprint-06 |
-| 8 | `production` | Workflows, mise en place, KDS, kanban, shopping list | sprint-07 |
-| 9 | `reporting` | KPIs, food cost, variance, dashboard, alerts, snapshots | sprint-08 |
-| 10 | `compliance` | APPCC, temperaturas, etiquetado, trazabilidad | sprint-09 |
-| 11 | `automation` | Jobs queue, worker, triggers automatizados | sprint-10 |
-| 12 | `notifications` | In-app Realtime, email, preferencias, severity | sprint-11 |
-| 13 | `integrations` | PMS (Mews, OPERA), POS (Lightspeed, Simphony), sync | sprint-12 |
-| 14 | `hr` | Personnel, shifts, schedules, rotación | sprint-13 |
-| 15 | `agents` | 15 agentes asistidos (sugerencias, no autónomos) | sprint-14 |
+| 4 | `recipes` | Recetas, ingredientes, pasos, sub-recetas, costeo recursivo, escandallo live | sprint-03 |
+| 5 | `menus` | Menús, secciones, recetas en secciones, alérgenos agregados, tipos | sprint-03b |
+| 6 | `catalog` | Productos, categorías, proveedores, ofertas, alias | sprint-04 |
+| 7 | `procurement` | PR / PO / GR, consolidación, OCR albaranes | sprint-05 |
+| 8 | `inventory` | Lotes FIFO, reservations, counts, waste, forensics | sprint-06 |
+| 9 | `production` | Workflows, mise en place, KDS, kanban, shopping list | sprint-07 |
+| 10 | `reporting` | KPIs, food cost, variance, dashboard, alerts, snapshots | sprint-08 |
+| 11 | `compliance` | APPCC, temperaturas, etiquetado, trazabilidad | sprint-09 |
+| 12 | `automation` | Jobs queue, worker, triggers automatizados | sprint-10 |
+| 13 | `notifications` | In-app Realtime, email, preferencias, severity | sprint-11 |
+| 14 | `integrations` | PMS (Mews, OPERA), POS (Lightspeed, Simphony), sync | sprint-12 |
+| 15 | `hr` | Personnel, shifts, schedules, rotación | sprint-13 |
+| 16 | `agents` | 15 agentes asistidos (sugerencias, no autónomos) | sprint-14 |
 
 > **Nota ADR-0009:** `tenant-admin` se añadió en sprint-02b. Convive con `identity` sin solape: identity resuelve sesión + active hotel context; tenant-admin mutante tenants/hoteles/memberships/invites. Ver `specs/decisions-log.md § ADR-0009`.
+
+> **Nota ADR-0010:** `menus` se separó de `recipes` en sprint-03. Recipes posee fichas técnicas y escandallo; menus posee composición comercial (secciones, precios, alérgenos agregados). Consumido por commercial/BEO y reporting. Ver `specs/decisions-log.md § ADR-0010`.
 
 ---
 
@@ -83,7 +86,8 @@ Ver `specs/module-template.md` para la plantilla completa con cada sección a re
 - `identity` es owner de: auth flow (sign in/up/out, recovery), sesión, consulta de memberships del user actual, roles enum, perfiles UX, active hotel context. NO es owner de crear/mutar memberships ni de onboarding.
 - `tenant-admin` es owner de: crear/listar tenants, crear/listar hoteles bajo un tenant, mutar memberships (rol, activar/desactivar), emitir/aceptar/revocar invites email+token. Consume `identity` por contrato público.
 - `commercial` es owner de: eventos, clientes, BEO, calendario, categorías comerciales.
-- `recipes` es owner de: fichas técnicas, ingredientes, pasos, sub-recetas, costeo recursivo, menús.
+- `recipes` es owner de: fichas técnicas, ingredientes, pasos, sub-recetas, costeo recursivo, escandallo live vs GR.
+- `menus` es owner de: composición comercial de menús, secciones, recetas en secciones, alérgenos agregados, precios. Consume `@/features/recipes` por contrato público.
 - `catalog` es owner de: productos, categorías de producto, proveedores, ofertas, alias, supplier_refs.
 - `procurement` es owner de: purchase requests, purchase orders, goods receipts, consolidación, OCR.
 - `inventory` es owner de: lotes FIFO, movimientos, reservations, counts, waste, forensics.
@@ -168,4 +172,4 @@ Este documento debe leerse junto con:
 
 Este documento enumera los módulos oficiales de ChefOS v3.
 
-Ninguna implementación puede vivir fuera de estos 15 módulos sin ADR.
+Ninguna implementación puede vivir fuera de estos 16 módulos sin ADR.

@@ -1,5 +1,7 @@
 # ChefOS v3 Sprint 03 - Recipes
 
+> **AJUSTADO POR ADR-0010 (2026-04-22)**: menús se mueven a módulo separado `menus` (16º oficial, sprint-03b). Este sprint cubre solo recipes. Escandallo live INCLUIDO (hook + UI con diff vs último albarán). Import Excel FUERA de alcance → sprint dedicado `sprint-03c-import-excel` (feature imprescindible comercialmente, se hace después con foco total). Ver `.ai/specs/decisions-log.md § ADR-0010` y `§ ADR-0005-extensión-2`.
+
 ## Objetivo del sprint
 
 Construir la base funcional inicial del módulo `recipes` dentro de la arquitectura oficial de ChefOS v3, con alcance cerrado y orientado a estabilizar el contrato base del dominio de recetas del sistema.
