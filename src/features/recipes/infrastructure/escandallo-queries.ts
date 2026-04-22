@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { EscandalloLive, EscandalloSyncResult } from '../domain/types'
+import { mapSupabaseError } from '@/lib/errors/map-supabase-error'
 
 export async function getEscandalloLive(
   supabase: SupabaseClient,
@@ -10,7 +11,7 @@ export async function getEscandalloLive(
     p_hotel_id: hotelId,
     p_recipe_id: recipeId,
   })
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'escandallo' })
   return data as EscandalloLive
 }
 
@@ -23,6 +24,6 @@ export async function syncEscandalloPrices(
     p_hotel_id: hotelId,
     p_recipe_id: recipeId,
   })
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'escandallo' })
   return data as EscandalloSyncResult
 }

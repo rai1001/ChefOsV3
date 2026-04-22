@@ -32,7 +32,7 @@ export function MenuSectionRecipesPanel({ hotelId, sectionId }: Props) {
   const [price, setPrice] = useState('')
   const [error, setError] = useState<string | null>(null)
 
-  const approvedRecipes = recipesQ.data ?? []
+  const approvedRecipes = recipesQ.data?.rows ?? []
   const existing = sectionRecipesQ.data ?? []
 
   const addRecipe = async () => {

@@ -1,6 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Hotel } from '@/features/identity'
 import type { CreateHotelInput, TenantWithHotelInput } from '../domain/types'
+import { mapSupabaseError } from '@/lib/errors/map-supabase-error'
 
 export interface CreateTenantWithHotelResult {
   tenant_id: string
@@ -18,7 +19,7 @@ export async function createTenantWithHotel(
     p_timezone: input.timezone,
     p_currency: input.currency,
   })
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'hotel' })
   return data as CreateTenantWithHotelResult
 }
 
@@ -31,7 +32,7 @@ export async function fetchTenantHotels(
     .select('*')
     .eq('tenant_id', tenantId)
     .order('created_at', { ascending: true })
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'hotel' })
   return (data as Hotel[]) ?? []
 }
 
@@ -73,6 +74,6 @@ async function insertHotelFallback(
     })
     .select('id')
     .single()
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'hotel' })
   return (data as { id: string }).id
 }

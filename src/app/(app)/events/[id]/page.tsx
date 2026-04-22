@@ -1,8 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
 import { getActiveHotelOrNull } from '@/features/identity/server'
-import { fetchEvent, fetchEventMenus, fetchEventSpaces } from '@/features/commercial/infrastructure/event-queries'
+import { getEventDetailServer } from '@/features/commercial/server'
 import { EVENT_TYPE_LABELS, SERVICE_TYPE_LABELS } from '@/features/commercial'
 import { EventNotFoundError } from '@/features/commercial'
 import { Button } from '@/components/ui/button'
@@ -17,16 +16,14 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
   const activeHotel = await getActiveHotelOrNull()
   if (!activeHotel) return null
 
-  const supabase = await createClient()
   let event
   let spaces
   let menus
   try {
-    ;[event, spaces, menus] = await Promise.all([
-      fetchEvent(supabase, activeHotel.hotel_id, id),
-      fetchEventSpaces(supabase, activeHotel.hotel_id, id),
-      fetchEventMenus(supabase, activeHotel.hotel_id, id),
-    ])
+    const detail = await getEventDetailServer(activeHotel.hotel_id, id)
+    event = detail.event
+    spaces = detail.spaces
+    menus = detail.menus
   } catch (err) {
     if (err instanceof EventNotFoundError) notFound()
     throw err

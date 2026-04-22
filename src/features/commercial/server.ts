@@ -3,15 +3,16 @@ import 'server-only'
 /**
  * Contrato público server-only del módulo `commercial`.
  *
- * Reservado para helpers que lean/muten datos comerciales desde Server Components,
- * Server Actions o Route Handlers sin cargar hooks React al bundle cliente.
+ * Use estos helpers desde Server Components, Server Actions, Route Handlers.
+ * NO importar desde Client Components (rompería el build).
  *
- * Por ahora está vacío: las páginas del módulo usan hooks client (`@/features/commercial`)
- * y Server Actions locales en `src/app/(app)/events/*` para mutations.
- *
- * Cuando algún flujo necesite leer eventos directamente en un Server Component
- * (p. ej. una ruta `/events/[id]/print` server-rendered), añadir aquí un helper
- * `getEventServer(hotelId, eventId)` apoyado en `infrastructure/event-queries.ts`.
+ * Para hooks client + types, usar `@/features/commercial` (entry normal).
  */
 
-export {}
+export {
+  getEventServer,
+  getEventSpacesServer,
+  getEventMenusServer,
+  getEventDetailServer,
+  getClientServer,
+} from './application/get-event.server'

@@ -17,7 +17,9 @@
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "db:types": "npx supabase gen types typescript --project-id dbtrgnyfmzqsrcoadcrs --schema public > src/types/database.ts",
+    "db:types:check": "npx supabase gen types typescript --project-id dbtrgnyfmzqsrcoadcrs --schema public | diff - src/types/database.ts"
   },
   "dependencies": {
     "@radix-ui/react-checkbox": "^1.1.2",
@@ -38,6 +40,8 @@
     "@supabase/ssr": "^0.10.2",
     "@supabase/supabase-js": "^2.103.0",
     "@tanstack/react-query": "^5.99.0",
+    "@upstash/ratelimit": "^2.0.8",
+    "@upstash/redis": "^1.37.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",

@@ -9,19 +9,29 @@ import type {
   RecipesFilter,
 } from '../domain/types'
 import { RecipeNotFoundError } from '../domain/errors'
+import { mapSupabaseError } from '@/lib/errors/map-supabase-error'
+import {
+  buildPaginatedResult,
+  pageRange,
+  type PaginatedResult,
+  type PaginationParams,
+} from '@/lib/pagination'
 
 // ─── Lista / detalle ──────────────────────────────────────────────────────────
 
 export async function fetchRecipes(
   supabase: SupabaseClient,
   hotelId: string,
-  filter?: RecipesFilter
-): Promise<Recipe[]> {
+  filter?: RecipesFilter,
+  pagination?: PaginationParams
+): Promise<PaginatedResult<Recipe>> {
+  const { from, to, pageSize } = pageRange(pagination)
   let query = supabase
     .from('recipes')
     .select('*')
     .eq('hotel_id', hotelId)
     .order('updated_at', { ascending: false })
+    .range(from, to)
 
   if (filter?.status) {
     const statuses = Array.isArray(filter.status) ? filter.status : [filter.status]
@@ -33,8 +43,8 @@ export async function fetchRecipes(
   if (filter?.search) query = query.ilike('name', `%${filter.search}%`)
 
   const { data, error } = await query
-  if (error) throw error
-  return (data as Recipe[]) ?? []
+  if (error) throw mapSupabaseError(error, { resource: 'recipe' })
+  return buildPaginatedResult((data as Recipe[]) ?? [], pageSize, from)
 }
 
 export async function fetchRecipe(
@@ -48,7 +58,7 @@ export async function fetchRecipe(
     .eq('id', recipeId)
     .eq('hotel_id', hotelId)
     .maybeSingle()
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'recipe' })
   if (!data) throw new RecipeNotFoundError(recipeId)
   return data as Recipe
 }
@@ -105,7 +115,7 @@ export async function createRecipe(
     })
     .select()
     .single()
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'recipe' })
   return data as Recipe
 }
 
@@ -141,7 +151,7 @@ export async function updateRecipe(
     .eq('hotel_id', hotelId)
     .select()
     .single()
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'recipe' })
   return data as Recipe
 }
 
@@ -156,7 +166,7 @@ export async function submitRecipeForReview(
     p_hotel_id: hotelId,
     p_recipe_id: recipeId,
   })
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'recipe' })
 }
 
 export async function approveRecipe(
@@ -168,7 +178,7 @@ export async function approveRecipe(
     p_hotel_id: hotelId,
     p_recipe_id: recipeId,
   })
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'recipe' })
 }
 
 export async function deprecateRecipe(
@@ -180,7 +190,7 @@ export async function deprecateRecipe(
     p_hotel_id: hotelId,
     p_recipe_id: recipeId,
   })
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'recipe' })
 }
 
 /**
@@ -207,7 +217,7 @@ export async function transitionRecipeTo(
         .update({ status: 'draft' })
         .eq('id', recipeId)
         .eq('hotel_id', hotelId)
-      if (error) throw error
+      if (error) throw mapSupabaseError(error, { resource: 'recipe' })
       return
     }
     case 'archived': {
@@ -216,7 +226,7 @@ export async function transitionRecipeTo(
         .update({ status: 'archived' })
         .eq('id', recipeId)
         .eq('hotel_id', hotelId)
-      if (error) throw error
+      if (error) throw mapSupabaseError(error, { resource: 'recipe' })
       return
     }
     default:
@@ -235,7 +245,7 @@ export async function calculateRecipeCost(
     p_hotel_id: hotelId,
     p_recipe_id: recipeId,
   })
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'recipe_cost' })
   return data as RecipeCostResult
 }
 
@@ -248,7 +258,7 @@ export async function duplicateRecipe(
     p_hotel_id: hotelId,
     p_recipe_id: recipeId,
   })
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'recipe' })
   return data as string
 }
 
@@ -263,7 +273,7 @@ export async function scaleRecipe(
     p_recipe_id: recipeId,
     p_new_servings: newServings,
   })
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'recipe' })
   return data
 }
 
@@ -276,6 +286,6 @@ export async function getRecipeTechSheet(
     p_hotel_id: hotelId,
     p_recipe_id: recipeId,
   })
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'recipe_tech_sheet' })
   return data as RecipeTechSheet
 }

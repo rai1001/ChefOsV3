@@ -564,6 +564,122 @@ Cuando aparezca una relación operativa entre ambos (ej. menus necesitando mutar
 
 ---
 
+### ADR-0011 — Hardening de superficie pública: rate-limit + headers HTTP + origin allowlist
+
+**Fecha**: 2026-04-22
+**Estado**: aceptada
+**Módulo / área afectada**: `proxy`/middleware, `next.config.ts`, `tenant-admin/application`, `identity/application`
+
+#### Contexto
+
+Auditorías externas (Codex y Antigravity, sprint-hardening) identifican tres huecos en la superficie pública del SaaS antes de pasar a venta:
+
+1. **SEC-001 / SEC-002**: login y forgot-password sin rate limit + errores Supabase crudos expuestos al cliente. Combinado permite enumeración de cuentas y brute force.
+2. **SEC-003**: `createInviteAction` construye la URL de invitación a partir de headers `host`/`x-forwarded-proto` sin allowlist. Spoofing del header `Host` en proxies mal configurados → links de invitación apuntando a dominios de atacante.
+3. **SEC-004**: `next.config.ts` solo declara `reactStrictMode: true`. Sin CSP, HSTS, X-Frame-Options, Referrer-Policy, Permissions-Policy. La defensa frente a XSS/clickjacking depende del default del proveedor de hosting.
+
+#### Opciones consideradas
+
+1. **Hardening inline en cada acción/ruta** — pros: granularidad. Contras: fácil olvidar uno, fácil divergir entre rutas.
+2. **Capa transversal `src/lib/{rate-limit,errors}` + edge middleware + headers en `next.config.ts`** — pros: punto único, auditable, fácil de testear. Contras: requiere infra (Upstash) y reescritura del middleware existente.
+3. **Aplazar a producción** — pros: cero esfuerzo ahora. Contras: hueco real explotable hoy si alguien encuentra la URL del entorno demo. Bloquea salida comercial.
+
+#### Decisión
+
+Opción 2. Hardening centralizado:
+
+- **Rate limit**: `@upstash/ratelimit` + `@upstash/redis` REST. Backend Edge-compatible (Vercel Edge Functions y Workers). Persistencia entre instancias serverless. Free tier 10k cmds/día → suficiente para dev + early users.
+  - Límites por defecto:
+    - `login`: 5 intentos / minuto / IP.
+    - `forgot-password`: 3 intentos / 15 minutos / IP.
+    - `invite-accept`: 10 intentos / minuto / IP.
+  - Variables `UPSTASH_REDIS_REST_URL` y `UPSTASH_REDIS_REST_TOKEN` en `.env.example`. Si vacías en dev → modo "skip" (logging warning, no bloquea).
+  - Implementación en `src/lib/rate-limit/index.ts`. Aplicado vía middleware en `src/proxy.ts` y/o invocado desde server actions sensibles.
+
+- **Errores auth normalizados**: catálogo en `src/features/identity/domain/auth-errors.ts` con códigos `invalid_credentials`, `email_not_confirmed`, `rate_limited`, `network_error`, `generic`. Mensajes neutros al usuario, log interno con correlation id (UUID v4).
+
+- **Origin allowlist**: `createInviteAction` deja de leer `host` y `x-forwarded-proto`. Usa `process.env.NEXT_PUBLIC_APP_URL` validado contra allowlist por entorno (`localhost:3000` en dev, dominios canónicos en prod). Nueva env `APP_URL_ALLOWLIST` (CSV) opcional.
+
+- **Headers HTTP**: `next.config.ts` exporta `headers()` con:
+  - `Content-Security-Policy`: nonce + `strict-dynamic` para scripts. `default-src 'self'`. `connect-src` permite Supabase y Upstash.
+  - `Strict-Transport-Security: max-age=63072000; includeSubDomains; preload`.
+  - `X-Frame-Options: DENY`.
+  - `X-Content-Type-Options: nosniff`.
+  - `Referrer-Policy: strict-origin-when-cross-origin`.
+  - `Permissions-Policy: camera=(), microphone=(), geolocation=()`.
+
+#### Razón
+
+- Upstash es el backend Edge-compatible más usado del ecosistema Vercel/Next.js. SDK pequeño, sin servidor que gestionar.
+- Allowlist evita la clase de ataque "attacker controla `Host` → recibe URLs con su dominio". Trivial de explotar si hay reverse proxy mal configurado.
+- Headers explícitos en `next.config.ts` los hace auditables en repo (no dependen del hosting). CSP con nonce es la única defensa real contra XSS reflejado en una SPA.
+- Errores normalizados elimina la enumeración de cuentas (mensaje siempre genérico) y deja log interno para debug.
+
+#### Consecuencias
+
+- `package.json` suma `@upstash/ratelimit` y `@upstash/redis` (runtime).
+- `.env.example` añade `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`. Producción debe definirlas o el rate limit no aplica (degradación segura: skip + warning, no bloqueo).
+- `src/proxy.ts` se amplía para invocar rate-limit en rutas auth (login, signup, forgot-password) y para invitaciones.
+- `src/features/tenant-admin/application/create-invite-action.ts` queda sin `headers()` calls — usa `getCanonicalAppUrl()` del nuevo `src/lib/app-url/`.
+- `next.config.ts` deja de ser un one-liner — pasa a usar `async headers()`.
+- Cualquier nueva server action sensible debe envolverse con `withRateLimit(...)` o equivalente, o documentar exención.
+
+#### Revisable
+
+Cuando alcancemos >100 hoteles activos (Upstash free tier puede quedarse corto), o si Vercel introduce rate-limit nativo equivalente.
+
+---
+
+### ADR-0012 — Tipos Supabase autogenerados como fuente única de verdad de DB
+
+**Fecha**: 2026-04-22
+**Estado**: aceptada
+**Módulo / área afectada**: `src/types/database.ts`, `src/features/*/infrastructure/`
+
+#### Contexto
+
+Auditoría Antigravity (quick win) señala que los tipos TS de las tablas se mantienen a mano en `domain/types.ts`. Riesgo de drift contra el schema real cuando se añade columna o cambia tipo. v2 vivió este problema dos veces (campos null vs not null divergentes).
+
+`supabase gen types typescript` produce tipos desde el schema en vivo del proyecto (`dbtrgnyfmzqsrcoadcrs`, ADR-0003), incluyendo nullability, FKs, enums, RPCs.
+
+#### Opciones consideradas
+
+1. **Tipos a mano en `domain/types.ts` (status quo)** — pros: control total, expresivo. Contras: drift inevitable, doble fuente de verdad.
+2. **Tipos autogenerados como fuente única** — pros: nunca diverge del schema, refleja constraints reales. Contras: tipos verbosos, requieren wrapping en `domain/` para narrativa de negocio.
+3. **Híbrido: autogenerados como base + tipos de dominio que mapean** — pros: lo mejor de los dos mundos. Contras: dos capas de tipos.
+
+#### Decisión
+
+Opción 3 (híbrido). 
+
+- Script `npm run db:types` ejecuta `supabase gen types typescript --project-id dbtrgnyfmzqsrcoadcrs > src/types/database.ts`. CI valida que el archivo no diverge del schema (futuro check opcional).
+- `src/types/database.ts` contiene tipos `Database`, `Tables<'X'>`, `Enums<'Y'>` autogenerados. NO se edita a mano.
+- `infrastructure/*-queries.ts` consume tipos generados directamente (`Tables<'events'>`).
+- `domain/types.ts` mantiene tipos de negocio narrativos (`Event`, `EventDraft`, `EventStatus`) que pueden:
+  - extender el row tipo con cálculos derivados (`Event = Tables<'events'> & { computedField: ... }`),
+  - restringir nullability cuando el dominio garantiza más que la DB,
+  - exponer enums propios cuando el dominio difiere del PostgreSQL enum.
+
+#### Razón
+
+- v2 sufrió bugs por divergencia (`null` vs `undefined`, columna añadida sin reflejar en TS).
+- Migrar a 100% autogenerado obliga a usar nombres y nullability del schema, perdiendo narrativa de dominio. El híbrido respeta ownership: DB define forma física, dominio define semántica.
+- `gen types` es idempotente y trivialmente versionable en git → diff entre runs detecta cambios de schema sin sorpresas.
+
+#### Consecuencias
+
+- `package.json` añade script `db:types` y opcionalmente `db:types:check`.
+- `src/types/database.ts` aparece como archivo trackeado (NO ignorar en `.gitignore`).
+- Refactor progresivo: cada `infrastructure/*-queries.ts` migra cuando se toque (no big-bang). El mapping a tipos de dominio se centraliza en helpers `mapRowToEvent(row)`, etc., en `infrastructure/`.
+- `domain/types.ts` evoluciona para extender, no duplicar.
+- Cualquier cambio de schema (nueva migración) debe ir acompañado de `npm run db:types` y commit del diff.
+
+#### Revisable
+
+Si Supabase lanza CLI con generación de tipos a `domain/` directamente (improbable). O si v3 hace fork de Supabase y los tipos se generan desde el nuevo schema.
+
+---
+
 ## Mantenimiento
 
 Cada ADR debe poder leerse en <5 minutos. Si una decisión requiere más, dividirla en varias ADRs.

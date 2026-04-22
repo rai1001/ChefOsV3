@@ -1,8 +1,13 @@
 'use server'
 
-import { headers } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { signUpSchema } from '@/features/identity/application/schemas'
+import { mapAuthError } from '@/features/identity/domain/auth-errors'
+import { logger, newCorrelationId } from '@/lib/logger'
+import { getCanonicalAppUrl } from '@/lib/app-url'
+
+const NEUTRAL_SUCCESS_MESSAGE =
+  'Cuenta creada. Revisa tu email para confirmar antes de entrar. Si Supabase tiene email confirmation desactivado, ya puedes entrar directamente.'
 
 export type SignUpFormState =
   | { status: 'idle' }
@@ -29,8 +34,7 @@ export async function signUpAction(
   }
 
   const supabase = await createClient()
-  const headersList = await headers()
-  const origin = headersList.get('origin') ?? process.env.NEXT_PUBLIC_APP_URL ?? ''
+  const origin = getCanonicalAppUrl()
 
   const { error } = await supabase.auth.signUp({
     email: parsed.data.email,
@@ -42,12 +46,24 @@ export async function signUpAction(
   })
 
   if (error) {
-    return { status: 'error', message: error.message }
+    const correlationId = newCorrelationId()
+    const mapped = mapAuthError(error, 'signup')
+    logger.warn('auth.signUp failed', {
+      correlationId,
+      flow: 'signup',
+      code: mapped.code,
+      internalMessage: mapped.internalMessage,
+    })
+    // Para evitar enumeración: rate_limit y weak_password muestran mensaje específico,
+    // el resto cae al neutral success (no revela si email ya existía).
+    if (mapped.code === 'rate_limited' || mapped.code === 'weak_password') {
+      return { status: 'error', message: mapped.userMessage }
+    }
+    return { status: 'success', message: NEUTRAL_SUCCESS_MESSAGE }
   }
 
   return {
     status: 'success',
-    message:
-      'Cuenta creada. Revisa tu email para confirmar antes de entrar. Si Supabase tiene email confirmation desactivado, ya puedes entrar directamente.',
+    message: NEUTRAL_SUCCESS_MESSAGE,
   }
 }

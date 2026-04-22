@@ -1,9 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getActiveHotelOrNull } from '@/features/identity/server'
-import { getRecipeServer } from '@/features/recipes/server'
-import { createClient } from '@/lib/supabase/server'
-import { fetchRecipeIngredients } from '@/features/recipes/infrastructure/ingredient-queries'
+import { getRecipeWithIngredientsServer } from '@/features/recipes/server'
 import { RecipeNotFoundError, RECIPE_CATEGORY_LABELS, DIFFICULTY_LABELS } from '@/features/recipes'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
@@ -27,9 +25,9 @@ export default async function RecipeDetailPage({
   let recipe
   let ingredients
   try {
-    recipe = await getRecipeServer(activeHotel.hotel_id, id)
-    const supabase = await createClient()
-    ingredients = await fetchRecipeIngredients(supabase, activeHotel.hotel_id, id)
+    const data = await getRecipeWithIngredientsServer(activeHotel.hotel_id, id)
+    recipe = data.recipe
+    ingredients = data.ingredients
   } catch (err) {
     if (err instanceof RecipeNotFoundError) notFound()
     throw err

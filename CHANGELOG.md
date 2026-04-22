@@ -2,6 +2,120 @@
 
 Todos los cambios notables del proyecto se documentan aquí. Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.1.0/). Versionado: [SemVer](https://semver.org/lang/es/).
 
+## [0.4.0] - 2026-04-22
+
+### Sprint-hardening — auditorías Codex + Antigravity
+
+Sprint transversal de endurecimiento previo a `sprint-03c-import-excel`. Cierra
+hallazgos confirmados de dos auditorías externas. Ver `.ai/sprints/sprint-hardening.md`.
+
+### Added
+
+- **`src/lib/errors/`** — catálogo transversal `AppError` (NotFound, Conflict, Unauthorized,
+  Forbidden, Validation, RateLimited, Infrastructure) + `mapSupabaseError(raw, context)`
+  para traducir PostgrestError/AuthError a la jerarquía. Cubre **API-001**.
+- **`src/features/identity/domain/auth-errors.ts`** — `mapAuthError(raw, flow)` con catálogo
+  cerrado: `invalid_credentials`, `email_not_confirmed`, `email_already_in_use`,
+  `weak_password`, `rate_limited`, `network_error`, `generic`. Cubre **SEC-001**.
+- **`src/lib/app-url/`** — `getCanonicalAppUrl()` + `buildAbsoluteUrl(path)` validan contra
+  `APP_URL_ALLOWLIST`. Cubre **SEC-003**.
+- **`src/lib/rate-limit/`** — `@upstash/ratelimit` + `@upstash/redis` con presets
+  `login`/`signup`/`forgot-password`/`invite-accept`. Modo skip si vars vacías. Cubre
+  **SEC-002**.
+- **`src/lib/pagination/`** — `PaginationParams` + `PaginatedResult<T>` + helpers
+  `pageRange`/`buildPaginatedResult`/`parseCursor`. Cubre **PERF-001**.
+- **`src/lib/logger/`** — JSON estructurado + `newCorrelationId()` para tracing de errores.
+- **`src/types/database.ts`** — stub con `Database`, `Tables<T>`, `Enums<T>`. Script
+  `npm run db:types` regenera desde schema live. Cubre **ANTIGR-QW2**.
+- **Server contracts**: `commercial/server.ts` (getEventDetailServer, etc.),
+  `recipes/server.ts` (getRecipeWithIngredientsServer), `menus/server.ts`
+  (getMenuWithSectionsServer). Cubre **ARC-001**.
+- **`useEventsInfinite`, `useClientsInfinite`, `useRecipesInfinite`, `useMenusInfinite`,
+  `useInvitesInfinite`** — hooks `useInfiniteQuery` para "Cargar más".
+- **Headers HTTP** en `next.config.ts`: CSP nonce, HSTS 2 años, X-Frame DENY,
+  X-Content-Type nosniff, Referrer-Policy strict-origin, Permissions-Policy mínimo.
+  Cubre **SEC-004**.
+- **ESLint boundaries**: `no-restricted-imports` prohíbe importar `domain/`,
+  `application/`, `infrastructure/` de otro módulo. Cubre **ANTIGR-QW1**.
+- **E2E** `e2e/tests/tenant-isolation.spec.ts` — 5 SELECTs + 2 INSERTs cross-hotel.
+  Cubre **ANTIGR-SEC-01**.
+- **E2E** `e2e/tests/auth-rate-limit.spec.ts` — 6 logins → 429.
+- **ADR-0011** — rate-limit Upstash + headers HTTP + origin allowlist.
+- **ADR-0012** — tipos Supabase autogenerados como fuente única de DB.
+
+### Changed
+
+- **Login/signup/forgot-password actions** dejan de devolver `error.message` crudo de
+  Supabase. Mensajes neutros, log interno con correlation id. Forgot-password y signup
+  devuelven mensaje neutro de éxito incluso ante fallo (anti-enumeración).
+- **`createInviteAction`** ya no construye `origin` desde headers `host`/`x-forwarded-proto`.
+  Usa `buildAbsoluteUrl()` validado contra allowlist por entorno.
+- **`fetchEvents`, `fetchClients`, `fetchRecipes`, `fetchMenus`, `fetchInvites`** aceptan
+  `pagination?: PaginationParams` y devuelven `PaginatedResult<T>`. Default 50, max 200.
+- **Hooks `useEvents`, `useClients`, `useRecipes`, `useMenus`, `useInvites`** devuelven
+  `PaginatedResult<T>`. Componentes consumidores adaptados a `data?.rows ?? []`.
+- **Query keys** reorganizadas a `['modulo', hotelId, ...]` para invalidación scoped.
+- **`useSwitchHotel`** ya no llama `queryClient.invalidateQueries()` global. Predicate
+  invalida solo queries del hotel saliente/entrante + identity hotel-dependent. Cubre
+  **PERF-002**.
+- **Todas las `infrastructure/*-queries.ts`** (events, clients, beo, recipes, ingredients,
+  steps, sub-recipes, escandallo, menus, sections, tenant, team, invites, identity)
+  ahora envuelven los errores con `mapSupabaseError(error, { resource })`.
+- **Páginas server** (`/events/[id]`, `/events/[id]/edit`, `/menus/[id]`, `/recipes/[id]`)
+  migran de `infrastructure/*-queries` a contratos `*/server.ts`.
+- **`.env.example`** añade `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`,
+  `APP_URL_ALLOWLIST`.
+
+### Verificación
+
+- `npm run typecheck` — 0 errores.
+- `npm run lint` — 0 errores, 0 warnings.
+- `npm run test` — 188 tests verdes (incluye 39 nuevos: pagination 22 + errors 22 + auth-errors 11
+  + app-url 11 + rate-limit 6).
+- E2E nuevos gated por env vars; otros suites siguen verdes.
+
+### Hallazgos descartados (no aplican)
+
+- **ARQ-01 (Antigravity)**: index.ts ya existen en los 5 módulos productivos.
+- **ARQ-02 (Antigravity)**: capa `infrastructure/` ya separa `SupabaseClient` de hooks.
+
+### Fuera de scope (sprints futuros)
+
+- **DB-001 (Codex)**: auditoría completa migraciones por bounded context (revisión).
+- **OPS-001 (Codex)**: observability + DR runbook (sprint propio).
+- **ID-DB-01 (Antigravity P3)**: mover RPCs PL/pgSQL masivos a Node.
+
+## [0.3.0] - 2026-04-22
+
+### Sprint-03 — recipes + sprint-03b — menus
+
+- **Módulo `recipes` (15º oficial)**: fichas técnicas, ingredientes (CRUD inline + flag
+  mapeo pendiente), pasos ordenados, sub-recetas, escandallo live (diff vs goods receipts),
+  workflow draft → review_pending → approved → deprecated, calculate_recipe_cost,
+  duplicate_recipe, scale_recipe.
+- **Módulo `menus` (16º oficial, ADR-0010)**: composición comercial separada de recipes.
+  Tablas `menus`, `menu_sections`, `menu_section_recipes`. Tipos buffet/seated/cocktail.
+  Picker de recetas aprobadas en sections.
+- **8 rutas nuevas**: `/recipes`, `/recipes/new`, `/recipes/[id]`, `/recipes/[id]/edit`,
+  `/recipes/[id]/escandallo`, `/menus`, `/menus/new`, `/menus/[id]`.
+- **ADR-0005-extensión-2** — Radix Tabs añadido al set base.
+- **ADR-0010** — Módulo `menus` separado de `recipes`.
+
+## [0.2.0] - 2026-04-22
+
+### Sprint-02 — commercial + sprint-02b — tenant-admin
+
+- **Módulo `commercial`** (ajustado por ADR-0008 al schema real v2): events, clients,
+  event_spaces (1:N), event_menus, BEO PDF (@react-pdf/renderer aislado, ADR-0005-ext-1),
+  state machine 8 estados (draft → pending_confirmation → confirmed → in_preparation →
+  in_operation → completed → archived + cancelled), enum EventType inglés.
+- **Módulo `tenant-admin` (15º al cierre, ADR-0009)**: onboarding completo (create_tenant_with_hotel),
+  gestión de hoteles, team management (rol, activo/desactivado), invitaciones email + token
+  con migración 00053 (tabla `invites` + 3 RPCs), integración Resend.
+- **Rutas**: `/onboarding`, `/settings/hotels`, `/settings/team`, `/invite/[token]`.
+- **ADR-0008** — Sprint-02 respeta schema real v2.
+- **ADR-0009** — Módulo `tenant-admin` oficializado + arquitectura invitaciones email+token.
+
 ## [0.1.0] - 2026-04-21
 
 ### Added — Sprint 01 Identity

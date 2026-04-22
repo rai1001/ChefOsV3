@@ -2,6 +2,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Role } from '@/features/identity'
 import type { TeamMember } from '../domain/types'
 import { MembershipNotFoundError } from '../domain/errors'
+import { mapSupabaseError } from '@/lib/errors/map-supabase-error'
 
 /**
  * Lista miembros del hotel con info de user (email, full_name) del lado server.
@@ -27,7 +28,7 @@ export async function fetchTeamMembers(
     .eq('hotel_id', hotelId)
     .order('created_at', { ascending: true })
 
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'membership' })
 
   return (data ?? []).map((row) => {
     const r = row as {
@@ -64,7 +65,7 @@ export async function updateMemberRole(
     .eq('id', membershipId)
     .select('id')
     .maybeSingle()
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'membership' })
   if (!data) throw new MembershipNotFoundError(membershipId)
 }
 
@@ -78,7 +79,7 @@ export async function deactivateMember(
     .eq('id', membershipId)
     .select('id')
     .maybeSingle()
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'membership' })
   if (!data) throw new MembershipNotFoundError(membershipId)
 }
 
@@ -92,6 +93,6 @@ export async function reactivateMember(
     .eq('id', membershipId)
     .select('id')
     .maybeSingle()
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'membership' })
   if (!data) throw new MembershipNotFoundError(membershipId)
 }

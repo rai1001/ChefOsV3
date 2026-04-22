@@ -4,6 +4,8 @@ import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { signInSchema } from '@/features/identity/application/schemas'
+import { mapAuthError } from '@/features/identity/domain/auth-errors'
+import { logger, newCorrelationId } from '@/lib/logger'
 
 export type SignInFormState =
   | { status: 'idle' }
@@ -30,7 +32,15 @@ export async function signInAction(
   const { error } = await supabase.auth.signInWithPassword(parsed.data)
 
   if (error) {
-    return { status: 'error', message: error.message }
+    const correlationId = newCorrelationId()
+    const mapped = mapAuthError(error, 'login')
+    logger.warn('auth.signIn failed', {
+      correlationId,
+      flow: 'login',
+      code: mapped.code,
+      internalMessage: mapped.internalMessage,
+    })
+    return { status: 'error', message: mapped.userMessage }
   }
 
   revalidatePath('/', 'layout')

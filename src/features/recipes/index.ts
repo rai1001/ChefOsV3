@@ -62,7 +62,7 @@ export {
 } from './domain/errors'
 
 // ── Application: client hooks ──────────────────────────────────────
-export { useRecipes } from './application/use-recipes'
+export { useRecipes, useRecipesInfinite } from './application/use-recipes'
 export { useRecipe } from './application/use-recipe'
 export { useCreateRecipe } from './application/use-create-recipe'
 export { useUpdateRecipe } from './application/use-update-recipe'

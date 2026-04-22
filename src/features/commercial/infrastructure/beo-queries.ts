@@ -1,6 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { BeoData } from '../domain/types'
 import { EventNotFoundError } from '../domain/errors'
+import { mapSupabaseError } from '@/lib/errors/map-supabase-error'
 
 export async function fetchEventBeo(
   supabase: SupabaseClient,
@@ -11,7 +12,7 @@ export async function fetchEventBeo(
     p_hotel_id: hotelId,
     p_event_id: eventId,
   })
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'event_beo' })
   if (!data) throw new EventNotFoundError(eventId, `BEO no disponible para evento ${eventId}`)
   return data as BeoData
 }
@@ -25,7 +26,7 @@ export async function calculateEventCostEstimate(
     p_hotel_id: hotelId,
     p_event_id: eventId,
   })
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'event_cost_estimate' })
   return typeof data === 'number' ? data : Number(data ?? 0)
 }
 
@@ -38,6 +39,6 @@ export async function generateEventOperationalImpact(
     p_hotel_id: hotelId,
     p_event_id: eventId,
   })
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'event_operational_impact' })
   return typeof data === 'number' ? data : Number(data ?? 0)
 }

@@ -5,4 +5,9 @@ import 'server-only'
  * Use estos helpers desde Server Components, Server Actions, Route Handlers.
  */
 
-export { getRecipeServer, getRecipeTechSheetServer } from './application/get-recipe.server'
+export {
+  getRecipeServer,
+  getRecipeTechSheetServer,
+  getRecipeIngredientsServer,
+  getRecipeWithIngredientsServer,
+} from './application/get-recipe.server'

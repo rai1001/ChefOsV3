@@ -10,19 +10,29 @@ import type {
   ServiceType,
 } from '../domain/types'
 import { EventNotFoundError } from '../domain/errors'
+import { mapSupabaseError } from '@/lib/errors/map-supabase-error'
+import {
+  buildPaginatedResult,
+  pageRange,
+  type PaginatedResult,
+  type PaginationParams,
+} from '@/lib/pagination'
 
 // ─── Lista y lectura ──────────────────────────────────────────────────────────
 
 export async function fetchEvents(
   supabase: SupabaseClient,
   hotelId: string,
-  filter?: EventsFilter
-): Promise<Event[]> {
+  filter?: EventsFilter,
+  pagination?: PaginationParams
+): Promise<PaginatedResult<Event>> {
+  const { from, to, pageSize } = pageRange(pagination)
   let query = supabase
     .from('events')
     .select('*')
     .eq('hotel_id', hotelId)
     .order('event_date', { ascending: true })
+    .range(from, to)
 
   if (filter?.status) {
     const statuses = Array.isArray(filter.status) ? filter.status : [filter.status]
@@ -38,8 +48,8 @@ export async function fetchEvents(
   if (filter?.search) query = query.ilike('name', `%${filter.search}%`)
 
   const { data, error } = await query
-  if (error) throw error
-  return (data as Event[]) ?? []
+  if (error) throw mapSupabaseError(error, { resource: 'event' })
+  return buildPaginatedResult((data as Event[]) ?? [], pageSize, from)
 }
 
 export async function fetchEvent(
@@ -54,7 +64,7 @@ export async function fetchEvent(
     .eq('hotel_id', hotelId)
     .maybeSingle()
 
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'event' })
   if (!data) throw new EventNotFoundError(eventId)
   return data as Event
 }
@@ -71,7 +81,7 @@ export async function fetchEventSpaces(
     .eq('hotel_id', hotelId)
     .order('created_at', { ascending: true })
 
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'event_space' })
   return (data as EventSpace[]) ?? []
 }
 
@@ -87,7 +97,7 @@ export async function fetchEventMenus(
     .eq('hotel_id', hotelId)
     .order('sort_order', { ascending: true })
 
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'event_menu' })
   return (data as EventMenu[]) ?? []
 }
 
@@ -104,7 +114,7 @@ export async function fetchEventsCalendar(
     p_from: fromDate,
     p_to: toDate,
   })
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'event_calendar' })
   return (data as CalendarEvent[]) ?? []
 }
 
@@ -141,7 +151,7 @@ export async function createEvent(
     p_venue: input.venue ?? null,
     p_notes: input.notes ?? null,
   })
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'event' })
   return data as string
 }
 
@@ -171,7 +181,7 @@ export async function updateEvent(
     p_data: input,
     p_change_reason: changeReason ?? null,
   })
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'event' })
 }
 
 export async function transitionEvent(
@@ -187,5 +197,5 @@ export async function transitionEvent(
     p_new_status: newStatus,
     p_reason: reason ?? null,
   })
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'event' })
 }

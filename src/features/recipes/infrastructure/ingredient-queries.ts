@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { RecipeIngredient } from '../domain/types'
+import { mapSupabaseError } from '@/lib/errors/map-supabase-error'
 
 export async function fetchRecipeIngredients(
   supabase: SupabaseClient,
@@ -12,7 +13,7 @@ export async function fetchRecipeIngredients(
     .eq('recipe_id', recipeId)
     .eq('hotel_id', hotelId)
     .order('sort_order', { ascending: true })
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'recipe_ingredient' })
   return (data as RecipeIngredient[]) ?? []
 }
 
@@ -49,7 +50,7 @@ export async function addRecipeIngredient(
     })
     .select()
     .single()
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'recipe_ingredient' })
   return data as RecipeIngredient
 }
 
@@ -68,7 +69,7 @@ export async function updateRecipeIngredient(
     .eq('hotel_id', hotelId)
     .select()
     .single()
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'recipe_ingredient' })
   return data as RecipeIngredient
 }
 
@@ -82,5 +83,5 @@ export async function removeRecipeIngredient(
     .delete()
     .eq('id', ingredientId)
     .eq('hotel_id', hotelId)
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'recipe_ingredient' })
 }

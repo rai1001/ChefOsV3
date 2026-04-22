@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { RecipeSubRecipe } from '../domain/types'
+import { mapSupabaseError } from '@/lib/errors/map-supabase-error'
 
 export async function fetchSubRecipes(
   supabase: SupabaseClient,
@@ -10,7 +11,7 @@ export async function fetchSubRecipes(
     .select('*')
     .eq('recipe_id', recipeId)
     .order('created_at', { ascending: true })
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'recipe_sub_recipe' })
   return (data as RecipeSubRecipe[]) ?? []
 }
 
@@ -35,7 +36,7 @@ export async function addSubRecipe(
     })
     .select()
     .single()
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'recipe_sub_recipe' })
   return data as RecipeSubRecipe
 }
 
@@ -44,5 +45,5 @@ export async function removeSubRecipe(
   subRecipeLinkId: string
 ): Promise<void> {
   const { error } = await supabase.from('recipe_sub_recipes').delete().eq('id', subRecipeLinkId)
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'recipe_sub_recipe' })
 }

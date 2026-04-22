@@ -11,7 +11,7 @@ export function useEventsCalendar(
   toDate: string
 ) {
   return useQuery<CalendarEvent[]>({
-    queryKey: ['commercial', 'events-calendar', hotelId, fromDate, toDate],
+    queryKey: ['commercial', hotelId, 'events-calendar', fromDate, toDate],
     enabled: !!hotelId && !!fromDate && !!toDate,
     queryFn: async () => {
       const supabase = createClient()
