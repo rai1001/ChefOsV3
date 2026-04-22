@@ -25,24 +25,27 @@ Este documento es normativo.
 
 ---
 
-## Módulos oficiales (14)
+## Módulos oficiales (15)
 
 | # | Módulo | Responsabilidad principal | Sprint |
 |---|---|---|---|
-| 1 | `identity` | Auth, sesión, memberships, roles, perfiles UX | sprint-01 |
+| 1 | `identity` | Auth, sesión, memberships (consulta), roles, perfiles UX, active hotel context | sprint-01 |
 | 2 | `commercial` | Eventos, clientes, BEO, calendario comercial | sprint-02 |
-| 3 | `recipes` | Recetas, ingredientes, pasos, costeo, menús | sprint-03 |
-| 4 | `catalog` | Productos, categorías, proveedores, ofertas, alias | sprint-04 |
-| 5 | `procurement` | PR / PO / GR, consolidación, OCR albaranes | sprint-05 |
-| 6 | `inventory` | Lotes FIFO, reservations, counts, waste, forensics | sprint-06 |
-| 7 | `production` | Workflows, mise en place, KDS, kanban, shopping list | sprint-07 |
-| 8 | `reporting` | KPIs, food cost, variance, dashboard, alerts, snapshots | sprint-08 |
-| 9 | `compliance` | APPCC, temperaturas, etiquetado, trazabilidad | sprint-09 |
-| 10 | `automation` | Jobs queue, worker, triggers automatizados | sprint-10 |
-| 11 | `notifications` | In-app Realtime, email, preferencias, severity | sprint-11 |
-| 12 | `integrations` | PMS (Mews, OPERA), POS (Lightspeed, Simphony), sync | sprint-12 |
-| 13 | `hr` | Personnel, shifts, schedules, rotación | sprint-13 |
-| 14 | `agents` | 15 agentes asistidos (sugerencias, no autónomos) | sprint-14 |
+| 3 | `tenant-admin` | Tenants, hoteles (creación), memberships (mutación), invites email+token | sprint-02b |
+| 4 | `recipes` | Recetas, ingredientes, pasos, costeo, menús | sprint-03 |
+| 5 | `catalog` | Productos, categorías, proveedores, ofertas, alias | sprint-04 |
+| 6 | `procurement` | PR / PO / GR, consolidación, OCR albaranes | sprint-05 |
+| 7 | `inventory` | Lotes FIFO, reservations, counts, waste, forensics | sprint-06 |
+| 8 | `production` | Workflows, mise en place, KDS, kanban, shopping list | sprint-07 |
+| 9 | `reporting` | KPIs, food cost, variance, dashboard, alerts, snapshots | sprint-08 |
+| 10 | `compliance` | APPCC, temperaturas, etiquetado, trazabilidad | sprint-09 |
+| 11 | `automation` | Jobs queue, worker, triggers automatizados | sprint-10 |
+| 12 | `notifications` | In-app Realtime, email, preferencias, severity | sprint-11 |
+| 13 | `integrations` | PMS (Mews, OPERA), POS (Lightspeed, Simphony), sync | sprint-12 |
+| 14 | `hr` | Personnel, shifts, schedules, rotación | sprint-13 |
+| 15 | `agents` | 15 agentes asistidos (sugerencias, no autónomos) | sprint-14 |
+
+> **Nota ADR-0009:** `tenant-admin` se añadió en sprint-02b. Convive con `identity` sin solape: identity resuelve sesión + active hotel context; tenant-admin mutante tenants/hoteles/memberships/invites. Ver `specs/decisions-log.md § ADR-0009`.
 
 ---
 
@@ -77,7 +80,8 @@ Ver `specs/module-template.md` para la plantilla completa con cada sección a re
 
 ### Qué pertenece a cada módulo
 
-- `identity` es owner de: auth flow, memberships, roles, perfiles UX, active hotel context.
+- `identity` es owner de: auth flow (sign in/up/out, recovery), sesión, consulta de memberships del user actual, roles enum, perfiles UX, active hotel context. NO es owner de crear/mutar memberships ni de onboarding.
+- `tenant-admin` es owner de: crear/listar tenants, crear/listar hoteles bajo un tenant, mutar memberships (rol, activar/desactivar), emitir/aceptar/revocar invites email+token. Consume `identity` por contrato público.
 - `commercial` es owner de: eventos, clientes, BEO, calendario, categorías comerciales.
 - `recipes` es owner de: fichas técnicas, ingredientes, pasos, sub-recetas, costeo recursivo, menús.
 - `catalog` es owner de: productos, categorías de producto, proveedores, ofertas, alias, supplier_refs.
@@ -110,6 +114,8 @@ No son módulos oficiales y no deben crearse sin ADR:
 - `utils` — no es módulo, es `src/lib/utils.ts`
 
 Crear uno de estos requiere ADR con justificación clara.
+
+> **Nota sobre `admin`:** `tenant-admin` NO es un pseudo-módulo `admin` transversal. Tiene ownership específico (tenants, hotels creación, memberships mutación, invites). Ver ADR-0009.
 
 ---
 
@@ -162,4 +168,4 @@ Este documento debe leerse junto con:
 
 Este documento enumera los módulos oficiales de ChefOS v3.
 
-Ninguna implementación puede vivir fuera de estos 14 módulos sin ADR.
+Ninguna implementación puede vivir fuera de estos 15 módulos sin ADR.
