@@ -2,7 +2,7 @@
 
 Control operativo de cocina multi-servicio. Reescritura DDD del dominio validado en v2.
 
-> Estado 2026-04-22: 5 módulos productivos (identity, commercial, tenant-admin, recipes, menus) sobre 16 oficiales. Sprint-hardening cerrado (auditorías Codex + Antigravity).
+> Estado 2026-04-22: 6 módulos productivos (identity, commercial, tenant-admin, recipes, menus, import) sobre 17 oficiales. Sprint-hardening + sprint-03c cerrados.
 
 ## Capability matrix (2026-04-22)
 
@@ -13,7 +13,8 @@ Control operativo de cocina multi-servicio. Reescritura DDD del dominio validado
 | tenant-admin  | producción   | sprint-02b  | onboarding, hoteles, team, invites + Resend |
 | recipes       | producción   | sprint-03   | fichas, ingredientes, pasos, escandallo live |
 | menus         | producción   | sprint-03b  | composición comercial, sections, recipes nested |
-| catalog       | pendiente    | sprint-04   | productos, conversiones unidad |
+| import        | producción   | sprint-03c  | bulk import Excel: recetas + ingredientes (mapping productos NULL pendiente) |
+| catalog       | pendiente    | sprint-04   | productos, conversiones unidad — desbloquea mapping post-import |
 | procurement   | pendiente    | sprint-05   | proveedores, órdenes |
 | inventory     | pendiente    | sprint-06   | stock, mermas, movimientos |
 | production    | pendiente    | sprint-07   | producción diaria, batches |
