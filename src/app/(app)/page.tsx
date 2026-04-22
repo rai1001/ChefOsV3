@@ -41,7 +41,7 @@ export default async function DashboardPage() {
           </div>
         </section>
 
-        <section className="grid gap-4 md:grid-cols-2">
+        <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           <div
             className="rounded-lg border p-6"
             style={{
@@ -54,7 +54,7 @@ export default async function DashboardPage() {
             <p className="mt-2 text-[color:var(--color-text-secondary)]">
               Gestión de eventos, clientes, espacios, menús, BEO y calendario.
             </p>
-            <div className="mt-4 flex gap-2">
+            <div className="mt-4 flex gap-2 flex-wrap">
               <Button asChild size="sm">
                 <Link href="/events">Abrir</Link>
               </Button>
@@ -71,12 +71,34 @@ export default async function DashboardPage() {
               background: 'var(--color-bg-card)',
             }}
           >
+            <p className="kpi-label mb-2">sprint-03 · recipes</p>
+            <h2>Recetas</h2>
+            <p className="mt-2 text-[color:var(--color-text-secondary)]">
+              Fichas técnicas, ingredientes, pasos, escandallo live vs albarán.
+            </p>
+            <div className="mt-4 flex gap-2 flex-wrap">
+              <Button asChild size="sm">
+                <Link href="/recipes">Abrir</Link>
+              </Button>
+              <Button asChild variant="secondary" size="sm">
+                <Link href="/menus">Menús</Link>
+              </Button>
+            </div>
+          </div>
+
+          <div
+            className="rounded-lg border p-6"
+            style={{
+              borderColor: 'var(--color-border)',
+              background: 'var(--color-bg-card)',
+            }}
+          >
             <p className="kpi-label mb-2">sprint-02b · tenant-admin</p>
             <h2>Configuración</h2>
             <p className="mt-2 text-[color:var(--color-text-secondary)]">
               Hoteles de tu grupo, miembros, roles, invitaciones por email.
             </p>
-            <div className="mt-4 flex gap-2">
+            <div className="mt-4 flex gap-2 flex-wrap">
               <Button asChild size="sm">
                 <Link href="/settings">Abrir</Link>
               </Button>

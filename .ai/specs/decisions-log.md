@@ -479,6 +479,91 @@ Cuando v3 haga fork de Supabase (ADR-0003 revisada). Entonces podemos reconsider
 
 ---
 
+### ADR-0005-extensión-2 — Añadir `@radix-ui/react-tabs` al set base
+
+**Fecha**: 2026-04-22
+**Estado**: aceptada
+**Módulo / área afectada**: `src/components/ui/`
+
+#### Contexto
+
+Sprint-03-recipes necesita detalle de receta con 5 tabs (info, ingredientes, pasos, sub-recetas, alérgenos). Implementar tabs sin Radix implica reinventar:
+- focus management
+- keyboard navigation (flechas)
+- ARIA (tablist/tab/tabpanel)
+- active state sync con URL opcional
+
+El coste de reinventar > bundle cost de Radix Tabs (granular, tree-shakeable).
+
+#### Decisión
+
+Añadir `@radix-ui/react-tabs` como extensión al set base ADR-0005. Wrapped en `src/components/ui/tabs.tsx` con estilos Industrial Control Surface.
+
+#### Razón
+
+- Accesibilidad gratuita (WCAG AA).
+- Bundle mínimo (~3KB minificado por primitivo, tree-shaking automático).
+- Coherencia con otros primitivos Radix ya en el set (Dialog, Select, DropdownMenu, etc.).
+
+#### Consecuencias
+
+- `package.json` suma `@radix-ui/react-tabs`.
+- Ningún otro módulo fuera de `recipes` lo usa todavía; disponible para futuros sprints sin nueva ADR.
+
+---
+
+### ADR-0010 — Módulo `menus` como 16º oficial
+
+**Fecha**: 2026-04-22
+**Estado**: aceptada
+**Módulo / área afectada**: `menus` (nuevo), `recipes`, module-list
+
+#### Contexto
+
+Sprint doc `sprint-03-recipes.md` anticipa `Menu` + `MenuSection` como parte de `recipes` (fiel a v2 donde ambos viven en el mismo módulo). Al implementar se evidencia que fusionar rompe ownership:
+
+- **Recipes** es owner de fichas técnicas, escandallo, producción, costeo recursivo.
+- **Menus** es owner de composición comercial (qué recetas van en cada sección, precio al cliente, alérgenos agregados, tipos buffet/seated/cocktail).
+- **Consumidores de menus**: `commercial` (BEO), `reporting` (margen por menú).
+- **Consumidores de recipes**: `menus`, `production`, `procurement`.
+
+Fusionar contamina el contrato público (expone types `Menu*` junto a `Recipe*` sin relación natural) y fuerza a `commercial` a importar `@/features/recipes` solo para tocar menús.
+
+#### Opciones consideradas
+
+1. **Módulo separado `menus` (recomendado)** — ownership claro, contratos aislados. Requiere esta ADR + update module-list.
+2. **Dentro de recipes** (como v2) — ahorra una ADR pero rompe DDD.
+3. **Dentro de commercial** — menús se componen ahí. Contamina commercial con gestión de recetas.
+
+#### Decisión
+
+Añadir `menus` como 16º módulo oficial.
+
+- Ownership: tablas `menus`, `menu_sections`, `menu_section_recipes`.
+- Consume `@/features/recipes` por contrato público (para listar recetas aprobadas al componer sections).
+- NO toca internals de recipes.
+
+`module-list.md` → 16 módulos. `sprint-03-recipes.md` recibe nota "AJUSTADO POR ADR-0010". Se crea `sprint-03b-menus.md` con el sprint específico.
+
+#### Razón
+
+- Ownership limpio: composición comercial ≠ ficha técnica culinaria.
+- Consumers distintos: BEO usa menus, no recipes directamente.
+- Facilita mantenimiento: cambios en menus no tocan recipes y viceversa.
+
+#### Consecuencias
+
+- 16 módulos oficiales (antes 15 por ADR-0009).
+- Sprint-03 se divide en 2 módulos paralelos (recipes + menus) en la misma sesión.
+- Sin migración nueva: tablas v2 existentes se consumen directamente.
+- `commercial` en sprint futuro podrá importar `@/features/menus` para BEO sin violar ownership.
+
+#### Revisable
+
+Cuando aparezca una relación operativa entre ambos (ej. menus necesitando mutar recipe_ingredients). Entonces reconsiderar fusión.
+
+---
+
 ## Mantenimiento
 
 Cada ADR debe poder leerse en <5 minutos. Si una decisión requiere más, dividirla en varias ADRs.
