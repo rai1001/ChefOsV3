@@ -53,7 +53,7 @@ export async function addRecipeIngredient(
   return data as RecipeIngredient
 }
 
-export interface UpdateRecipeIngredientInput extends Partial<Omit<AddRecipeIngredientInput, 'recipe_id'>> {}
+export type UpdateRecipeIngredientInput = Partial<Omit<AddRecipeIngredientInput, 'recipe_id'>>
 
 export async function updateRecipeIngredient(
   supabase: SupabaseClient,
