@@ -12,7 +12,7 @@ export function useClients(
   pagination?: PaginationParams
 ) {
   return useQuery<PaginatedResult<Client>>({
-    queryKey: ['commercial', hotelId, 'clients', onlyActive, pagination ?? null],
+    queryKey: ['commercial', 'clients', hotelId, onlyActive, pagination ?? null],
     enabled: !!hotelId,
     queryFn: async () => {
       const supabase = createSupabase()
@@ -27,7 +27,7 @@ export function useClientsInfinite(
   pageSize?: number
 ) {
   return useInfiniteQuery<PaginatedResult<Client>>({
-    queryKey: ['commercial', hotelId, 'clients', 'infinite', onlyActive, pageSize ?? null],
+    queryKey: ['commercial', 'clients', hotelId, 'infinite', onlyActive, pageSize ?? null],
     enabled: !!hotelId,
     initialPageParam: '0',
     queryFn: async ({ pageParam }) => {
