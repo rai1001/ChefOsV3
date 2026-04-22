@@ -2,7 +2,35 @@
 
 Control operativo de cocina multi-servicio. Reescritura DDD del dominio validado en v2.
 
-> Repo scaffolding nivel sprint-00b. Sin features de negocio todavía.
+> Estado 2026-04-22: 5 módulos productivos (identity, commercial, tenant-admin, recipes, menus) sobre 16 oficiales. Sprint-hardening cerrado (auditorías Codex + Antigravity).
+
+## Capability matrix (2026-04-22)
+
+| Módulo        | Estado       | Sprint      | Notas |
+|---------------|--------------|-------------|-------|
+| identity      | producción   | sprint-01   | auth, roles, permissions, active hotel, sanitización errores |
+| commercial    | producción   | sprint-02   | events, clients, BEO PDF, paginación cursor |
+| tenant-admin  | producción   | sprint-02b  | onboarding, hoteles, team, invites + Resend |
+| recipes       | producción   | sprint-03   | fichas, ingredientes, pasos, escandallo live |
+| menus         | producción   | sprint-03b  | composición comercial, sections, recipes nested |
+| catalog       | pendiente    | sprint-04   | productos, conversiones unidad |
+| procurement   | pendiente    | sprint-05   | proveedores, órdenes |
+| inventory     | pendiente    | sprint-06   | stock, mermas, movimientos |
+| production    | pendiente    | sprint-07   | producción diaria, batches |
+| reporting     | pendiente    | sprint-08   | KPIs, márgenes |
+| compliance    | pendiente    | sprint-09   | HACCP, trazabilidad |
+| automation    | pendiente    | sprint-10   | workflows, alertas |
+| notifications | pendiente    | sprint-11   | in-app, push, email |
+| integrations  | pendiente    | sprint-12   | TPV, ERP, delivery |
+| hr            | pendiente    | sprint-13   | turnos, fichaje |
+| agents        | pendiente    | sprint-14   | asistentes IA |
+
+Pre-features pendientes: `sprint-03c-import-excel` (importación Excel para recipes/menus).
+
+Hardening cerrado en sprint-hardening: errores auth normalizados, rate limit Upstash,
+paginación cursor en queries de lista, headers HTTP (CSP, HSTS), origin allowlist
+para invitaciones, server contracts en commercial/recipes/menus, ESLint boundaries,
+tests cross-tenant. Ver `.ai/sprints/sprint-hardening.md`.
 
 ## Quick start
 
