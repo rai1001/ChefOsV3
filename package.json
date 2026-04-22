@@ -17,7 +17,9 @@
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "db:types": "npx supabase gen types typescript --project-id dbtrgnyfmzqsrcoadcrs --schema public > src/types/database.ts",
+    "db:types:check": "npx supabase gen types typescript --project-id dbtrgnyfmzqsrcoadcrs --schema public | diff - src/types/database.ts"
   },
   "dependencies": {
     "@radix-ui/react-checkbox": "^1.1.2",
