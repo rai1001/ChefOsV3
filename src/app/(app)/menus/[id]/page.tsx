@@ -1,8 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
 import { getActiveHotelOrNull } from '@/features/identity/server'
-import { fetchMenu } from '@/features/menus/infrastructure/menu-queries'
+import { getMenuServer } from '@/features/menus/server'
 import { MenuNotFoundError, MENU_TYPE_LABELS } from '@/features/menus'
 import { MenuSectionsEditor } from '@/features/menus/components/menu-sections-editor'
 
@@ -17,10 +16,9 @@ export default async function MenuDetailPage({
   const activeHotel = await getActiveHotelOrNull()
   if (!activeHotel) return null
 
-  const supabase = await createClient()
   let menu
   try {
-    menu = await fetchMenu(supabase, activeHotel.hotel_id, id)
+    menu = await getMenuServer(activeHotel.hotel_id, id)
   } catch (err) {
     if (err instanceof MenuNotFoundError) notFound()
     throw err

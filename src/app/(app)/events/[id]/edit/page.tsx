@@ -1,8 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
 import { getActiveHotelOrNull } from '@/features/identity/server'
-import { fetchEvent } from '@/features/commercial/infrastructure/event-queries'
+import { getEventServer } from '@/features/commercial/server'
 import { EventNotFoundError } from '@/features/commercial'
 import { EventForm } from '@/features/commercial/components/event-form'
 
@@ -13,10 +12,9 @@ export default async function EditEventPage({ params }: { params: Promise<{ id: 
   const activeHotel = await getActiveHotelOrNull()
   if (!activeHotel) return null
 
-  const supabase = await createClient()
   let event
   try {
-    event = await fetchEvent(supabase, activeHotel.hotel_id, id)
+    event = await getEventServer(activeHotel.hotel_id, id)
   } catch (err) {
     if (err instanceof EventNotFoundError) notFound()
     throw err
