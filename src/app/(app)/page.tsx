@@ -1,7 +1,9 @@
+import Link from 'next/link'
 import { getCurrentUserOrNull, getActiveHotelOrNull } from '@/features/identity/server'
 import { UserBadge } from '@/components/shell/user-badge'
 import { HotelSwitcher } from '@/components/shell/hotel-switcher'
 import { LogoutButton } from '@/components/shell/logout-button'
+import { Button } from '@/components/ui/button'
 
 export default async function DashboardPage() {
   // El layout (app) ya garantiza user + activeHotel (si null → redirect).
@@ -39,19 +41,42 @@ export default async function DashboardPage() {
           </div>
         </section>
 
-        <section
-          className="rounded-lg border p-6"
-          style={{
-            borderColor: 'var(--color-border)',
-            background: 'var(--color-bg-card)',
-          }}
-        >
-          <p className="kpi-label mb-2">sprint-01 · identity</p>
-          <h2>Dashboard mínimo</h2>
-          <p className="mt-2 text-[color:var(--color-text-secondary)]">
-            Sesión autenticada, hotel activo resuelto y switcher funcional. El código de negocio
-            real llega en <code>sprint-02-commercial</code> y siguientes.
-          </p>
+        <section className="grid gap-4 md:grid-cols-2">
+          <div
+            className="rounded-lg border p-6"
+            style={{
+              borderColor: 'var(--color-border)',
+              background: 'var(--color-bg-card)',
+            }}
+          >
+            <p className="kpi-label mb-2">sprint-02 · commercial</p>
+            <h2>Eventos</h2>
+            <p className="mt-2 text-[color:var(--color-text-secondary)]">
+              Gestión de eventos, clientes, espacios, menús, BEO y calendario.
+            </p>
+            <div className="mt-4 flex gap-2">
+              <Button asChild size="sm">
+                <Link href="/events">Abrir</Link>
+              </Button>
+              <Button asChild variant="secondary" size="sm">
+                <Link href="/events/clients">Clientes</Link>
+              </Button>
+            </div>
+          </div>
+
+          <div
+            className="rounded-lg border p-6"
+            style={{
+              borderColor: 'var(--color-border)',
+              background: 'var(--color-bg-card)',
+            }}
+          >
+            <p className="kpi-label mb-2">sprint-01 · identity</p>
+            <h2>Sesión</h2>
+            <p className="mt-2 text-[color:var(--color-text-secondary)]">
+              Sesión autenticada, hotel activo y switcher funcional.
+            </p>
+          </div>
         </section>
       </div>
     </main>
