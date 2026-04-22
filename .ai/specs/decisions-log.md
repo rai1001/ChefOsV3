@@ -680,6 +680,70 @@ Si Supabase lanza CLI con generación de tipos a `domain/` directamente (improba
 
 ---
 
+### ADR-0013 — Módulo `import` (17º oficial) + arquitectura híbrida client+server para Excel bulk
+
+**Fecha**: 2026-04-22
+**Estado**: aceptada
+**Módulo / área afectada**: `import` (nuevo), `recipes` (consumidor de RPC bulk), `supabase/migrations`, module-list
+
+#### Contexto
+
+Israel: "tiene todo el mundo las recetas y escandallos en Excel lo necesitamos para eliminar friccion". Sprint-03c-import-excel ataca el pain de migración: 200 recetas en <10 min.
+
+Cuatro decisiones a documentar:
+
+1. **Nuevo módulo o ampliación de recipes.** El placeholder original (`sprint-03c-import-excel.md`) sugería ampliar recipes. Pero el dominio "import bulk desde Excel/CSV" trasciende recetas: futuros sprints querrán importar productos (sprint-04), inventario inicial (sprint-06), histórico de eventos (sprint-02 follow-up). Si vive en recipes, contamina el contrato público y obliga a moverlo cuando se reuse.
+2. **Librería Excel.** `xlsx` (SheetJS) vs `exceljs`. SheetJS community es Apache 2.0 (no AGPL como leyenda urbana sugería), más ligera. ExcelJS es MIT, más pesada (~870KB) pero soporta escritura con estilos (necesario para template descargable).
+3. **Parse client vs server vs híbrido.** Parse client da feedback inmediato. Server da consistencia. Híbrido: parse + preview en cliente, server valida con Zod y commit RPC.
+4. **Atomicidad y mapeo de productos.** Todo-o-nada vs parcial. Auto-create productos vs NULL+mapping posterior.
+
+#### Opciones consideradas
+
+1. **Módulo separado `import` (recomendado)** — owner único de import bulk. RPCs `import_X_bulk(p_hotel_id, p_payload jsonb) → jsonb`. Tabla `import_runs` (audit log). Consume contratos públicos de los módulos destino sin tocar internals.
+2. **Ampliar recipes** — más rápido pero contamina recipes y debe extraerse cuando aparezca import productos.
+3. **Sin módulo, lógica inline en página** — viola DDD, no testeable, no reutilizable.
+
+#### Decisión
+
+**1. Módulo separado `import`.** Añadido como 17º oficial. Owner de:
+- Tabla `import_runs` (id, hotel_id, kind, status enum, total_rows, ok_rows, failed_rows, errors jsonb, created_by, started_at, finished_at).
+- RPCs bulk: `import_recipes_bulk` en sprint-03c. Futuras: `import_products_bulk`, `import_inventory_bulk`, etc.
+- Parser Excel + Zod schemas + UI form/preview/result.
+- Endpoint `/api/import/template/<kind>` para descargar plantillas xlsx pregeneradas runtime.
+
+NO es owner de:
+- Las tablas destino (recipes/products) — se llaman vía RPC SECURITY DEFINER que valida `check_membership` y hace los inserts.
+
+**2. ExcelJS** (MIT). Más pesada pero permite escribir templates con header marcado (bold + color) y validación de celdas. Compensa en UX. Bundle aceptable porque solo se carga en `/recipes/import` (dynamic import).
+
+**3. Híbrido**: parse client (feedback inmediato + preview interactivo), server action recibe el payload JSON y aplica Zod + invariantes cruzadas (FK por nombre de receta), RPC commit por fila con array de errores devuelto.
+
+**4. Atomicidad parcial**: RPC commitea las recetas válidas + devuelve `{ ok_count, failed: [{ row_index, name, errors[] }] }`. El frontend muestra resumen y permite descargar CSV con las filas fallidas para corregir y reimportar. **Mapeo productos**: en sprint-03c los ingredientes se importan con `product_id: null` y `unit_id: null` — quedan en estado "mapping pendiente" (UI ya lo soporta vía `unmappedIngredients()`). Sprint-04-catalog añadirá UI de mapping bulk post-import.
+
+#### Razón
+
+- Ownership separado escala: el import será reutilizado por catalog/inventory/etc.
+- ExcelJS justificado por capability template generation (DX importa para adopción comercial).
+- Parse híbrido evita la trampa de "subir 5MB de XLSX al server sin saber si es válido".
+- Atomicidad parcial es la única que escala a 200+ filas (todo-o-nada frustra; mapping previo es fricción inaceptable).
+- Diferir mapping evita scope creep hacia sprint-04-catalog.
+
+#### Consecuencias
+
+- `module-list.md` pasa a 17 módulos.
+- Migración `00054_sprint03c_import.sql`: tabla `import_runs` + enum `import_kind` + enum `import_status` + RPC `import_recipes_bulk`.
+- `package.json` suma `exceljs` (runtime dep).
+- Bundle `/recipes/import` ~+870KB de exceljs (acceptable, dynamic import).
+- Cualquier RPC bulk futura debe seguir el contrato `(p_hotel_id, p_payload jsonb) → jsonb { ok_count, failed[] }` y registrar en `import_runs`.
+- `permissions-matrix.md` añade `import.recipes`, `import.products` (futuro).
+- UI de "mapping pendiente" en recipes ya existe — aprovechar para el flujo post-import.
+
+#### Revisable
+
+Cuando se construyan ≥3 RPCs bulk (recipes + products + inventory), reevaluar si el módulo necesita refactor (extraer parser y validators a `lib/excel/`).
+
+---
+
 ## Mantenimiento
 
 Cada ADR debe poder leerse en <5 minutos. Si una decisión requiere más, dividirla en varias ADRs.
