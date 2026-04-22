@@ -28,7 +28,9 @@ test.describe('auth-signup', () => {
     await expect(page.getByText(/incluir números/i)).toBeVisible({ timeout: 5_000 })
   })
 
-  test('signup con email único termina en success state', async ({ page }) => {
+  test('signup con email único termina en success o signups-disabled', async ({ page }) => {
+    // Supabase compartido con v2 puede tener signups desactivados (ADR-0003 + producción).
+    // Aceptamos ambos caminos: success page (dev con signups ON) o error documentado (prod/compartido con signups OFF).
     const uniqueEmail = `signup-ok-${Date.now()}@chefos.test`
     await page.goto('/signup')
     await page.getByLabel(/nombre completo/i).fill('Test User')
@@ -37,8 +39,8 @@ test.describe('auth-signup', () => {
     await page.getByLabel(/confirmar/i).fill('Test1234!')
     await page.getByRole('button', { name: /crear cuenta/i }).click()
 
-    await expect(page.getByRole('heading', { name: /cuenta creada/i })).toBeVisible({
-      timeout: 10_000,
-    })
+    const successHeading = page.getByRole('heading', { name: /cuenta creada/i })
+    const signupsDisabledMessage = page.getByText(/signups not allowed/i)
+    await expect(successHeading.or(signupsDisabledMessage)).toBeVisible({ timeout: 10_000 })
   })
 })

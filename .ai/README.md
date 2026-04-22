@@ -25,7 +25,7 @@ El objetivo del proyecto es una versión estable, vendible y mantenible para coc
 
 ## Repositorio oficial
 
-- GitHub: `rai1001/ChefOsv3` (pendiente crear al bootstrap; heredar template `rai1001/ChefOsv2` como referencia de v2)
+- GitHub: `rai1001/ChefOsV3` (https://github.com/rai1001/ChefOsV3, creado 2026-04-22, público)
 - Supabase compartido con v2 durante construcción: `dbtrgnyfmzqsrcoadcrs` (ver `specs/decisions-log.md` ADR-0003)
 
 ---
