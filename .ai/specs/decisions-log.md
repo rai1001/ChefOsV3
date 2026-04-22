@@ -324,6 +324,98 @@ Cuando se arranque sprint-02 o sprint-02b. Decidir entonces si onboarding va den
 
 ---
 
+### ADR-0005-extensión-1 — @react-pdf/renderer para BEO
+
+**Fecha**: 2026-04-22
+**Estado**: aceptada
+**Módulo / área afectada**: `src/features/commercial/components/`
+
+#### Contexto
+Sprint-02-commercial requiere generar BEO (Banquet Event Order) como PDF descargable. ADR-0005 prohíbe añadir librerías UI fuera del set base sin extensión explícita.
+
+#### Opciones consideradas
+1. **`@react-pdf/renderer` client-side + `dynamic()`** — validado en v2, bundle aislado, sin round-trip server. Patrón probado.
+2. **Edge Function server-side con `pdf-lib` o Puppeteer** — bundle client menor pero latencia + complejidad deploy. Permite cache server-side y firmas.
+3. **Aplazar BEO a sprint posterior** — cerrar sprint-02 sin PDF.
+
+#### Decisión
+Opción 1. `@react-pdf/renderer` añadido como dependencia de producción. Consumido exclusivamente en:
+- `src/features/commercial/components/beo-document.tsx` (el Document + Styles)
+- `src/features/commercial/components/beo-download-button.tsx` (wrapper con `dynamic(() => import('./beo-document'), { ssr: false })`)
+
+Ningún otro módulo lo importa directamente. Fuera del wrapper, la UI consume solo el botón.
+
+#### Razón
+- Patrón v2 en producción (Eurostars demo) sin crash Turbopack cuando se aísla con `dynamic()`.
+- Bundle tree-shaking: solo páginas que renderizan el botón cargan el runtime PDF.
+- No requiere infraestructura server adicional (Edge Function + deploy + debugging).
+- Consistencia con v2 facilita migración del `beo-document.tsx` como referencia.
+
+#### Consecuencias
+- `package.json` suma `@react-pdf/renderer` (runtime dep).
+- Cualquier otro uso de renderizado PDF fuera de `features/commercial/components/` requiere ADR nueva (reutilizar la lib en otro módulo es OK — añadir OTRA lib de PDF no).
+- Si aparece crash Turbopack: primero comprobar que el wrapper `dynamic()` es lo único que importa `beo-document.tsx`. Nunca importar el documento directamente en Server Components.
+
+#### Revisable
+Cuando sprint-08-reporting o sprint-05-procurement necesiten PDFs server-side (facturas firmadas, PO con sello), se evaluará si migrar BEO a Edge Function o mantener híbrido.
+
+---
+
+### ADR-0008 — Sprint-02 respeta state machine y schema real de v2
+
+**Fecha**: 2026-04-22
+**Estado**: aceptada
+**Módulo / área afectada**: `commercial`, `supabase`
+
+#### Contexto
+`sprint-02-commercial.md` (escrito en sprint-00-foundation) describe un diseño idealizado del dominio comercial con:
+- 4 estados: `draft → confirmed → closed + cancelled`.
+- Tablas `Room` + `EventRoom` (N:M).
+- Enum EventType en español: `Comida, Cena, Pensión completa, Cóctel, Coffee break, Otros`.
+- Tabla `EventService` para servicios múltiples por evento.
+- Importación Excel con anti-duplicados.
+
+La realidad v2 en el Supabase compartido (`dbtrgnyfmzqsrcoadcrs`, ADR-0003) tiene:
+- 8 estados: `draft → pending_confirmation → confirmed → in_preparation → in_operation → completed → archived + cancelled`.
+- Tabla `event_spaces` (1:N por evento, sin junction N:M).
+- Enum EventType en inglés: `banquet, buffet, coffee_break, cocktail, room_service, catering, restaurant`.
+- Sin tabla `event_services`.
+- Sin import Excel.
+
+Renombrar o rediseñar en v3 rompería v2 en producción (Eurostars).
+
+#### Opciones consideradas
+1. **Aceptar schema real de v2** — sprint-02 usa 8 estados, `event_spaces`, enum inglés. Fuera de alcance: services + Excel.
+2. **Mantener diseño idealizado del sprint doc** — requiere migraciones nuevas en v3 (renombrar tablas/estados) + dual-write hacia v2.
+3. **Fork Supabase ya** — separar v3 ahora, migrar dominio al schema ideal.
+
+#### Decisión
+Opción 1. Mantener el schema y state machine reales de v2. Ajustes concretos:
+- Dominio TS usa enum `EventStatus` con 8 valores (match a DB).
+- Tipo `EventSpace` (no `Room` ni `EventRoom`) — relación 1:N directa con evento.
+- Enum `EventType` en inglés.
+- `EventService` queda fuera de alcance sprint-02.
+- Import Excel queda fuera de alcance sprint-02 (propuesta sprint-02c o antes de lanzamiento).
+
+`.ai/sprints/sprint-02-commercial.md` recibe nota "AJUSTADO POR ADR-0008" al inicio y en la sección "Detalle específico del dominio".
+
+#### Razón
+- ADR-0003 manda: Supabase compartido con v2 en producción. Rediseñar rompe v2.
+- v2 lleva >50 migraciones con este naming — cero fricción respetarlo.
+- El sprint doc era aspiracional cuando se escribió sin auditar v2; la realidad manda.
+- Excel import + EventService son features adicionales, no base del dominio — posponerlas no compromete sprint-02.
+
+#### Consecuencias
+- `src/features/commercial/domain/types.ts` usa nombres y enums de v2.
+- Nuevas tablas v3 específicas del dominio commercial NO se crean en sprint-02 (solo consumo de v2).
+- Sprint-02c o similar queda reservado para Excel import.
+- Onboarding va en sprint-02b (módulo `tenant-admin` separado, ADR-0007 ya lo anticipaba).
+
+#### Revisable
+Cuando ADR-0003 se revise (fork de Supabase). Entonces se puede renombrar estados/tablas si aporta claridad, con migración controlada.
+
+---
+
 ## Mantenimiento
 
 Cada ADR debe poder leerse en <5 minutos. Si una decisión requiere más, dividirla en varias ADRs.

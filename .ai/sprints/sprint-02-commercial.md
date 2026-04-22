@@ -1,5 +1,7 @@
 # ChefOS v3 Sprint 02 - Commercial
 
+> **AJUSTADO POR ADR-0008 (2026-04-22)**: state machine real de v2 (8 estados, no 4), tabla `event_spaces` (no `rooms`/`event_rooms`), enum EventType en inglés. `EventService` y import Excel quedan fuera de alcance. Ver `.ai/specs/decisions-log.md § ADR-0008`.
+
 ## Objetivo del sprint
 
 Construir la base funcional inicial del módulo `commercial` dentro de la arquitectura oficial de ChefOS v3, con alcance cerrado y orientado a estabilizar el contrato base del dominio comercial del sistema.
