@@ -4,7 +4,12 @@ import { NoActiveHotelError } from '../domain/errors'
 
 export async function callGetActiveHotel(supabase: SupabaseClient): Promise<ActiveHotel> {
   const { data, error } = await supabase.rpc('get_active_hotel')
-  if (error) throw error
+  if (error) {
+    // RPC get_active_hotel lanza 'no active membership found' con code P0003
+    // cuando el usuario no tiene membership. Lo mapeamos al error de dominio.
+    if ((error as { code?: string }).code === 'P0003') throw new NoActiveHotelError()
+    throw error
+  }
   if (!data) throw new NoActiveHotelError()
   return data as ActiveHotel
 }
