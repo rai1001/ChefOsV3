@@ -25,7 +25,7 @@ Este documento es normativo.
 
 ---
 
-## Módulos oficiales (16)
+## Módulos oficiales (17)
 
 | # | Módulo | Responsabilidad principal | Sprint |
 |---|---|---|---|
@@ -34,21 +34,24 @@ Este documento es normativo.
 | 3 | `tenant-admin` | Tenants, hoteles (creación), memberships (mutación), invites email+token | sprint-02b |
 | 4 | `recipes` | Recetas, ingredientes, pasos, sub-recetas, costeo recursivo, escandallo live | sprint-03 |
 | 5 | `menus` | Menús, secciones, recetas en secciones, alérgenos agregados, tipos | sprint-03b |
-| 6 | `catalog` | Productos, categorías, proveedores, ofertas, alias | sprint-04 |
-| 7 | `procurement` | PR / PO / GR, consolidación, OCR albaranes | sprint-05 |
-| 8 | `inventory` | Lotes FIFO, reservations, counts, waste, forensics | sprint-06 |
-| 9 | `production` | Workflows, mise en place, KDS, kanban, shopping list | sprint-07 |
-| 10 | `reporting` | KPIs, food cost, variance, dashboard, alerts, snapshots | sprint-08 |
-| 11 | `compliance` | APPCC, temperaturas, etiquetado, trazabilidad | sprint-09 |
-| 12 | `automation` | Jobs queue, worker, triggers automatizados | sprint-10 |
-| 13 | `notifications` | In-app Realtime, email, preferencias, severity | sprint-11 |
-| 14 | `integrations` | PMS (Mews, OPERA), POS (Lightspeed, Simphony), sync | sprint-12 |
-| 15 | `hr` | Personnel, shifts, schedules, rotación | sprint-13 |
-| 16 | `agents` | 15 agentes asistidos (sugerencias, no autónomos) | sprint-14 |
+| 6 | `import` | Importación bulk desde Excel/CSV (recetas, productos, inventario, etc.) + import_runs log | sprint-03c |
+| 7 | `catalog` | Productos, categorías, proveedores, ofertas, alias | sprint-04 |
+| 8 | `procurement` | PR / PO / GR, consolidación, OCR albaranes | sprint-05 |
+| 9 | `inventory` | Lotes FIFO, reservations, counts, waste, forensics | sprint-06 |
+| 10 | `production` | Workflows, mise en place, KDS, kanban, shopping list | sprint-07 |
+| 11 | `reporting` | KPIs, food cost, variance, dashboard, alerts, snapshots | sprint-08 |
+| 12 | `compliance` | APPCC, temperaturas, etiquetado, trazabilidad | sprint-09 |
+| 13 | `automation` | Jobs queue, worker, triggers automatizados | sprint-10 |
+| 14 | `notifications` | In-app Realtime, email, preferencias, severity | sprint-11 |
+| 15 | `integrations` | PMS (Mews, OPERA), POS (Lightspeed, Simphony), sync | sprint-12 |
+| 16 | `hr` | Personnel, shifts, schedules, rotación | sprint-13 |
+| 17 | `agents` | 15 agentes asistidos (sugerencias, no autónomos) | sprint-14 |
 
 > **Nota ADR-0009:** `tenant-admin` se añadió en sprint-02b. Convive con `identity` sin solape: identity resuelve sesión + active hotel context; tenant-admin mutante tenants/hoteles/memberships/invites. Ver `specs/decisions-log.md § ADR-0009`.
 
 > **Nota ADR-0010:** `menus` se separó de `recipes` en sprint-03. Recipes posee fichas técnicas y escandallo; menus posee composición comercial (secciones, precios, alérgenos agregados). Consumido por commercial/BEO y reporting. Ver `specs/decisions-log.md § ADR-0010`.
+
+> **Nota ADR-0013:** `import` se añadió en sprint-03c como módulo transversal de migración de datos desde Excel/CSV. Owner del log `import_runs` y de las RPCs `import_X_bulk(p_hotel_id, p_payload jsonb)`. Consume contratos públicos de los módulos destino (recipes, catalog futuro, etc.) sin tocar internals. Ver `specs/decisions-log.md § ADR-0013`.
 
 ---
 

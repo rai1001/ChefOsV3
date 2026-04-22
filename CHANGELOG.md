@@ -2,6 +2,71 @@
 
 Todos los cambios notables del proyecto se documentan aquí. Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.1.0/). Versionado: [SemVer](https://semver.org/lang/es/).
 
+## [0.5.0] - 2026-04-22
+
+### Sprint-03c — Módulo `import` (17º oficial) + import Excel de recetas
+
+Cierra el pain comercial #1 ("todo el mundo tiene las recetas en Excel"). Permite migrar
+200 recetas en <10 min. Owner transversal de migración bulk: futuros sprints
+(catalog, inventory) reusarán esta infraestructura.
+
+### ADRs
+
+- **ADR-0013** — Módulo `import` separado + arquitectura híbrida (parse client +
+  validate server + RPC bulk). exceljs (MIT). Atomicidad parcial. Mapping
+  product_id/unit_id NULL hasta sprint-04-catalog.
+
+### Added
+
+- **Migración `00054_sprint03c_import.sql`**:
+  - Enum `import_kind` (`recipes`; futuro: `products`, `inventory`).
+  - Enum `import_status` (`pending`, `running`, `completed`, `partial`, `failed`).
+  - Tabla `import_runs` con RLS admin/direction/superadmin.
+  - RPC `import_recipes_bulk(p_hotel_id, p_payload jsonb) → jsonb` SECURITY DEFINER.
+    Atomicidad por fila (savepoint), FK por nombre case-insensitive,
+    devuelve `{ run_id, ok_count, failed_count, failed[] }`.
+- **Módulo `src/features/import/`** (17º oficial):
+  - `domain/types.ts`: ImportKind, ImportStatus, ImportRun, ImportFailure,
+    ImportResult, ParsedRecipeRow, ParsedIngredientRow, ParsedRecipesPayload,
+    ValidationReport.
+  - `domain/errors.ts`: ExcelParseError, MissingSheetError, EmptyImportError,
+    ImportRunNotFoundError.
+  - `domain/invariants.ts`: normalizeRecipeName, parseCsvField, cellToNumber
+    (acepta coma decimal europea), cellToString, findOrphanIngredientRecipes.
+  - `application/parse-excel.ts`: parser exceljs dynamic import. Headers
+    case-insensitive sin acentos con aliases. Skip filas vacías.
+  - `application/schemas.ts`: Zod parsedRecipeRowSchema, parsedIngredientRowSchema.
+  - `application/validate-payload.ts`: cross-validation FK + duplicate detection.
+  - `application/use-import-recipes.ts`, `use-import-runs.ts`.
+  - `infrastructure/import-queries.ts`: importRecipesBulk + fetchImportRuns paginada.
+  - `components/`: import-recipes-form (state machine), import-preview-table,
+    import-result-summary (descarga CSV errores), template-download-button.
+- **Ruta `/recipes/import`** + CTA "Importar desde Excel" en `/recipes`.
+- **Endpoint `/api/import/template/recipes`** — genera xlsx runtime con headers
+  marcados, 1 receta de ejemplo, 2 ingredientes y hoja "Leeme" con instrucciones.
+- **Tests unit**: 19 invariants + 10 validate-payload + schemas Zod. Tests verdes
+  cubren coma decimal europea, duplicados case-insensitive, FK orfanos.
+
+### Changed
+
+- `package.json` añade `exceljs` (~870KB, dynamic import en `/recipes/import`).
+- `module-list.md` — 16 → 17 módulos (`import` insertado en #6).
+
+### Verificación
+
+- `npm run typecheck` — 0 errores.
+- `npm run lint` — 0 warnings.
+- `npm run test` — 217 tests verdes (29 nuevos).
+- `npm run build` — 28 rutas (2 nuevas).
+- Manual: aplicar migración 00054 en Supabase Dashboard antes de probar UI.
+
+### Pendiente post-merge
+
+- Aplicar migración `00054_sprint03c_import.sql` en Supabase Dashboard.
+- Probar manualmente con xlsx real (5 recetas, 3 válidas, 2 con errores).
+- Sprint-04-catalog: mapping bulk `product_id/unit_id` para ingredientes en
+  estado "mapping pendiente" creados por este import.
+
 ## [0.4.0] - 2026-04-22
 
 ### Sprint-hardening — auditorías Codex + Antigravity

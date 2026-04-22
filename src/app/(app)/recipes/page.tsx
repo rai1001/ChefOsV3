@@ -21,9 +21,14 @@ export default async function RecipesPage() {
             </p>
             <h1>Recetas · {activeHotel.hotel_name}</h1>
           </div>
-          <Button asChild size="sm">
-            <Link href="/recipes/new">Nueva receta</Link>
-          </Button>
+          <div className="flex gap-2">
+            <Button asChild size="sm" variant="ghost">
+              <Link href="/recipes/import">Importar desde Excel</Link>
+            </Button>
+            <Button asChild size="sm">
+              <Link href="/recipes/new">Nueva receta</Link>
+            </Button>
+          </div>
         </header>
 
         <RecipesList hotelId={activeHotel.hotel_id} />
