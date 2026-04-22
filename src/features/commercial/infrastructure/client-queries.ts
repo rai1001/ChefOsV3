@@ -1,23 +1,33 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Client, VipLevel } from '../domain/types'
 import { ClientNotFoundError } from '../domain/errors'
+import { mapSupabaseError } from '@/lib/errors/map-supabase-error'
+import {
+  buildPaginatedResult,
+  pageRange,
+  type PaginatedResult,
+  type PaginationParams,
+} from '@/lib/pagination'
 
 export async function fetchClients(
   supabase: SupabaseClient,
   hotelId: string,
-  onlyActive = true
-): Promise<Client[]> {
+  onlyActive = true,
+  pagination?: PaginationParams
+): Promise<PaginatedResult<Client>> {
+  const { from, to, pageSize } = pageRange(pagination)
   let query = supabase
     .from('clients')
     .select('*')
     .eq('hotel_id', hotelId)
     .order('name', { ascending: true })
+    .range(from, to)
 
   if (onlyActive) query = query.eq('is_active', true)
 
   const { data, error } = await query
-  if (error) throw error
-  return (data as Client[]) ?? []
+  if (error) throw mapSupabaseError(error, { resource: 'client' })
+  return buildPaginatedResult((data as Client[]) ?? [], pageSize, from)
 }
 
 export async function fetchClient(
@@ -32,7 +42,7 @@ export async function fetchClient(
     .eq('hotel_id', hotelId)
     .maybeSingle()
 
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'client' })
   if (!data) throw new ClientNotFoundError(clientId)
   return data as Client
 }
@@ -70,7 +80,7 @@ export async function createClient(
     .select()
     .single()
 
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'client' })
   return data as Client
 }
 
@@ -92,6 +102,6 @@ export async function updateClient(
     .select()
     .single()
 
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'client' })
   return data as Client
 }

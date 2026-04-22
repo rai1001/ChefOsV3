@@ -180,7 +180,7 @@ export function EventForm({ hotelId, event }: Props) {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="__none__">Sin cliente</SelectItem>
-              {(clients.data ?? []).map((c) => (
+              {(clients.data?.rows ?? []).map((c) => (
                 <SelectItem key={c.id} value={c.id}>
                   {c.name} {c.company ? `· ${c.company}` : ''}
                 </SelectItem>
