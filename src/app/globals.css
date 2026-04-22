@@ -1,0 +1,146 @@
+@import "tailwindcss";
+
+@theme {
+  /* ChefOS v3 — Industrial Control Surface
+     Ver .ai/specs/design-tokens.md para justificación WCAG AA. */
+
+  /* Superficies */
+  --color-bg-primary: #1a1a1a;
+  --color-bg-card: #242424;
+  --color-bg-sidebar: #1e1e1e;
+  --color-bg-input: #1e1e1e;
+  --color-bg-hover: #2a2a2a;
+
+  /* Texto */
+  --color-text-primary: #d4d4d4;
+  --color-text-secondary: #a0a0a0;
+  --color-text-muted: #949494;
+
+  /* Accent — EXCLUSIVO CTA primario y nav activo */
+  --color-accent: #e8e4dc;
+  --color-accent-hover: #d8d4cc;
+
+  /* Estado funcional — bases para bg-* y border-* */
+  --color-success: #5a7a5a;
+  --color-warning: #b87333;
+  --color-danger: #c0392b;
+  --color-info: #4a6070;
+
+  /* Foregrounds de estado — WCAG AA 4.5:1 sobre bg-card (#242424) */
+  --color-success-fg: #8baf8b;
+  --color-warning-fg: #d4a574;
+  --color-danger-fg: #e88070;
+  --color-info-fg: #8ba6b8;
+
+  /* Bordes */
+  --color-border: #2e2e2e;
+  --color-border-focus: #e8e4dc;
+
+  /* Fuentes (inyectadas por next/font/google en layout.tsx como CSS vars) */
+  --font-sans: var(--font-dm-sans), system-ui, -apple-system, sans-serif;
+  --font-display: var(--font-syne), system-ui, sans-serif;
+  --font-data: var(--font-dm-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-code: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Radius */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.625rem;
+}
+
+:root {
+  --border-strong: #3a3a3a;
+  --accent-fg: #1a1a1a;
+  --accent-ring: #e8e4dc;
+
+  --urgent-bg: rgba(192, 57, 43, 0.12);
+  --urgent-border: rgba(192, 57, 43, 0.25);
+  --warning-bg: rgba(184, 115, 51, 0.12);
+  --warning-border: rgba(184, 115, 51, 0.25);
+  --success-bg: rgba(90, 122, 90, 0.12);
+  --success-border: rgba(90, 122, 90, 0.25);
+  --info-bg: rgba(74, 96, 112, 0.12);
+  --info-border: rgba(74, 96, 112, 0.25);
+}
+
+html {
+  font-size: 110%;
+}
+
+body {
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+h1 { font-weight: 700; font-size: 28px; line-height: 1.15; }
+h2 { font-size: 22px; line-height: 1.2; }
+h3 { font-size: 17px; }
+
+code, kbd, samp {
+  font-family: var(--font-code);
+  font-size: 0.85em;
+}
+[class*="font-data"],
+[class*="font-code"],
+[class*="font-mono"] {
+  font-variant-numeric: tabular-nums;
+}
+
+.bg-accent,
+.hover\:bg-accent:hover {
+  color: var(--accent-fg);
+}
+
+.text-success { color: var(--color-success-fg); }
+.text-warning { color: var(--color-warning-fg); }
+.text-danger  { color: var(--color-danger-fg); }
+.text-info    { color: var(--color-info-fg); }
+
+*:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+/* Badges de estado */
+.badge-status {
+  font-family: var(--font-code);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid;
+}
+.badge-status.urgent  { color: #e88070; background: var(--urgent-bg);  border-color: var(--urgent-border); }
+.badge-status.warning { color: #d4a574; background: var(--warning-bg); border-color: var(--warning-border); }
+.badge-status.success { color: #8baf8b; background: var(--success-bg); border-color: var(--success-border); }
+.badge-status.info    { color: #8ba6b8; background: var(--info-bg);    border-color: var(--info-border); }
+.badge-status.neutral { color: var(--color-text-secondary); background: var(--color-bg-card); border-color: var(--color-border); }
+
+/* KPI label */
+.kpi-label {
+  font-family: var(--font-code);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+/* Touch target mínimo */
+.touch-target {
+  min-width: 48px;
+  min-height: 48px;
+}
