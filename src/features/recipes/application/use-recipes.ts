@@ -12,7 +12,7 @@ export function useRecipes(
   pagination?: PaginationParams
 ) {
   return useQuery<PaginatedResult<Recipe>>({
-    queryKey: ['recipes', hotelId, 'list', filter, pagination ?? null],
+    queryKey: ['recipes', 'list', hotelId, filter, pagination ?? null],
     enabled: !!hotelId,
     queryFn: async () => {
       const supabase = createClient()
@@ -27,7 +27,7 @@ export function useRecipesInfinite(
   pageSize?: number
 ) {
   return useInfiniteQuery<PaginatedResult<Recipe>>({
-    queryKey: ['recipes', hotelId, 'list', 'infinite', filter, pageSize ?? null],
+    queryKey: ['recipes', 'list', hotelId, 'infinite', filter, pageSize ?? null],
     enabled: !!hotelId,
     initialPageParam: '0',
     queryFn: async ({ pageParam }) => {
