@@ -1,10 +1,10 @@
 'use server'
 
-import { headers } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { createInvite } from '../infrastructure/invite-queries'
 import { sendInviteEmail } from '../infrastructure/send-invite-email'
 import type { CreateInviteInput } from '../domain/types'
+import { buildAbsoluteUrl } from '@/lib/app-url'
 
 export interface CreateInviteActionResult {
   invite_id: string
@@ -26,22 +26,16 @@ export interface CreateInviteActionResult {
  *
  * Arquitectura ADR-0009: el token plano solo vive server-side + en el email + en la URL
  * que el admin ve una vez. Jamás se almacena ni se vuelve a consultar.
+ *
+ * SEC-003 (Codex): el origin se resuelve desde NEXT_PUBLIC_APP_URL validado contra
+ * APP_URL_ALLOWLIST. NO se leen `host`/`x-forwarded-proto` de los headers (vector
+ * de phishing si proxy mal configurado).
  */
 export async function createInviteAction(input: CreateInviteInput): Promise<CreateInviteActionResult> {
   const supabase = await createClient()
-  const hdrs = await headers()
-
-  const origin = (() => {
-    const direct = hdrs.get('origin')
-    if (direct) return direct
-    const proto = hdrs.get('x-forwarded-proto')
-    const host = hdrs.get('host')
-    if (proto && host) return `${proto}://${host}`
-    return process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
-  })()
 
   const result = await createInvite(supabase, input)
-  const inviteUrl = `${origin}/invite/${encodeURIComponent(result.token)}`
+  const inviteUrl = buildAbsoluteUrl(`/invite/${encodeURIComponent(result.token)}`)
 
   // Info del inviter para personalizar email
   const { data: inviterData } = await supabase.auth.getUser()
