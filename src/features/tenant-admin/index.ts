@@ -56,7 +56,7 @@ export { useCreateHotel } from './application/use-create-hotel'
 export { useTeamMembers } from './application/use-team-members'
 export { useUpdateMemberRole } from './application/use-update-member-role'
 export { useDeactivateMember, useReactivateMember } from './application/use-deactivate-member'
-export { useInvites } from './application/use-invites'
+export { useInvites, useInvitesInfinite } from './application/use-invites'
 export { useCreateInvite } from './application/use-create-invite'
 export { useRevokeInvite } from './application/use-revoke-invite'
 

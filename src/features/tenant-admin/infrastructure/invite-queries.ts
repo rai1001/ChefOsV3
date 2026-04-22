@@ -9,6 +9,13 @@ import {
   InviteNotFoundError,
   InviteRevokedError,
 } from '../domain/errors'
+import { mapSupabaseError } from '@/lib/errors/map-supabase-error'
+import {
+  buildPaginatedResult,
+  pageRange,
+  type PaginatedResult,
+  type PaginationParams,
+} from '@/lib/pagination'
 
 // ─── Mapeo de códigos Postgres → errores tipados ─────────────────────────────
 
@@ -89,19 +96,22 @@ export async function previewInvite(
 export async function fetchInvites(
   supabase: SupabaseClient,
   hotelId: string,
-  onlyPending = false
-): Promise<Invite[]> {
+  onlyPending = false,
+  pagination?: PaginationParams
+): Promise<PaginatedResult<Invite>> {
+  const { from, to, pageSize } = pageRange(pagination)
   let query = supabase
     .from('invites')
     .select('*')
     .eq('hotel_id', hotelId)
     .order('created_at', { ascending: false })
+    .range(from, to)
 
   if (onlyPending) {
     query = query.is('accepted_at', null).is('revoked_at', null).gt('expires_at', new Date().toISOString())
   }
 
   const { data, error } = await query
-  if (error) throw error
-  return (data as Invite[]) ?? []
+  if (error) throw mapSupabaseError(error, { resource: 'invite' })
+  return buildPaginatedResult((data as Invite[]) ?? [], pageSize, from)
 }
