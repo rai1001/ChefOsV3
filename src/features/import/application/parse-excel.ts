@@ -46,6 +46,7 @@ function normalizeHeader(raw: unknown): string {
     .toLowerCase()
     .normalize('NFD')
     .replace(/\p{Diacritic}/gu, '')
+    .replace(/\*/g, '')
     .replace(/\s+/g, '_')
 }
 
