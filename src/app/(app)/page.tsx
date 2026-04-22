@@ -71,11 +71,19 @@ export default async function DashboardPage() {
               background: 'var(--color-bg-card)',
             }}
           >
-            <p className="kpi-label mb-2">sprint-01 · identity</p>
-            <h2>Sesión</h2>
+            <p className="kpi-label mb-2">sprint-02b · tenant-admin</p>
+            <h2>Configuración</h2>
             <p className="mt-2 text-[color:var(--color-text-secondary)]">
-              Sesión autenticada, hotel activo y switcher funcional.
+              Hoteles de tu grupo, miembros, roles, invitaciones por email.
             </p>
+            <div className="mt-4 flex gap-2">
+              <Button asChild size="sm">
+                <Link href="/settings">Abrir</Link>
+              </Button>
+              <Button asChild variant="secondary" size="sm">
+                <Link href="/settings/team">Equipo</Link>
+              </Button>
+            </div>
           </div>
         </section>
       </div>

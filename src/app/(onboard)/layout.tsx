@@ -2,17 +2,19 @@ import { redirect } from 'next/navigation'
 import type { ReactNode } from 'react'
 import { getCurrentUserOrNull, getActiveHotelOrNull } from '@/features/identity/server'
 
-// Dashboard depende de sesión → no prerenderizable.
+// Depende de sesión → no prerenderizable.
 export const dynamic = 'force-dynamic'
 
-export default async function AppLayout({ children }: { children: ReactNode }) {
+/**
+ * Layout (onboard) — protege rutas que requieren usuario autenticado pero NO hotel activo.
+ * Si el user YA tiene hotel activo, redirige al dashboard (/).
+ */
+export default async function OnboardLayout({ children }: { children: ReactNode }) {
   const user = await getCurrentUserOrNull()
   if (!user) redirect('/login')
 
   const activeHotel = await getActiveHotelOrNull()
-  // ADR-0009: user sin hotel → onboarding (crear tenant + hotel). /no-access queda
-  // reservado para edge cases (tenant desactivado, membership bloqueada).
-  if (!activeHotel) redirect('/onboarding')
+  if (activeHotel) redirect('/')
 
   return <>{children}</>
 }
