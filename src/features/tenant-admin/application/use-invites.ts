@@ -12,7 +12,7 @@ export function useInvites(
   pagination?: PaginationParams
 ) {
   return useQuery<PaginatedResult<Invite>>({
-    queryKey: ['tenant-admin', hotelId, 'invites', onlyPending, pagination ?? null],
+    queryKey: ['tenant-admin', 'invites', hotelId, onlyPending, pagination ?? null],
     enabled: !!hotelId,
     queryFn: async () => {
       const supabase = createClient()
@@ -27,7 +27,7 @@ export function useInvitesInfinite(
   pageSize?: number
 ) {
   return useInfiniteQuery<PaginatedResult<Invite>>({
-    queryKey: ['tenant-admin', hotelId, 'invites', 'infinite', onlyPending, pageSize ?? null],
+    queryKey: ['tenant-admin', 'invites', hotelId, 'infinite', onlyPending, pageSize ?? null],
     enabled: !!hotelId,
     initialPageParam: '0',
     queryFn: async ({ pageParam }) => {

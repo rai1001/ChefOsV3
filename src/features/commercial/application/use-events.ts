@@ -12,7 +12,7 @@ export function useEvents(
   pagination?: PaginationParams
 ) {
   return useQuery<PaginatedResult<Event>>({
-    queryKey: ['commercial', hotelId, 'events', filter, pagination ?? null],
+    queryKey: ['commercial', 'events', hotelId, filter, pagination ?? null],
     enabled: !!hotelId,
     queryFn: async () => {
       const supabase = createClient()
@@ -28,7 +28,7 @@ export function useEventsInfinite(
   pageSize?: number
 ) {
   return useInfiniteQuery<PaginatedResult<Event>>({
-    queryKey: ['commercial', hotelId, 'events', 'infinite', filter, pageSize ?? null],
+    queryKey: ['commercial', 'events', hotelId, 'infinite', filter, pageSize ?? null],
     enabled: !!hotelId,
     initialPageParam: '0',
     queryFn: async ({ pageParam }) => {

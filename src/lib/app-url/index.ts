@@ -50,14 +50,27 @@ export class InvalidAppUrlError extends Error {
   }
 }
 
+export class MissingAppUrlError extends Error {
+  readonly code = 'MISSING_APP_URL' as const
+  constructor() {
+    super('NEXT_PUBLIC_APP_URL es obligatoria y debe ser válida en producción')
+    this.name = 'MissingAppUrlError'
+  }
+}
+
 export function getCanonicalAppUrl(options?: AppUrlOptions): string {
   const env = process.env.NODE_ENV
   const isProd = env === 'production'
   const enforceAllowlist = options?.enforceAllowlist ?? isProd
 
-  const fromEnv = process.env.NEXT_PUBLIC_APP_URL
-  const candidate = normalize(fromEnv ?? '') || DEFAULT_DEV_URL
+  const fromEnv = process.env.NEXT_PUBLIC_APP_URL?.trim() ?? ''
+  const normalizedFromEnv = normalize(fromEnv)
 
+  if (isProd && !normalizedFromEnv) {
+    throw new MissingAppUrlError()
+  }
+
+  const candidate = normalizedFromEnv || DEFAULT_DEV_URL
   const allowlist = parseAllowlist().map(normalize).filter(Boolean)
 
   if (enforceAllowlist) {

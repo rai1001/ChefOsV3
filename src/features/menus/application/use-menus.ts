@@ -12,7 +12,7 @@ export function useMenus(
   pagination?: PaginationParams
 ) {
   return useQuery<PaginatedResult<Menu>>({
-    queryKey: ['menus', hotelId, 'list', onlyActive, pagination ?? null],
+    queryKey: ['menus', 'list', hotelId, onlyActive, pagination ?? null],
     enabled: !!hotelId,
     queryFn: async () => {
       const supabase = createClient()
@@ -27,7 +27,7 @@ export function useMenusInfinite(
   pageSize?: number
 ) {
   return useInfiniteQuery<PaginatedResult<Menu>>({
-    queryKey: ['menus', hotelId, 'list', 'infinite', onlyActive, pageSize ?? null],
+    queryKey: ['menus', 'list', hotelId, 'infinite', onlyActive, pageSize ?? null],
     enabled: !!hotelId,
     initialPageParam: '0',
     queryFn: async ({ pageParam }) => {

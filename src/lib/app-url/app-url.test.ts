@@ -1,5 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { buildAbsoluteUrl, getCanonicalAppUrl, InvalidAppUrlError } from './index'
+import {
+  buildAbsoluteUrl,
+  getCanonicalAppUrl,
+  InvalidAppUrlError,
+  MissingAppUrlError,
+} from './index'
 
 const ORIGINAL_ENV = { ...process.env }
 
@@ -58,9 +63,20 @@ describe('getCanonicalAppUrl', () => {
     expect(() => getCanonicalAppUrl()).toThrow(InvalidAppUrlError)
   })
 
-  it('falls back to dev default when env value is malformed', () => {
+  it('falls back to dev default when env value is malformed outside production', () => {
     process.env.NEXT_PUBLIC_APP_URL = 'not a url'
     expect(getCanonicalAppUrl()).toBe('http://localhost:3000')
+  })
+
+  it('throws when NEXT_PUBLIC_APP_URL is missing in production', () => {
+    vi.stubEnv('NODE_ENV', 'production')
+    expect(() => getCanonicalAppUrl()).toThrow(MissingAppUrlError)
+  })
+
+  it('throws when NEXT_PUBLIC_APP_URL is malformed in production', () => {
+    process.env.NEXT_PUBLIC_APP_URL = 'not a url'
+    vi.stubEnv('NODE_ENV', 'production')
+    expect(() => getCanonicalAppUrl()).toThrow(MissingAppUrlError)
   })
 })
 
