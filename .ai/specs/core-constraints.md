@@ -72,6 +72,8 @@ Agrupación por perfil UX (ver `features/identity/domain/types.ts`): `cocina`, `
 
 **Violación**: crear tabla sensible sin RLS habilitada o con policies que permiten lectura cruzada.
 
+> **Excepción documentada (ADR-0009):** `accept_invite(p_token)` en `tenant-admin` es SECURITY DEFINER pero NO lleva `check_membership()` como primera línea — el caller todavía no es miembro del hotel destino. Valida equivalentemente: `auth.uid()` + `token_hash` match + expiración + email case-insensitive match con `auth.users.email`. Ver `specs/decisions-log.md § ADR-0009`.
+
 ---
 
 ### 4. Storage por `hotel_id` en la ruta

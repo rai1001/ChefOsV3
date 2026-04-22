@@ -416,6 +416,69 @@ Cuando ADR-0003 se revise (fork de Supabase). Entonces se puede renombrar estado
 
 ---
 
+### ADR-0009 — Módulo `tenant-admin` (15º oficial) + arquitectura de invitaciones email+token
+
+**Fecha**: 2026-04-22
+**Estado**: aceptada
+**Módulo / área afectada**: `tenant-admin` (nuevo), `identity` (sin cambios), `supabase/migrations`, core-constraints, module-list
+
+#### Contexto
+
+Sprint-02b implementa el flujo completo de tenant administration: onboarding (crear tenant + primer hotel + primer admin membership), gestión de hoteles adicionales bajo el mismo tenant, team management (listar, rol, desactivar) e invitaciones por email + token. El scope se confirmó completo en AskUserQuestion previo.
+
+Hay cuatro cuestiones que requieren decisión documentada:
+
+1. **Módulo nuevo o absorber en identity.** `module-list.md § 14 módulos oficiales` no incluye `tenant-admin`. `module-list.md § Módulos no oficiales prohibidos salvo ADR` dice que un módulo genérico `admin` está prohibido. ADR-0007 anticipaba `tenant-admin` como módulo separado sin confirmarlo.
+2. **Dep `resend` para envío de email** (no UI).
+3. **Tabla `invites` nueva + 3 RPCs (`create_invite`, `accept_invite`, `revoke_invite`)** en Supabase compartido con v2.
+4. **Excepción a core-constraints § 10 / database-security**: `accept_invite` NO puede empezar por `check_membership()` — el user que acepta aún no tiene membership en el hotel destino.
+
+#### Opciones consideradas
+
+1. **Módulo separado `tenant-admin`** (recomendado). Ownership claro: `tenants`, `hotels` (creación), `memberships` (mutación), `invites`. `identity` sigue siendo owner de sesión, active hotel context, auth flow, profiles, `Role` enum. No contradice `module-list.md § 103` porque esa regla apunta a prohibir un "admin genérico transversal", no a prohibir un módulo de gestión de tenancy con ownership concreto.
+2. **Absorber en identity.** Rompe ownership: crear tenants/hoteles/invites no es concern de sesión. Además crecería la superficie pública de identity, complicando su mantenimiento.
+3. **Mezclar onboarding en commercial y team management en identity.** Lo peor: disemina el dominio tenant-admin entre dos módulos, rompe DDD.
+
+#### Decisión
+
+**1. Añadir `tenant-admin` como 15º módulo oficial.**
+Actualiza `module-list.md`: sección "Módulos oficiales (14)" → "(15)", añade fila `15 | tenant-admin | Tenant, hoteles, memberships, invites | sprint-02b`. Añade a sección "Ownership explícito": `tenant-admin` es owner de crear/listar `tenants`, crear/listar `hotels`, mutar `memberships` (rol, activo), crear/aceptar/revocar `invites`. Identity sigue dueño de consultar active hotel context, roles enum, profiles.
+
+**2. Dep `resend` añadida como utility de integración (no UI).** Excepción ADR-0002 ya lo permite (no-UI). La registramos aquí por trazabilidad. Alternativa descartada: Supabase Auth invite flow (fuerza confirm_email global, rompería signup comercial).
+
+**3. Tabla `invites` creada en migración `00053_sprint02b_invites.sql`** (v2 va hasta 00052, cero colisión con ADR-0003). Campos: `id, hotel_id, tenant_id, email (lowercased), role, token_hash (sha256 del token plano), expires_at (default now()+7d), created_by, created_at, accepted_at, accepted_by, revoked_at`. UNIQUE parcial `(hotel_id, lower(email)) WHERE accepted_at IS NULL AND revoked_at IS NULL`. RLS: admin/direction/superadmin del hotel pueden leer/escribir. El token plano solo existe en (a) respuesta de `create_invite`, (b) URL del email. Nunca persiste.
+
+**4. Excepción documentada a la regla "RPC SECURITY DEFINER sin check_membership en primera línea"**: `accept_invite(p_token text)` no puede invocar `check_membership` porque el caller todavía no es miembro del hotel destino. Validación equivalente del token:
+   - `auth.uid() IS NOT NULL` (requiere sesión).
+   - `token_hash` match contra `invites.token_hash`.
+   - `accepted_at IS NULL AND revoked_at IS NULL AND expires_at > now()`.
+   - `lower(invites.email) = lower((SELECT email FROM auth.users WHERE id = auth.uid()))`.
+   
+   Las otras dos RPCs (`create_invite`, `revoke_invite`) SÍ llevan `check_membership` en primera línea (rol admin/direction/superadmin requerido). `core-constraints.md` recibe una nota añadida a la regla 3.c apuntando a esta ADR.
+
+#### Razón
+
+- Ownership limpio: tenant lifecycle ≠ session lifecycle. Separar acelera mantenimiento.
+- Migración numerada >= v2 respeta ADR-0003. Tabla nueva, no modifica schema existente → sin impacto en v2 producción.
+- Resend aislado a `src/lib/email/` con skip automático si `RESEND_API_KEY` vacío (dev friendly).
+- Excepción de `accept_invite` es narrow, documentada, y la validación alternativa es equivalente en fuerza (token criptográfico + email match).
+
+#### Consecuencias
+
+- `module-list.md` pasa a 15 módulos.
+- `core-constraints.md § 3.c` recibe nota sobre excepción `accept_invite`.
+- `permissions-matrix.md` añade `tenant.create`, `hotel.create`, `team.manage` (si no estaba), `invite.create`, `invite.accept`, `invite.revoke`.
+- `domain-events.md` añade `tenant.created`, `hotel.created`, `member.invited`, `member.accepted`, `member.revoked`.
+- `.env.example` añade `RESEND_API_KEY` (opcional dev, requerida prod).
+- `src/app/(app)/layout.tsx` cambia `redirect('/no-access')` → `redirect('/onboarding')` cuando `getActiveHotelOrNull()` retorna null.
+- `/no-access` queda reservado para edge cases (tenant desactivado, membership bloqueada).
+
+#### Revisable
+
+Cuando v3 haga fork de Supabase (ADR-0003 revisada). Entonces podemos reconsiderar si `tenant-admin` sigue siendo un módulo separado o si invites migran a `notifications` con un patrón genérico.
+
+---
+
 ## Mantenimiento
 
 Cada ADR debe poder leerse en <5 minutos. Si una decisión requiere más, dividirla en varias ADRs.

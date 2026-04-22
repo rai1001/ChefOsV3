@@ -22,20 +22,20 @@ test.describe('commercial-routes', () => {
     await expect(page).toHaveURL(/\/login/, { timeout: 10_000 })
   })
 
-  test('tras login, /events carga o redirige a /no-access (depende de membership)', async ({
+  test('tras login, /events carga o redirige a /onboarding (depende de membership)', async ({
     page,
   }) => {
     await loginAs(page)
     await page.goto('/events')
 
     // Dos caminos válidos: con membership → /events (dashboard comercial),
-    // sin membership → /no-access (ADR-0007: onboarding diferido a sprint-02b).
-    await expect(page).toHaveURL(/\/(events|no-access)/, { timeout: 10_000 })
+    // sin membership → /onboarding (ADR-0009, sprint-02b: layout redirige aquí).
+    await expect(page).toHaveURL(/\/(events|onboarding)/, { timeout: 10_000 })
 
     const currentUrl = page.url()
-    if (currentUrl.includes('/no-access')) {
-      // Sin membership — verificamos que /no-access renderiza.
-      await expect(page.getByRole('heading')).toBeVisible()
+    if (currentUrl.includes('/onboarding')) {
+      // Sin membership — verificamos que /onboarding renderiza el form.
+      await expect(page.getByRole('heading', { name: /crea tu primer hotel/i })).toBeVisible()
     } else {
       // Con membership — verificamos header y botones de la página de eventos.
       await expect(page.getByRole('heading', { name: /eventos/i })).toBeVisible()
