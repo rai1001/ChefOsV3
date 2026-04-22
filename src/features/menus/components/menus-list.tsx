@@ -9,7 +9,7 @@ export function MenusList({ hotelId }: { hotelId: string }) {
 
   if (isLoading) return <p className="kpi-label">Cargando menús…</p>
   if (error) return <p className="text-danger">Error: {error.message}</p>
-  const items = data ?? []
+  const items = data?.rows ?? []
   if (items.length === 0) {
     return <p className="text-[color:var(--color-text-muted)]">Sin menús todavía.</p>
   }

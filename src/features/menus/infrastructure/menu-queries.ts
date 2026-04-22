@@ -1,23 +1,33 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Menu, MenuType } from '../domain/types'
 import { MenuNotFoundError } from '../domain/errors'
+import { mapSupabaseError } from '@/lib/errors/map-supabase-error'
+import {
+  buildPaginatedResult,
+  pageRange,
+  type PaginatedResult,
+  type PaginationParams,
+} from '@/lib/pagination'
 
 export async function fetchMenus(
   supabase: SupabaseClient,
   hotelId: string,
-  onlyActive = true
-): Promise<Menu[]> {
+  onlyActive = true,
+  pagination?: PaginationParams
+): Promise<PaginatedResult<Menu>> {
+  const { from, to, pageSize } = pageRange(pagination)
   let query = supabase
     .from('menus')
     .select('*')
     .eq('hotel_id', hotelId)
     .order('updated_at', { ascending: false })
+    .range(from, to)
 
   if (onlyActive) query = query.eq('is_active', true)
 
   const { data, error } = await query
-  if (error) throw error
-  return (data as Menu[]) ?? []
+  if (error) throw mapSupabaseError(error, { resource: 'menu' })
+  return buildPaginatedResult((data as Menu[]) ?? [], pageSize, from)
 }
 
 export async function fetchMenu(
@@ -31,7 +41,7 @@ export async function fetchMenu(
     .eq('id', menuId)
     .eq('hotel_id', hotelId)
     .maybeSingle()
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'menu' })
   if (!data) throw new MenuNotFoundError(menuId)
   return data as Menu
 }
@@ -66,7 +76,7 @@ export async function createMenu(
     })
     .select()
     .single()
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'menu' })
   return data as Menu
 }
 
@@ -87,7 +97,7 @@ export async function updateMenu(
     .eq('hotel_id', hotelId)
     .select()
     .single()
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'menu' })
   return data as Menu
 }
 
@@ -102,5 +112,5 @@ export async function deleteMenu(
     .update({ is_active: false })
     .eq('id', menuId)
     .eq('hotel_id', hotelId)
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'menu' })
 }

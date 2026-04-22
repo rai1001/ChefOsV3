@@ -1,6 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { MenuSection, MenuSectionRecipe } from '../domain/types'
 import { RecipeAlreadyInSectionError } from '../domain/errors'
+import { mapSupabaseError } from '@/lib/errors/map-supabase-error'
 
 // ─── Sections ─────────────────────────────────────────────────────────────────
 
@@ -15,7 +16,7 @@ export async function fetchMenuSections(
     .eq('menu_id', menuId)
     .eq('hotel_id', hotelId)
     .order('sort_order', { ascending: true })
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'menu_section' })
   return (data as MenuSection[]) ?? []
 }
 
@@ -40,7 +41,7 @@ export async function addMenuSection(
     })
     .select()
     .single()
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'menu_section' })
   return data as MenuSection
 }
 
@@ -57,7 +58,7 @@ export async function updateMenuSection(
     .eq('hotel_id', hotelId)
     .select()
     .single()
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'menu_section' })
   return data as MenuSection
 }
 
@@ -71,7 +72,7 @@ export async function removeMenuSection(
     .delete()
     .eq('id', sectionId)
     .eq('hotel_id', hotelId)
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'menu_section' })
 }
 
 // ─── Section-Recipes ──────────────────────────────────────────────────────────
@@ -87,7 +88,7 @@ export async function fetchSectionRecipes(
     .eq('section_id', sectionId)
     .eq('hotel_id', hotelId)
     .order('sort_order', { ascending: true })
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'menu_section_recipe' })
   return (data as MenuSectionRecipe[]) ?? []
 }
 
@@ -122,7 +123,7 @@ export async function addRecipeToSection(
     if (e?.code === '23505') {
       throw new RecipeAlreadyInSectionError(input.section_id, input.recipe_id)
     }
-    throw error
+    throw mapSupabaseError(error, { resource: 'menu_section_recipe' })
   }
   return data as MenuSectionRecipe
 }
@@ -137,5 +138,5 @@ export async function removeRecipeFromSection(
     .delete()
     .eq('id', sectionRecipeId)
     .eq('hotel_id', hotelId)
-  if (error) throw error
+  if (error) throw mapSupabaseError(error, { resource: 'menu_section_recipe' })
 }

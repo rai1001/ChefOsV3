@@ -35,7 +35,7 @@ export {
 } from './domain/errors'
 
 // ── Application: client hooks ──────────────────────────────────────
-export { useMenus } from './application/use-menus'
+export { useMenus, useMenusInfinite } from './application/use-menus'
 export { useMenu } from './application/use-menu'
 export { useCreateMenu, useUpdateMenu, useDeleteMenu } from './application/use-menu-mutations'
 export {
