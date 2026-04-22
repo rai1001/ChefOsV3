@@ -138,7 +138,7 @@ begin
     select ord, val from jsonb_array_elements(p_payload->'recipes') with ordinality as t(val, ord)
   loop
     v_recipe_name := trim(v_recipe->>'name');
-    v_recipe_name_normalized := lower(v_recipe_name);
+    v_recipe_name_normalized := lower(regexp_replace(v_recipe_name, '\s+', ' ', 'g'));
 
     begin
       insert into public.recipes (
@@ -199,7 +199,9 @@ begin
       v_target_recipe_name text;
     begin
       v_target_recipe_name := trim(v_ingredient->>'recipe_name');
-      v_target_recipe_id := (v_name_to_id ->> lower(v_target_recipe_name))::uuid;
+      v_target_recipe_id := (
+        v_name_to_id ->> lower(regexp_replace(v_target_recipe_name, '\s+', ' ', 'g'))
+      )::uuid;
 
       if v_target_recipe_id is null then
         v_failed_count := v_failed_count + 1;
