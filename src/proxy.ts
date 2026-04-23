@@ -20,28 +20,36 @@ function matchRateLimit(request: NextRequest): RateLimitPreset | null {
   return null
 }
 
+async function maybeHandleRateLimit(request: NextRequest, preset: RateLimitPreset): Promise<NextResponse | null> {
+  const id = identifierFromHeaders(request.headers)
+  const limit = await checkRateLimit(preset, id)
+  if (!limit.ok) {
+    return new NextResponse(
+      JSON.stringify({
+        error: 'rate_limited',
+        message: 'Demasiadas peticiones, espera un momento.',
+        retryAfterSeconds: limit.retryAfterSeconds,
+      }),
+      {
+        status: 429,
+        headers: {
+          'content-type': 'application/json',
+          'retry-after': String(limit.retryAfterSeconds || 60),
+        },
+      }
+    )
+  }
+  return null
+}
+
 export async function proxy(request: NextRequest) {
   const preset = matchRateLimit(request)
-  if (preset) {
-    const id = identifierFromHeaders(request.headers)
-    const limit = await checkRateLimit(preset, id)
-    if (!limit.ok) {
-      return new NextResponse(
-        JSON.stringify({
-          error: 'rate_limited',
-          message: 'Demasiadas peticiones, espera un momento.',
-          retryAfterSeconds: limit.retryAfterSeconds,
-        }),
-        {
-          status: 429,
-          headers: {
-            'content-type': 'application/json',
-            'retry-after': String(limit.retryAfterSeconds || 60),
-          },
-        }
-      )
-    }
-  }
+  const rateLimitResponse = preset
+    ? await maybeHandleRateLimit(request, preset)
+    : null
+
+  if (rateLimitResponse) return rateLimitResponse
+
   return await updateSession(request)
 }
 
