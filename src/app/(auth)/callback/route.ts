@@ -6,9 +6,11 @@ export async function GET(request: Request) {
   const code = searchParams.get('code')
   const next = searchParams.get('next') ?? '/'
 
-  // Validate next to be a safe internal relative path.
-  // Reject external URLs, absolute URLs, or protocol-relative URLs starting with //
-  const isSafeNext = next.startsWith('/') && !next.startsWith('//')
+  // Validate `next` as an internal app path only.
+  // Reject protocol-relative values (`//foo`), backslash-prefixed variants (`/\foo`)
+  // and any payload containing backslashes to avoid WHATWG URL slash-normalization
+  // turning the redirect into an external origin.
+  const isSafeNext = next.startsWith('/') && !next.startsWith('//') && !next.includes('\\')
   const safeNext = isSafeNext ? next : '/'
 
   if (code) {
