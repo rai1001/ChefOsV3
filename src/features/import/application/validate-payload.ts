@@ -12,6 +12,17 @@ import type {
 import { findOrphanIngredientRecipes, normalizeRecipeName } from '../domain/invariants'
 import { parsedIngredientRowSchema, parsedRecipeRowSchema } from './schemas'
 
+import { ZodIssue } from 'zod'
+
+function formatZodIssues(excelRow: number, issues: ZodIssue[]): RowValidationIssue[] {
+  return issues.map((issue) => ({
+    excel_row: excelRow,
+    field: issue.path.join('.') || undefined,
+    message: issue.message,
+    severity: 'error',
+  }))
+}
+
 export function validatePayload(payload: ParsedRecipesPayload): ValidationReport {
   const recipeIssues: RowValidationIssue[] = []
   const ingredientIssues: RowValidationIssue[] = []
@@ -24,14 +35,7 @@ export function validatePayload(payload: ParsedRecipesPayload): ValidationReport
   for (const row of payload.recipes) {
     const result = parsedRecipeRowSchema.safeParse(row)
     if (!result.success) {
-      for (const issue of result.error.issues) {
-        recipeIssues.push({
-          excel_row: row.excel_row,
-          field: issue.path.join('.') || undefined,
-          message: issue.message,
-          severity: 'error',
-        })
-      }
+      recipeIssues.push(...formatZodIssues(row.excel_row, result.error.issues))
       continue
     }
     const normalized = normalizeRecipeName(result.data.name)
@@ -59,14 +63,7 @@ export function validatePayload(payload: ParsedRecipesPayload): ValidationReport
   for (const row of payload.ingredients) {
     const result = parsedIngredientRowSchema.safeParse(row)
     if (!result.success) {
-      for (const issue of result.error.issues) {
-        ingredientIssues.push({
-          excel_row: row.excel_row,
-          field: issue.path.join('.') || undefined,
-          message: issue.message,
-          severity: 'error',
-        })
-      }
+      ingredientIssues.push(...formatZodIssues(row.excel_row, result.error.issues))
       continue
     }
     const normalized = normalizeRecipeName(result.data.recipe_name)
