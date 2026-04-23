@@ -30,6 +30,17 @@ describe('newCorrelationId', () => {
     expect(getRandomValues).toHaveBeenCalledTimes(1)
   })
 
+
+  it('throws when getRandomValues returns insufficient bytes', () => {
+    const getRandomValues = vi.fn(() => new Uint8Array(0))
+
+    vi.stubGlobal('crypto', { getRandomValues } as Pick<Crypto, 'getRandomValues'>)
+
+    expect(() => newCorrelationId()).toThrow(
+      'Secure random source returned insufficient bytes for UUID generation.',
+    )
+  })
+
   it('throws when a secure crypto API is unavailable', () => {
     vi.stubGlobal('crypto', undefined)
 
