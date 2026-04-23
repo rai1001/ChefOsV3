@@ -55,10 +55,33 @@ function buildColumnMap(
 ): Record<string, number> {
   const result: Record<string, number> = {}
   const normalized = rawHeaders.map(normalizeHeader)
+
+  // Build inverse map: normalizedAlias -> canonical[]
+  const aliasToCanonicals = new Map<string, string[]>()
   for (const [canonical, aliases] of Object.entries(aliasMap)) {
     const allCandidates = [canonical, ...aliases].map(normalizeHeader)
-    const idx = normalized.findIndex((h) => allCandidates.includes(h))
-    if (idx >= 0) result[canonical] = idx
+    for (const cand of allCandidates) {
+      if (!aliasToCanonicals.has(cand)) {
+        aliasToCanonicals.set(cand, [])
+      }
+      const list = aliasToCanonicals.get(cand)!
+      if (!list.includes(canonical)) {
+        list.push(canonical)
+      }
+    }
+  }
+
+  // Iterate over normalized headers once
+  for (let i = 0; i < normalized.length; i++) {
+    const h = normalized[i]
+    const canonicals = aliasToCanonicals.get(h)
+    if (canonicals) {
+      for (const canonical of canonicals) {
+        if (result[canonical] === undefined) {
+          result[canonical] = i
+        }
+      }
+    }
   }
   return result
 }
