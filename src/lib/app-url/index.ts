@@ -34,6 +34,10 @@ function normalize(rawUrl: string): string {
   }
 }
 
+function getNormalizedAllowlist(): string[] {
+  return parseAllowlist().map(normalize).filter(Boolean)
+}
+
 export interface AppUrlOptions {
   // Si true, lanza si la URL no está en la allowlist en producción.
   // Default: true en producción, false en dev/test.
@@ -71,7 +75,7 @@ export function getCanonicalAppUrl(options?: AppUrlOptions): string {
   }
 
   const candidate = normalizedFromEnv || DEFAULT_DEV_URL
-  const allowlist = parseAllowlist().map(normalize).filter(Boolean)
+  const allowlist = getNormalizedAllowlist()
 
   if (enforceAllowlist) {
     if (!allowlist.includes(candidate)) {
@@ -80,6 +84,20 @@ export function getCanonicalAppUrl(options?: AppUrlOptions): string {
   }
 
   return candidate
+}
+
+// Devuelve el origin preferido solo si pertenece a la allowlist.
+// Si no, cae al origin canónico para evitar redirects a hosts no confiables.
+export function getAllowedAppOrigin(preferredOrigin?: string | null): string {
+  const canonical = getCanonicalAppUrl()
+  const normalizedPreferred = preferredOrigin ? normalize(preferredOrigin) : ''
+  const allowlist = getNormalizedAllowlist()
+
+  if (normalizedPreferred && allowlist.includes(normalizedPreferred)) {
+    return normalizedPreferred
+  }
+
+  return canonical
 }
 
 // Construye una URL absoluta con path. Garantiza que el resultado pertenece al dominio canónico.

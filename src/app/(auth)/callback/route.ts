@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { buildAbsoluteUrl } from '@/lib/app-url'
+import { getAllowedAppOrigin } from '@/lib/app-url'
 
 function getSafeNextPath(nextParam: string | null): string {
   if (
@@ -20,7 +20,9 @@ function getSafeNextPath(nextParam: string | null): string {
 }
 
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url)
+  const requestUrl = new URL(request.url)
+  const safeOrigin = getAllowedAppOrigin(requestUrl.origin)
+  const { searchParams } = requestUrl
   const code = searchParams.get('code')
   const nextPath = getSafeNextPath(searchParams.get('next'))
 
@@ -28,9 +30,9 @@ export async function GET(request: Request) {
     const supabase = await createClient()
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     if (!error) {
-      return NextResponse.redirect(buildAbsoluteUrl(nextPath))
+      return NextResponse.redirect(new URL(nextPath, safeOrigin))
     }
   }
 
-  return NextResponse.redirect(buildAbsoluteUrl('/login?error=auth_callback_error'))
+  return NextResponse.redirect(new URL('/login?error=auth_callback_error', safeOrigin))
 }
