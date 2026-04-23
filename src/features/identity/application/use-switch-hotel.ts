@@ -17,6 +17,32 @@ function isUuid(value: unknown): value is string {
   return typeof value === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value)
 }
 
+export function shouldInvalidateHotelDependentQuery(
+  key: unknown,
+  prevHotelId: string | null,
+  newHotelId: string
+): boolean {
+  if (!Array.isArray(key) || key.length === 0) return false
+
+  // Identity hotel-dependent queries.
+  if (IDENTITY_HOTEL_DEPENDENT_KEYS.some((k) => k[0] === key[0])) return true
+
+  // Convención: el segundo segmento es el hotelId.
+  const second = key[1]
+  if (isUuid(second)) {
+    return second === prevHotelId || second === newHotelId
+  }
+
+  // Fallback conservador: queries cuyo primer segmento es un módulo conocido pero
+  // que aún no siguen la convención `[modulo, hotelId, ...]`. Se invalidan para
+  // evitar mostrar stale data cross-tenant.
+  if (typeof key[0] === 'string') {
+    const legacyHotelScoped = ['recipes', 'menus', 'commercial', 'tenant-admin']
+    if (legacyHotelScoped.includes(key[0])) return true
+  }
+  return false
+}
+
 export function useSwitchHotel() {
   const queryClient = useQueryClient()
 
@@ -33,29 +59,8 @@ export function useSwitchHotel() {
     // Queries 100% global (ej. session, app-config) NO se tocan.
     onSuccess: ({ prevHotelId, newHotelId }) => {
       queryClient.invalidateQueries({
-        predicate: (query) => {
-          const key = query.queryKey
-          if (!Array.isArray(key) || key.length === 0) return false
-
-          // Identity hotel-dependent queries.
-          if (IDENTITY_HOTEL_DEPENDENT_KEYS.some((k) => k[0] === key[0])) return true
-
-          // Convención: el segundo segmento es el hotelId.
-          const second = key[1]
-          if (isUuid(second)) {
-            if (second === prevHotelId || second === newHotelId) return true
-            return false
-          }
-
-          // Fallback conservador: queries cuyo primer segmento es un módulo conocido pero
-          // que aún no siguen la convención `[modulo, hotelId, ...]`. Se invalidan para
-          // evitar mostrar stale data cross-tenant.
-          if (typeof key[0] === 'string') {
-            const legacyHotelScoped = ['recipes', 'menus', 'commercial', 'tenant-admin']
-            if (legacyHotelScoped.includes(key[0])) return true
-          }
-          return false
-        },
+        predicate: (query) =>
+          shouldInvalidateHotelDependentQuery(query.queryKey, prevHotelId, newHotelId),
       })
     },
   })
