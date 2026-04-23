@@ -15,12 +15,8 @@ export interface LogContext {
 function uuidV4FromRandomValues(getRandomValues: (array: Uint8Array) => Uint8Array): string {
   const bytes = getRandomValues(new Uint8Array(16))
 
-  const byte6 = bytes[6]
-  const byte8 = bytes[8]
-
-  if (byte6 === undefined || byte8 === undefined) {
-    throw new Error('Secure random source returned insufficient bytes for UUID generation.')
-  }
+  const byte6 = bytes[6] ?? 0
+  const byte8 = bytes[8] ?? 0
 
   bytes[6] = (byte6 & 0x0f) | 0x40
   bytes[8] = (byte8 & 0x3f) | 0x80
