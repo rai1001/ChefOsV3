@@ -24,6 +24,7 @@ import {
   type RecipeDifficulty,
 } from '../domain/types'
 import { DIFFICULTY_LABELS, RECIPE_CATEGORY_LABELS } from '../domain/invariants'
+import { parseCommaSeparatedList } from './recipe-form-utils'
 
 interface Props {
   hotelId: string
@@ -59,14 +60,8 @@ export function RecipeForm({ hotelId, userId, recipe }: Props) {
       difficulty,
       target_price: (data.get('target_price') as string) || null,
       notes: (data.get('notes') as string) || null,
-      allergens: (data.get('allergens') as string)
-        ?.split(',')
-        .map((s) => s.trim())
-        .filter(Boolean) ?? [],
-      dietary_tags: (data.get('dietary_tags') as string)
-        ?.split(',')
-        .map((s) => s.trim())
-        .filter(Boolean) ?? [],
+      allergens: parseCommaSeparatedList(data.get('allergens')),
+      dietary_tags: parseCommaSeparatedList(data.get('dietary_tags')),
     }
 
     const parsed = createRecipeSchema.safeParse(raw)
