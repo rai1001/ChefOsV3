@@ -54,11 +54,22 @@ function buildColumnMap(
   aliasMap: Record<string, string[]>
 ): Record<string, number> {
   const result: Record<string, number> = {}
-  const normalized = rawHeaders.map(normalizeHeader)
+  const headerIndex = new Map<string, number>()
+  rawHeaders.forEach((header, index) => {
+    const normalized = normalizeHeader(header)
+    if (!headerIndex.has(normalized)) {
+      headerIndex.set(normalized, index)
+    }
+  })
+
   for (const [canonical, aliases] of Object.entries(aliasMap)) {
-    const allCandidates = [canonical, ...aliases].map(normalizeHeader)
-    const idx = normalized.findIndex((h) => allCandidates.includes(h))
-    if (idx >= 0) result[canonical] = idx
+    for (const candidate of [canonical, ...aliases]) {
+      const idx = headerIndex.get(normalizeHeader(candidate))
+      if (idx !== undefined) {
+        result[canonical] = idx
+        break
+      }
+    }
   }
   return result
 }
