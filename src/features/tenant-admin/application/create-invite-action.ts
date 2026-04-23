@@ -37,18 +37,19 @@ export async function createInviteAction(input: CreateInviteInput): Promise<Crea
   const result = await createInvite(supabase, input)
   const inviteUrl = buildAbsoluteUrl(`/invite/${encodeURIComponent(result.token)}`)
 
-  // Info del inviter para personalizar email
-  const { data: inviterData } = await supabase.auth.getUser()
+  // Info del inviter y del hotel/tenant en paralelo
+  const [{ data: inviterData }, { data: hotelRow }] = await Promise.all([
+    supabase.auth.getUser(),
+    supabase
+      .from('hotels')
+      .select('name, tenants(name)')
+      .eq('id', input.hotel_id)
+      .maybeSingle(),
+  ])
+
   const inviterName: string | null =
     (inviterData?.user?.user_metadata?.full_name as string | undefined) ??
     (inviterData?.user?.email ? inviterData.user.email.split('@')[0] ?? null : null)
-
-  // Nombre del hotel + tenant para email
-  const { data: hotelRow } = await supabase
-    .from('hotels')
-    .select('name, tenants(name)')
-    .eq('id', input.hotel_id)
-    .maybeSingle()
 
   const hotelName = (hotelRow as { name?: string } | null)?.name ?? 'tu hotel'
   const tenantName =
