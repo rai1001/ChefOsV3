@@ -144,6 +144,7 @@ Cada cambio debe poder responder con claridad:
 ### `specs/` (19 documentos normativos)
 
 **Base operativa** (formato y proceso):
+
 - `architecture.md` — estructura oficial del repo y reglas de capas
 - `coding-standards.md` — TypeScript strict, naming, modularidad
 - `testing-standards.md` — estrategia de tests, cobertura ≥90% en domain/application
@@ -154,12 +155,14 @@ Cada cambio debe poder responder con claridad:
 - `module-template.md` — plantilla oficial de módulo
 
 **Reglas del agente y ejecución**:
+
 - `agent-responsibilities.md` — cómo se comporta el agente (AI/humano asistido)
 - `task-execution-order.md` — orden oficial de tareas + scripts obligatorios + anti-deriva
 - `ci-standards.md` — checks obligatorios de CI y bloqueo de merge
 - `decisions-log.md` — ADR-lite para decisiones estructurales
 
 **Reglas del dominio**:
+
 - `core-constraints.md` — reglas duras (multi-tenant, RLS, módulos no se llaman entre sí)
 - `database-security.md` — RLS helpers, SECURITY DEFINER checklist, credentials isolation
 - `permissions-matrix.md` — matriz roles × acciones (UI guard + RLS)
@@ -211,6 +214,7 @@ Cada sprint incluye: objetivo, alcance cerrado, contratos públicos esperados, e
 ### `skills/` (21 skills)
 
 **Transversales**:
+
 - `chefos-v3-architect/` — validación arquitectónica
 - `chefos-v3-sprint-builder/` — construcción de sprints
 - `chefos-v3-migrate-legacy/` — migración legacy de v2
@@ -218,6 +222,7 @@ Cada sprint incluye: objetivo, alcance cerrado, contratos públicos esperados, e
 **Por módulo** (14): `identity`, `commercial`, `recipes`, `catalog`, `procurement`, `inventory`, `production`, `reporting`, `compliance`, `automation`, `notifications`, `integrations`, `hr`, `agents`.
 
 **Operativas**:
+
 - `demo-chefos-playbook/` — guion demo 40 min + plan B + objeciones + cierre
 - `design-system-rollout/` — plan 5 fases de aplicación del DS a todas las pantallas
 - `ocr-delivery-notes-workflow/` — flujo OCR albaranes (foto → Claude Vision → GR lines)

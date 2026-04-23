@@ -66,6 +66,7 @@ Un miembro operativo con la anon key de Supabase puede hacer `.from('tabla').sel
 ### Solución
 
 1. **SELECT restringido a admin+**:
+
    ```sql
    create policy "tabla_select_admin" on public.tabla
      for select using (
@@ -179,7 +180,11 @@ Si la Edge Function procesa un webhook cuyo payload viene del cliente, **NO conf
 const { record_id } = await req.json()
 // NO: operar directamente con los campos del payload
 // SÍ: leer la fila completa desde DB y usar esos datos
-const { data: record } = await supabase.from('notifications').select('*').eq('id', record_id).single()
+const { data: record } = await supabase
+  .from('notifications')
+  .select('*')
+  .eq('id', record_id)
+  .single()
 ```
 
 Patrón establecido en `notification-dispatcher` post-commit `0ed3c16`.

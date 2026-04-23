@@ -58,8 +58,7 @@ export function AcceptInviteCard({ token, preview, callerEmail }: Props) {
         <p className="kpi-label">Te han invitado a</p>
         <h2>{preview.hotel_name}</h2>
         <p className="text-sm text-[color:var(--color-text-secondary)]">
-          Del grupo <strong>{preview.tenant_name}</strong> como{' '}
-          <strong>{roleLabel}</strong>.
+          Del grupo <strong>{preview.tenant_name}</strong> como <strong>{roleLabel}</strong>.
         </p>
       </div>
 
@@ -94,8 +93,8 @@ export function AcceptInviteCard({ token, preview, callerEmail }: Props) {
             color: 'var(--color-warning-fg)',
           }}
         >
-          Esta invitación está <strong>{preview.status}</strong>. Contacta con el admin si
-          necesitas una nueva.
+          Esta invitación está <strong>{preview.status}</strong>. Contacta con el admin si necesitas
+          una nueva.
         </div>
       )}
 

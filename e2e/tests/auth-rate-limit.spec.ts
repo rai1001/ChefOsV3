@@ -8,8 +8,7 @@ import { test, expect } from '@playwright/test'
  * no aporta valor. CI gated.
  */
 
-const skipIfNoUpstash =
-  !process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN
+const skipIfNoUpstash = !process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN
 
 test.describe('auth-rate-limit', () => {
   test.skip(skipIfNoUpstash, 'Requires UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN')

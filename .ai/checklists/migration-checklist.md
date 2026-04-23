@@ -189,12 +189,12 @@ Marcar `NO` si ocurre cualquiera de estas situaciones.
 
 ### Motivos de bloqueo si no está done
 
-- 
-- 
-- 
+-
+-
+-
 
 ### Observaciones finales
 
-- 
-- 
+-
+-
 -

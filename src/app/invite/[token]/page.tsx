@@ -5,11 +5,7 @@ import { AcceptInviteCard } from '@/features/tenant-admin/components/accept-invi
 
 export const dynamic = 'force-dynamic'
 
-export default async function AcceptInvitePage({
-  params,
-}: {
-  params: Promise<{ token: string }>
-}) {
+export default async function AcceptInvitePage({ params }: { params: Promise<{ token: string }> }) {
   const { token: rawToken } = await params
   const token = decodeURIComponent(rawToken)
 
@@ -45,15 +41,12 @@ export default async function AcceptInvitePage({
             <div className="space-y-3">
               <h2>Invitación no válida</h2>
               <p className="text-sm text-[color:var(--color-text-secondary)]">
-                {loadError ?? 'No pudimos leer la invitación. Contacta con el admin que te la envió.'}
+                {loadError ??
+                  'No pudimos leer la invitación. Contacta con el admin que te la envió.'}
               </p>
             </div>
           ) : (
-            <AcceptInviteCard
-              token={token}
-              preview={preview}
-              callerEmail={user.email ?? ''}
-            />
+            <AcceptInviteCard token={token} preview={preview} callerEmail={user.email ?? ''} />
           )}
         </section>
       </div>

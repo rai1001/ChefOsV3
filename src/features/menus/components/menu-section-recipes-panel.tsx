@@ -13,7 +13,11 @@ import {
 } from '@/components/ui/select'
 import { useRecipes } from '@/features/recipes'
 import { useActiveHotel } from '@/features/identity'
-import { useAddRecipeToSection, useRemoveRecipeFromSection, useSectionRecipes } from '../application/use-section-recipes'
+import {
+  useAddRecipeToSection,
+  useRemoveRecipeFromSection,
+  useSectionRecipes,
+} from '../application/use-section-recipes'
 
 interface Props {
   hotelId: string
@@ -55,9 +59,7 @@ export function MenuSectionRecipesPanel({ hotelId, sectionId }: Props) {
   return (
     <div className="space-y-3">
       {existing.length === 0 ? (
-        <p className="text-xs text-[color:var(--color-text-muted)]">
-          Sin recetas en esta sección.
-        </p>
+        <p className="text-xs text-[color:var(--color-text-muted)]">Sin recetas en esta sección.</p>
       ) : (
         <ul className="space-y-1">
           {existing.map((sr) => {
@@ -98,7 +100,11 @@ export function MenuSectionRecipesPanel({ hotelId, sectionId }: Props) {
           <Label className="text-[11px]">Añadir receta aprobada</Label>
           <Select value={selectedRecipe} onValueChange={setSelectedRecipe}>
             <SelectTrigger>
-              <SelectValue placeholder={approvedRecipes.length === 0 ? 'Sin recetas aprobadas' : 'Seleccionar…'} />
+              <SelectValue
+                placeholder={
+                  approvedRecipes.length === 0 ? 'Sin recetas aprobadas' : 'Seleccionar…'
+                }
+              />
             </SelectTrigger>
             <SelectContent>
               {approvedRecipes.map((r) => (
@@ -119,11 +125,7 @@ export function MenuSectionRecipesPanel({ hotelId, sectionId }: Props) {
             onChange={(e) => setPrice(e.target.value)}
           />
         </div>
-        <Button
-          size="sm"
-          disabled={!selectedRecipe || add.isPending}
-          onClick={addRecipe}
-        >
+        <Button size="sm" disabled={!selectedRecipe || add.isPending} onClick={addRecipe}>
           Añadir
         </Button>
       </div>

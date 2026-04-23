@@ -9,10 +9,7 @@ export default async function DashboardPage() {
   // El layout (app) ya garantiza user + activeHotel (si null → redirect).
   // Usamos *OrNull aquí como red de seguridad para evitar errores ruidosos
   // cuando la page se ejecuta en paralelo con el layout.
-  const [user, activeHotel] = await Promise.all([
-    getCurrentUserOrNull(),
-    getActiveHotelOrNull(),
-  ])
+  const [user, activeHotel] = await Promise.all([getCurrentUserOrNull(), getActiveHotelOrNull()])
   if (!user || !activeHotel) return null
 
   const fullName =

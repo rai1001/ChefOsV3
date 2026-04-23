@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { cn } from './utils'
+import { cn, parseCommaSeparatedList } from './utils'
 
 describe('cn', () => {
   it('combina clases sin duplicar', () => {
@@ -12,5 +12,20 @@ describe('cn', () => {
 
   it('fusiona clases Tailwind conflictivas con twMerge', () => {
     expect(cn('text-red-500', 'text-blue-500')).toBe('text-blue-500')
+  })
+})
+
+describe('parseCommaSeparatedList', () => {
+  it('parses comma-separated values, trims, and removes empty strings', () => {
+    expect(parseCommaSeparatedList('a,b,c')).toEqual(['a', 'b', 'c'])
+    expect(parseCommaSeparatedList('a, b , c ')).toEqual(['a', 'b', 'c'])
+    expect(parseCommaSeparatedList('a,,b, ,c')).toEqual(['a', 'b', 'c'])
+  })
+
+  it('handles empty values and whitespace-only correctly', () => {
+    expect(parseCommaSeparatedList('')).toEqual([])
+    expect(parseCommaSeparatedList(' ')).toEqual([])
+    expect(parseCommaSeparatedList(null)).toEqual([])
+    expect(parseCommaSeparatedList(undefined)).toEqual([])
   })
 })

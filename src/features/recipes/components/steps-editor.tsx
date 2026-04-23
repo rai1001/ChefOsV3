@@ -50,9 +50,7 @@ export function StepsEditor({ hotelId, recipeId, readOnly = false }: Props) {
       {stepsQ.isLoading ? (
         <p className="kpi-label">Cargando pasos…</p>
       ) : steps.length === 0 ? (
-        <p className="text-sm text-[color:var(--color-text-muted)]">
-          Sin pasos todavía.
-        </p>
+        <p className="text-sm text-[color:var(--color-text-muted)]">Sin pasos todavía.</p>
       ) : (
         <ol className="space-y-2">
           {steps.map((s) => (
@@ -61,17 +59,12 @@ export function StepsEditor({ hotelId, recipeId, readOnly = false }: Props) {
               className="rounded border p-3 flex items-start gap-3"
               style={{ borderColor: 'var(--color-border)', background: 'var(--color-bg-card)' }}
             >
-              <span
-                className="kpi-label text-xs flex-shrink-0 mt-1"
-                style={{ minWidth: '24px' }}
-              >
+              <span className="kpi-label text-xs flex-shrink-0 mt-1" style={{ minWidth: '24px' }}>
                 #{s.step_number}
               </span>
               <div className="flex-1">
                 <p className="text-sm whitespace-pre-wrap">{s.instruction}</p>
-                {s.duration_min != null && (
-                  <p className="kpi-label mt-1">{s.duration_min} min</p>
-                )}
+                {s.duration_min != null && <p className="kpi-label mt-1">{s.duration_min} min</p>}
               </div>
               {!readOnly && (
                 <Button

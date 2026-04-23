@@ -30,68 +30,68 @@ Este documento es normativo.
 
 ### Autenticación (`AUTH_`)
 
-| Código | Mensaje UI | Cuándo usar |
-|---|---|---|
-| `AUTH_INVALID` | Credenciales inválidas. | Email o password incorrectos |
-| `AUTH_NO_ROLE` | Tu cuenta no tiene rol asignado para este hotel. | Usuario autenticado sin membership válida |
-| `AUTH_EXPIRED` | Tu sesión ha expirado. Vuelve a iniciar sesión. | Token expirado |
-| `AUTH_NOT_VERIFIED` | Debes verificar tu email antes de acceder. | Email sin confirmar |
-| `AUTH_LOCKED` | Cuenta bloqueada. Contacta con el administrador. | Rate limit por intentos fallidos |
+| Código              | Mensaje UI                                       | Cuándo usar                               |
+| ------------------- | ------------------------------------------------ | ----------------------------------------- |
+| `AUTH_INVALID`      | Credenciales inválidas.                          | Email o password incorrectos              |
+| `AUTH_NO_ROLE`      | Tu cuenta no tiene rol asignado para este hotel. | Usuario autenticado sin membership válida |
+| `AUTH_EXPIRED`      | Tu sesión ha expirado. Vuelve a iniciar sesión.  | Token expirado                            |
+| `AUTH_NOT_VERIFIED` | Debes verificar tu email antes de acceder.       | Email sin confirmar                       |
+| `AUTH_LOCKED`       | Cuenta bloqueada. Contacta con el administrador. | Rate limit por intentos fallidos          |
 
 ### Validación (`VALIDATION_`)
 
-| Código | Mensaje UI | Cuándo usar |
-|---|---|---|
-| `VALIDATION_REQUIRED` | Campo obligatorio. | Campo requerido vacío |
-| `VALIDATION_INVALID` | Valor inválido. | Formato no válido (email, número, etc.) |
-| `VALIDATION_TOO_SHORT` | Mínimo {n} caracteres. | String por debajo del mínimo |
-| `VALIDATION_TOO_LONG` | Máximo {n} caracteres. | String por encima del máximo |
-| `VALIDATION_OUT_OF_RANGE` | Valor fuera del rango permitido. | Número fuera de rango |
+| Código                    | Mensaje UI                       | Cuándo usar                             |
+| ------------------------- | -------------------------------- | --------------------------------------- |
+| `VALIDATION_REQUIRED`     | Campo obligatorio.               | Campo requerido vacío                   |
+| `VALIDATION_INVALID`      | Valor inválido.                  | Formato no válido (email, número, etc.) |
+| `VALIDATION_TOO_SHORT`    | Mínimo {n} caracteres.           | String por debajo del mínimo            |
+| `VALIDATION_TOO_LONG`     | Máximo {n} caracteres.           | String por encima del máximo            |
+| `VALIDATION_OUT_OF_RANGE` | Valor fuera del rango permitido. | Número fuera de rango                   |
 
 ### Permisos (`PERMISSION_`)
 
-| Código | Mensaje UI | Cuándo usar |
-|---|---|---|
-| `PERMISSION_DENIED` | No tienes permisos para realizar esta acción. | Rol insuficiente |
-| `PERMISSION_HOTEL_MISMATCH` | No puedes acceder a datos de otro hotel. | Cross-tenant detectado |
-| `PERMISSION_ROLE_REQUIRED` | Esta acción requiere rol {role}. | Acción admin-only intentada por otro rol |
+| Código                      | Mensaje UI                                    | Cuándo usar                              |
+| --------------------------- | --------------------------------------------- | ---------------------------------------- |
+| `PERMISSION_DENIED`         | No tienes permisos para realizar esta acción. | Rol insuficiente                         |
+| `PERMISSION_HOTEL_MISMATCH` | No puedes acceder a datos de otro hotel.      | Cross-tenant detectado                   |
+| `PERMISSION_ROLE_REQUIRED`  | Esta acción requiere rol {role}.              | Acción admin-only intentada por otro rol |
 
 ### Operaciones (`SAVE_` / `LOAD_` / `DELETE_`)
 
-| Código | Mensaje UI | Cuándo usar |
-|---|---|---|
-| `SAVE_OK` | Guardado correctamente. | Operación exitosa |
-| `SAVE_FAIL` | No se pudo guardar. Inténtalo de nuevo. | Error genérico al guardar |
-| `SAVE_CONFLICT` | Otra persona modificó este registro. Recarga para ver los cambios. | Conflicto de concurrencia |
-| `LOAD_FAIL` | No se pudo cargar la información. | Error genérico al leer |
-| `LOAD_NOT_FOUND` | No encontramos el elemento solicitado. | 404 de recurso |
-| `DELETE_OK` | Eliminado correctamente. | Borrado exitoso |
-| `DELETE_FAIL` | No se pudo eliminar. Inténtalo de nuevo. | Error al borrar |
-| `DELETE_CONFLICT` | No se puede eliminar: tiene dependencias activas. | FK constraint |
+| Código            | Mensaje UI                                                         | Cuándo usar               |
+| ----------------- | ------------------------------------------------------------------ | ------------------------- |
+| `SAVE_OK`         | Guardado correctamente.                                            | Operación exitosa         |
+| `SAVE_FAIL`       | No se pudo guardar. Inténtalo de nuevo.                            | Error genérico al guardar |
+| `SAVE_CONFLICT`   | Otra persona modificó este registro. Recarga para ver los cambios. | Conflicto de concurrencia |
+| `LOAD_FAIL`       | No se pudo cargar la información.                                  | Error genérico al leer    |
+| `LOAD_NOT_FOUND`  | No encontramos el elemento solicitado.                             | 404 de recurso            |
+| `DELETE_OK`       | Eliminado correctamente.                                           | Borrado exitoso           |
+| `DELETE_FAIL`     | No se pudo eliminar. Inténtalo de nuevo.                           | Error al borrar           |
+| `DELETE_CONFLICT` | No se puede eliminar: tiene dependencias activas.                  | FK constraint             |
 
 ### Estado de evento / producción / stock (`STATE_`)
 
-| Código | Mensaje UI | Cuándo usar |
-|---|---|---|
+| Código                     | Mensaje UI                          | Cuándo usar                              |
+| -------------------------- | ----------------------------------- | ---------------------------------------- |
 | `STATE_TRANSITION_INVALID` | No se puede pasar de {from} a {to}. | Transición no permitida en state machine |
-| `STATE_ALREADY_PROCESSED` | Este elemento ya fue procesado. | Idempotencia en operaciones |
-| `STATE_BLOCKED_BY` | Bloqueado por: {reason}. | Operación bloqueada por dependencia |
+| `STATE_ALREADY_PROCESSED`  | Este elemento ya fue procesado.     | Idempotencia en operaciones              |
+| `STATE_BLOCKED_BY`         | Bloqueado por: {reason}.            | Operación bloqueada por dependencia      |
 
 ### Rate limits y red (`RATE_` / `NETWORK_`)
 
-| Código | Mensaje UI | Cuándo usar |
-|---|---|---|
-| `RATE_LIMIT` | Demasiadas peticiones. Inténtalo en unos segundos. | 429 del servidor |
-| `NETWORK_OFFLINE` | Sin conexión. Algunas acciones no están disponibles. | Usuario offline |
-| `NETWORK_TIMEOUT` | La petición está tardando demasiado. Inténtalo de nuevo. | Timeout de red |
+| Código            | Mensaje UI                                               | Cuándo usar      |
+| ----------------- | -------------------------------------------------------- | ---------------- |
+| `RATE_LIMIT`      | Demasiadas peticiones. Inténtalo en unos segundos.       | 429 del servidor |
+| `NETWORK_OFFLINE` | Sin conexión. Algunas acciones no están disponibles.     | Usuario offline  |
+| `NETWORK_TIMEOUT` | La petición está tardando demasiado. Inténtalo de nuevo. | Timeout de red   |
 
 ### Integraciones (`INTEGRATION_`)
 
-| Código | Mensaje UI | Cuándo usar |
-|---|---|---|
-| `INTEGRATION_UNAVAILABLE` | El servicio externo no responde. | PMS / POS caído |
-| `INTEGRATION_CREDENTIALS_INVALID` | Credenciales de integración inválidas. | Credentials rechazadas por servicio externo |
-| `INTEGRATION_CONFIG_DISABLED` | Esta sincronización está deshabilitada. | `config.<sync_type>` es false |
+| Código                            | Mensaje UI                              | Cuándo usar                                 |
+| --------------------------------- | --------------------------------------- | ------------------------------------------- |
+| `INTEGRATION_UNAVAILABLE`         | El servicio externo no responde.        | PMS / POS caído                             |
+| `INTEGRATION_CREDENTIALS_INVALID` | Credenciales de integración inválidas.  | Credentials rechazadas por servicio externo |
+| `INTEGRATION_CONFIG_DISABLED`     | Esta sincronización está deshabilitada. | `config.<sync_type>` es false               |
 
 ---
 

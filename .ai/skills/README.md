@@ -401,7 +401,7 @@ Responsabilidad:
 
 - plan en 5 fases (F0-F5) con criterios de cierre
 - checklist de regresión por pantalla
-- mappings *_STATUS_VARIANT por módulo
+- mappings \*\_STATUS_VARIANT por módulo
 
 ### ocr-delivery-notes-workflow
 

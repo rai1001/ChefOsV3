@@ -63,9 +63,7 @@ export function HotelSwitcher() {
                   'data-[highlighted]:bg-[color:var(--color-bg-hover)]'
                 )}
               >
-                <Check
-                  className={cn('h-4 w-4 shrink-0', isActive ? 'opacity-100' : 'opacity-0')}
-                />
+                <Check className={cn('h-4 w-4 shrink-0', isActive ? 'opacity-100' : 'opacity-0')} />
                 <div className="flex flex-col">
                   <span>{hotel.hotel_name}</span>
                   <span className="kpi-label">{hotel.role}</span>

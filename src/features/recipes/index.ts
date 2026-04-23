@@ -23,11 +23,7 @@ export type {
   RecipeTechSheet,
 } from './domain/types'
 
-export {
-  RECIPE_STATUSES,
-  RECIPE_CATEGORIES,
-  RECIPE_DIFFICULTIES,
-} from './domain/types'
+export { RECIPE_STATUSES, RECIPE_CATEGORIES, RECIPE_DIFFICULTIES } from './domain/types'
 
 // ── Invariants + labels ────────────────────────────────────────────
 export {

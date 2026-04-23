@@ -1,9 +1,5 @@
 import { z } from 'zod'
-import {
-  RECIPE_CATEGORIES,
-  RECIPE_DIFFICULTIES,
-  RECIPE_STATUSES,
-} from '../domain/types'
+import { RECIPE_CATEGORIES, RECIPE_DIFFICULTIES, RECIPE_STATUSES } from '../domain/types'
 
 export const createRecipeSchema = z.object({
   name: z.string().min(2, 'Nombre requerido').max(200),

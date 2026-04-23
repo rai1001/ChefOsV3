@@ -24,8 +24,10 @@ export interface MappedAuthError {
   readonly retryAfterSeconds?: number
 }
 
-const NEUTRAL_LOGIN_MESSAGE = 'Credenciales incorrectas. Si el problema persiste, contacta con soporte.'
-const NEUTRAL_RESET_MESSAGE = 'No hemos podido procesar la solicitud. Inténtalo de nuevo en unos minutos.'
+const NEUTRAL_LOGIN_MESSAGE =
+  'Credenciales incorrectas. Si el problema persiste, contacta con soporte.'
+const NEUTRAL_RESET_MESSAGE =
+  'No hemos podido procesar la solicitud. Inténtalo de nuevo en unos minutos.'
 
 interface AuthErrorLike {
   message?: string
@@ -75,13 +77,18 @@ export function mapAuthError(
   if (lower.includes('email not confirmed') || lower.includes('not confirmed')) {
     return {
       code: 'email_not_confirmed',
-      userMessage: 'Necesitas confirmar tu email antes de entrar. Revisa tu bandeja y la carpeta de spam.',
+      userMessage:
+        'Necesitas confirmar tu email antes de entrar. Revisa tu bandeja y la carpeta de spam.',
       internalMessage: message,
     }
   }
 
   // Email ya en uso (signup)
-  if (lower.includes('user already registered') || lower.includes('already registered') || lower.includes('email already')) {
+  if (
+    lower.includes('user already registered') ||
+    lower.includes('already registered') ||
+    lower.includes('email already')
+  ) {
     if (flow === 'signup') {
       return {
         code: 'email_already_in_use',
@@ -92,10 +99,14 @@ export function mapAuthError(
   }
 
   // Password débil (signup)
-  if (lower.includes('password') && (lower.includes('weak') || lower.includes('short') || lower.includes('characters'))) {
+  if (
+    lower.includes('password') &&
+    (lower.includes('weak') || lower.includes('short') || lower.includes('characters'))
+  ) {
     return {
       code: 'weak_password',
-      userMessage: 'La contraseña no cumple los requisitos mínimos. Usa al menos 8 caracteres con mayúsculas, minúsculas y números.',
+      userMessage:
+        'La contraseña no cumple los requisitos mínimos. Usa al menos 8 caracteres con mayúsculas, minúsculas y números.',
       internalMessage: message,
     }
   }
@@ -104,7 +115,8 @@ export function mapAuthError(
   if (lower.includes('fetch') || lower.includes('network') || e.name === 'TypeError') {
     return {
       code: 'network_error',
-      userMessage: 'No hemos podido contactar con el servicio. Revisa tu conexión e inténtalo de nuevo.',
+      userMessage:
+        'No hemos podido contactar con el servicio. Revisa tu conexión e inténtalo de nuevo.',
       internalMessage: message || 'Network error contacting auth provider',
     }
   }

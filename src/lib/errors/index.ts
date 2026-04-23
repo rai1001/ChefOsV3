@@ -45,7 +45,10 @@ export class ConflictError extends AppError {
   override readonly code = 'CONFLICT' as const
   override readonly httpStatus = 409
 
-  constructor(message = 'Conflicto con el estado actual del recurso', options?: { cause?: unknown }) {
+  constructor(
+    message = 'Conflicto con el estado actual del recurso',
+    options?: { cause?: unknown }
+  ) {
     super(message, options)
   }
 }

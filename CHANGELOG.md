@@ -136,7 +136,7 @@ hallazgos confirmados de dos auditorías externas. Ver `.ai/sprints/sprint-harde
 - `npm run typecheck` — 0 errores.
 - `npm run lint` — 0 errores, 0 warnings.
 - `npm run test` — 188 tests verdes (incluye 39 nuevos: pagination 22 + errors 22 + auth-errors 11
-  + app-url 11 + rate-limit 6).
+  - app-url 11 + rate-limit 6).
 - E2E nuevos gated por env vars; otros suites siguen verdes.
 
 ### Hallazgos descartados (no aplican)

@@ -7,13 +7,7 @@ import { RECIPE_CATEGORY_LABELS } from '../domain/invariants'
 import { RecipeStatusBadge } from './recipe-status-badge'
 import { Button } from '@/components/ui/button'
 
-export function RecipesList({
-  hotelId,
-  filter,
-}: {
-  hotelId: string
-  filter?: RecipesFilter
-}) {
+export function RecipesList({ hotelId, filter }: { hotelId: string; filter?: RecipesFilter }) {
   const { data, isLoading, error, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useRecipesInfinite(hotelId, filter)
 
@@ -66,9 +60,7 @@ export function RecipesList({
                     currency: 'EUR',
                   })}
                 </td>
-                <td className="px-3 py-2 text-right font-data">
-                  {r.food_cost_pct.toFixed(1)}%
-                </td>
+                <td className="px-3 py-2 text-right font-data">{r.food_cost_pct.toFixed(1)}%</td>
                 <td className="px-3 py-2">
                   <RecipeStatusBadge status={r.status} />
                 </td>

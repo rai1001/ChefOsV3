@@ -25,18 +25,19 @@ export type {
 export { ROLES } from './domain/types'
 
 // ── Invariants (pure functions) ────────────────────────────────────
-export { ROLE_TO_PROFILE, uxProfileFromRole, hasRole, isActiveMembership } from './domain/invariants'
+export {
+  ROLE_TO_PROFILE,
+  uxProfileFromRole,
+  hasRole,
+  isActiveMembership,
+} from './domain/invariants'
 
 // ── Permissions ────────────────────────────────────────────────────
 export type { Permission } from './domain/permissions'
 export { PERMISSIONS, hasPermission } from './domain/permissions'
 
 // ── Errors ─────────────────────────────────────────────────────────
-export {
-  NotAuthenticatedError,
-  NoActiveHotelError,
-  InsufficientRoleError,
-} from './domain/errors'
+export { NotAuthenticatedError, NoActiveHotelError, InsufficientRoleError } from './domain/errors'
 
 // ── Application: client hooks ──────────────────────────────────────
 export { useCurrentUser } from './application/use-current-user'

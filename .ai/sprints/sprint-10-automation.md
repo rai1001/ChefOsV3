@@ -388,6 +388,7 @@ Absorbe `docs/MODULO_AUTOMATIZACIONES.md` de v2. Migración `00021_m8_automation
 Types: `AutomationJob`, `AutomationJobLog`, `AutomationTrigger`, `JobType`, `JobStatus`, `JOB_TYPES`, `JOB_STATUS_VARIANT`.
 
 Hooks:
+
 - `useAutomationJobs(filters?)` — panel admin
 - `useJobLogs(jobId)`
 - `useEnqueueJob()` — solo admin+
@@ -403,6 +404,7 @@ Hooks:
 ### RPCs consumidas
 
 Service-only (worker invoca, REVOKE authenticated, 00049):
+
 - `enqueue_job(p_hotel_id, p_job_type, p_payload, p_run_after)` — validaciones: whitelist job_type, config activa
 - `claim_next_job(p_worker_id)` — `SELECT FOR UPDATE SKIP LOCKED`
 - `complete_job(p_job_id, p_result)`
@@ -410,12 +412,14 @@ Service-only (worker invoca, REVOKE authenticated, 00049):
 - `cancel_job(p_job_id)`
 
 User-facing (todos los miembros según permissions-matrix):
+
 - `get_pending_jobs(p_hotel_id)`
 - `get_job_logs(p_job_id)`
 
 ### Edge Function
 
 `automation-worker`:
+
 - Validar `Authorization: Bearer <service_role>`.
 - Loop: claim → process → complete/fail.
 - Backoff respeta `Retry-After` si aplica.

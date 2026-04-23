@@ -81,9 +81,7 @@ export async function parseRecipesExcel(
 ): Promise<ParsedRecipesPayload> {
   let ExcelJS
   try {
-    ExcelJS = options?.loadExcelJS
-      ? await options.loadExcelJS()
-      : await import('exceljs')
+    ExcelJS = options?.loadExcelJS ? await options.loadExcelJS() : await import('exceljs')
   } catch (err) {
     throw new ExcelParseError('No se pudo cargar la librería ExcelJS', err)
   }

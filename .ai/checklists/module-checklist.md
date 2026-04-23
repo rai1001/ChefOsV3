@@ -190,12 +190,12 @@ Completar solo si hubo reutilización de código previo.
 
 ### Motivos de bloqueo si no está done
 
-- 
-- 
-- 
+-
+-
+-
 
 ### Observaciones finales
 
-- 
-- 
+-
+-
 -

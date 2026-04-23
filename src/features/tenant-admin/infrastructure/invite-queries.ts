@@ -1,5 +1,11 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
-import type { AcceptInviteResult, CreateInviteInput, CreateInviteResult, Invite, InviteStatus } from '../domain/types'
+import type {
+  AcceptInviteResult,
+  CreateInviteInput,
+  CreateInviteResult,
+  Invite,
+  InviteStatus,
+} from '../domain/types'
 import type { Role } from '@/features/identity'
 import {
   AlreadyMemberError,
@@ -33,7 +39,8 @@ function mapInviteError(raw: unknown): Error {
   if (msg.includes('invite_revoked')) return new InviteRevokedError()
   if (msg.includes('invite_already_revoked')) return new InviteRevokedError()
   if (msg.includes('invite_email_mismatch')) return new InviteEmailMismatchError()
-  if (msg.includes('already_member')) return new AlreadyMemberError('usuario', 'Ya es miembro del hotel')
+  if (msg.includes('already_member'))
+    return new AlreadyMemberError('usuario', 'Ya es miembro del hotel')
   return raw instanceof Error ? raw : new Error(msg || 'Error en RPC de invitación')
 }
 
@@ -61,10 +68,7 @@ export async function acceptInviteRpc(
   return data as AcceptInviteResult
 }
 
-export async function revokeInvite(
-  supabase: SupabaseClient,
-  inviteId: string
-): Promise<void> {
+export async function revokeInvite(supabase: SupabaseClient, inviteId: string): Promise<void> {
   const { error } = await supabase.rpc('revoke_invite', { p_invite_id: inviteId })
   if (error) throw mapInviteError(error)
 }
@@ -108,7 +112,10 @@ export async function fetchInvites(
     .range(from, to)
 
   if (onlyPending) {
-    query = query.is('accepted_at', null).is('revoked_at', null).gt('expires_at', new Date().toISOString())
+    query = query
+      .is('accepted_at', null)
+      .is('revoked_at', null)
+      .gt('expires_at', new Date().toISOString())
   }
 
   const { data, error } = await query

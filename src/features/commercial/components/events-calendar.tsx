@@ -121,9 +121,7 @@ export function EventsCalendar({ hotelId }: Props) {
                 <span className={isToday ? 'font-bold text-[color:var(--color-accent)]' : ''}>
                   {format(day, 'd')}
                 </span>
-                {events.length > 0 && (
-                  <span className="kpi-label">{events.length}</span>
-                )}
+                {events.length > 0 && <span className="kpi-label">{events.length}</span>}
               </div>
               <div className="mt-1 space-y-0.5">
                 {events.slice(0, 3).map((ev) => (
@@ -145,9 +143,7 @@ export function EventsCalendar({ hotelId }: Props) {
         })}
       </div>
 
-      {isLoading && (
-        <p className="mt-3 kpi-label">Cargando calendario…</p>
-      )}
+      {isLoading && <p className="mt-3 kpi-label">Cargando calendario…</p>}
     </div>
   )
 }

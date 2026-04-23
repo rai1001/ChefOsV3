@@ -37,10 +37,16 @@ export function ImportPreviewTable({
             </thead>
             <tbody>
               {validRecipes.map((r) => (
-                <tr key={r.excel_row} className="border-t" style={{ borderColor: 'var(--color-border)' }}>
+                <tr
+                  key={r.excel_row}
+                  className="border-t"
+                  style={{ borderColor: 'var(--color-border)' }}
+                >
                   <td className="px-3 py-1.5 font-data text-xs">{r.excel_row}</td>
                   <td className="px-3 py-1.5">{r.name}</td>
-                  <td className="px-3 py-1.5 text-[color:var(--color-text-secondary)]">{r.category}</td>
+                  <td className="px-3 py-1.5 text-[color:var(--color-text-secondary)]">
+                    {r.category}
+                  </td>
                   <td className="px-3 py-1.5 text-right font-data">{r.servings}</td>
                   <td className="px-3 py-1.5 kpi-label">{r.allergens.join(', ') || '—'}</td>
                 </tr>
@@ -70,7 +76,11 @@ export function ImportPreviewTable({
             </thead>
             <tbody>
               {validIngredients.map((i) => (
-                <tr key={`${i.excel_row}-${i.ingredient_name}`} className="border-t" style={{ borderColor: 'var(--color-border)' }}>
+                <tr
+                  key={`${i.excel_row}-${i.ingredient_name}`}
+                  className="border-t"
+                  style={{ borderColor: 'var(--color-border)' }}
+                >
                   <td className="px-3 py-1.5 font-data text-xs">{i.excel_row}</td>
                   <td className="px-3 py-1.5">{i.recipe_name}</td>
                   <td className="px-3 py-1.5">{i.ingredient_name}</td>

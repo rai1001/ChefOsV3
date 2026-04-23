@@ -32,14 +32,22 @@ export function clampOffset(offset: number | undefined): number {
 }
 
 // Calcula el rango [from, to] inclusivo para `supabase.range(from, to)`.
-export function pageRange(params?: PaginationParams): { from: number; to: number; pageSize: number } {
+export function pageRange(params?: PaginationParams): {
+  from: number
+  to: number
+  pageSize: number
+} {
   const pageSize = clampPageSize(params?.pageSize)
   const offset = clampOffset(params?.offset)
   return { from: offset, to: offset + pageSize - 1, pageSize }
 }
 
 // Construye el resultado paginado a partir de las filas devueltas y el rango usado.
-export function buildPaginatedResult<T>(rows: T[], pageSize: number, offset: number): PaginatedResult<T> {
+export function buildPaginatedResult<T>(
+  rows: T[],
+  pageSize: number,
+  offset: number
+): PaginatedResult<T> {
   return {
     rows,
     pageSize,

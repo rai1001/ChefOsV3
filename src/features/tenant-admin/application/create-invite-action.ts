@@ -31,7 +31,9 @@ export interface CreateInviteActionResult {
  * APP_URL_ALLOWLIST. NO se leen `host`/`x-forwarded-proto` de los headers (vector
  * de phishing si proxy mal configurado).
  */
-export async function createInviteAction(input: CreateInviteInput): Promise<CreateInviteActionResult> {
+export async function createInviteAction(
+  input: CreateInviteInput
+): Promise<CreateInviteActionResult> {
   const supabase = await createClient()
 
   const result = await createInvite(supabase, input)
@@ -41,7 +43,7 @@ export async function createInviteAction(input: CreateInviteInput): Promise<Crea
   const { data: inviterData } = await supabase.auth.getUser()
   const inviterName: string | null =
     (inviterData?.user?.user_metadata?.full_name as string | undefined) ??
-    (inviterData?.user?.email ? inviterData.user.email.split('@')[0] ?? null : null)
+    (inviterData?.user?.email ? (inviterData.user.email.split('@')[0] ?? null) : null)
 
   // Nombre del hotel + tenant para email
   const { data: hotelRow } = await supabase
@@ -52,8 +54,9 @@ export async function createInviteAction(input: CreateInviteInput): Promise<Crea
 
   const hotelName = (hotelRow as { name?: string } | null)?.name ?? 'tu hotel'
   const tenantName =
-    ((hotelRow as { tenants?: { name?: string } | null } | null)?.tenants?.name as string | undefined) ??
-    'ChefOS'
+    ((hotelRow as { tenants?: { name?: string } | null } | null)?.tenants?.name as
+      | string
+      | undefined) ?? 'ChefOS'
 
   const emailResult = await sendInviteEmail({
     toEmail: result.email,

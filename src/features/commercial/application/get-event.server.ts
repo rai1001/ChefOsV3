@@ -1,11 +1,7 @@
 import 'server-only'
 
 import { createClient } from '@/lib/supabase/server'
-import {
-  fetchEvent,
-  fetchEventMenus,
-  fetchEventSpaces,
-} from '../infrastructure/event-queries'
+import { fetchEvent, fetchEventMenus, fetchEventSpaces } from '../infrastructure/event-queries'
 import { fetchClient } from '../infrastructure/client-queries'
 import type { Client, Event, EventMenu, EventSpace } from '../domain/types'
 
@@ -22,10 +18,7 @@ export async function getEventSpacesServer(
   return fetchEventSpaces(supabase, hotelId, eventId)
 }
 
-export async function getEventMenusServer(
-  hotelId: string,
-  eventId: string
-): Promise<EventMenu[]> {
+export async function getEventMenusServer(hotelId: string, eventId: string): Promise<EventMenu[]> {
   const supabase = await createClient()
   return fetchEventMenus(supabase, hotelId, eventId)
 }

@@ -44,10 +44,7 @@ export const parsedIngredientRowSchema = z.object({
   excel_row: z.number().int().min(1),
   recipe_name: z.string().trim().min(1, 'recipe_name es obligatorio').max(200),
   ingredient_name: z.string().trim().min(1, 'ingredient_name es obligatorio').max(200),
-  quantity_gross: z
-    .number()
-    .positive('cantidad_bruta debe ser > 0')
-    .max(1_000_000),
+  quantity_gross: z.number().positive('cantidad_bruta debe ser > 0').max(1_000_000),
   unit: z.string().trim().max(50).nullable().optional(),
   waste_pct: z
     .number()

@@ -44,11 +44,7 @@ export function InvitesList({ hotelId }: { hotelId: string }) {
           {items.map((inv) => {
             const status = computeInviteStatus(inv)
             return (
-              <tr
-                key={inv.id}
-                className="border-t"
-                style={{ borderColor: 'var(--color-border)' }}
-              >
+              <tr key={inv.id} className="border-t" style={{ borderColor: 'var(--color-border)' }}>
                 <td className="px-3 py-2 font-code text-xs">{inv.email}</td>
                 <td className="px-3 py-2 kpi-label">{inv.role}</td>
                 <td className="px-3 py-2 font-data text-xs">

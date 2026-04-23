@@ -108,16 +108,19 @@ Probar en producción:
 ### Si hay problema funcional
 
 **Migración SQL:**
+
 - DROP de los objetos creados
 - Recrear los anteriores desde `git show <commit>~1 supabase/migrations/000XX_*.sql`
 
 **Edge function:**
+
 ```bash
 git checkout <commit>~1 supabase/functions/<name>
 npx supabase functions deploy <name> --linked
 ```
 
 **Vercel:**
+
 - Panel Vercel → Deployments → elegir deploy anterior → "Promote to Production"
 
 ### Si hay leak de secretos

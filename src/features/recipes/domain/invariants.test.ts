@@ -15,11 +15,7 @@ import {
   unmappedIngredients,
   VALID_RECIPE_TRANSITIONS,
 } from './invariants'
-import {
-  RECIPE_CATEGORIES,
-  RECIPE_STATUSES,
-  type RecipeIngredient,
-} from './types'
+import { RECIPE_CATEGORIES, RECIPE_STATUSES, type RecipeIngredient } from './types'
 
 function ing(overrides: Partial<RecipeIngredient> = {}): RecipeIngredient {
   return {

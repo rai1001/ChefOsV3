@@ -7,11 +7,7 @@ import { MenuSectionsEditor } from '@/features/menus/components/menu-sections-ed
 
 export const dynamic = 'force-dynamic'
 
-export default async function MenuDetailPage({
-  params,
-}: {
-  params: Promise<{ id: string }>
-}) {
+export default async function MenuDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const activeHotel = await getActiveHotelOrNull()
   if (!activeHotel) return null
@@ -41,9 +37,7 @@ export default async function MenuDetailPage({
         </header>
 
         {menu.description && (
-          <p className="text-sm text-[color:var(--color-text-secondary)]">
-            {menu.description}
-          </p>
+          <p className="text-sm text-[color:var(--color-text-secondary)]">{menu.description}</p>
         )}
 
         <section className="space-y-3">

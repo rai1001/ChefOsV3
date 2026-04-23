@@ -4,13 +4,7 @@
 export const IMPORT_KINDS = ['recipes'] as const
 export type ImportKind = (typeof IMPORT_KINDS)[number]
 
-export const IMPORT_STATUSES = [
-  'pending',
-  'running',
-  'completed',
-  'partial',
-  'failed',
-] as const
+export const IMPORT_STATUSES = ['pending', 'running', 'completed', 'partial', 'failed'] as const
 export type ImportStatus = (typeof IMPORT_STATUSES)[number]
 
 export interface ImportFailure {

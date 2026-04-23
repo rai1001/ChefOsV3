@@ -148,12 +148,12 @@ Rule sobre `main`:
 
 ## Troubleshooting
 
-| Síntoma | Causa probable | Fix |
-|---|---|---|
-| Job `build` falla con "missing SUPABASE_URL" | Secrets no configurados | Añadir en Settings → Secrets |
-| E2E jobs tardan >15 min | Playwright deps cache no activo | Verificar `cache: npm` en setup-node |
-| Tests passing localmente, rojos en CI | Diferencia de Node version | Alinear `node-version: 20` en workflow con `.nvmrc` |
-| Concurrency no cancela runs previos | Grupo mal configurado | Verificar `group: ci-${{ github.ref }}` |
+| Síntoma                                      | Causa probable                  | Fix                                                 |
+| -------------------------------------------- | ------------------------------- | --------------------------------------------------- |
+| Job `build` falla con "missing SUPABASE_URL" | Secrets no configurados         | Añadir en Settings → Secrets                        |
+| E2E jobs tardan >15 min                      | Playwright deps cache no activo | Verificar `cache: npm` en setup-node                |
+| Tests passing localmente, rojos en CI        | Diferencia de Node version      | Alinear `node-version: 20` en workflow con `.nvmrc` |
+| Concurrency no cancela runs previos          | Grupo mal configurado           | Verificar `group: ci-${{ github.ref }}`             |
 
 ---
 

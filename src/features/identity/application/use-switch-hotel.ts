@@ -14,7 +14,10 @@ const IDENTITY_HOTEL_DEPENDENT_KEYS: ReadonlyArray<readonly unknown[]> = [
 ]
 
 function isUuid(value: unknown): value is string {
-  return typeof value === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value)
+  return (
+    typeof value === 'string' &&
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value)
+  )
 }
 
 export function useSwitchHotel() {

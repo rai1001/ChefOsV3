@@ -174,7 +174,10 @@ export function EventForm({ hotelId, event }: Props) {
 
         <div className="space-y-1 md:col-span-2">
           <Label>Cliente</Label>
-          <Select value={clientId || '__none__'} onValueChange={(v) => setClientId(v === '__none__' ? '' : v)}>
+          <Select
+            value={clientId || '__none__'}
+            onValueChange={(v) => setClientId(v === '__none__' ? '' : v)}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Sin cliente" />
             </SelectTrigger>

@@ -367,16 +367,19 @@ Absorbe el estado de integraciones PMS/POS de v2. Migración `00025_m12_integrat
 Integración con sistemas externos del hotel (PMS, POS) para **sincronización de datos operativos**, no escritura bidireccional salvo en casos específicos.
 
 **PMS (Property Management System)**
+
 - Proveedores soportados: Mews, OPERA, [extensible].
 - Sync operations: `test_connection`, `sync_occupancy`, `sync_reservations`.
 - Datos absorbidos: ocupación futura (para previsión), reservations (para cross-reference con eventos).
 
 **POS (Point of Sale)**
+
 - Proveedores soportados: Lightspeed, Simphony, [extensible].
 - Sync operations: `test_connection`, `sync_sales`, `push_kitchen_orders` (escritura externa — solo superadmin+direction).
 - Datos absorbidos: ventas reales (para cost variance real).
 
 **Credentials isolation** (crítico, ver `specs/database-security.md`):
+
 - Credentials nunca accesibles vía PostgREST directo.
 - Solo vía `get_pms_integrations` / `get_pos_integrations` (RPC SECURITY DEFINER) que proyecta metadata sin credentials.
 - Leer credentials raw requiere admin+ (00028).
@@ -392,6 +395,7 @@ Integración con sistemas externos del hotel (PMS, POS) para **sincronización d
 Types: `PMSIntegration`, `POSIntegration`, `IntegrationSyncLog`, `PMSType`, `POSType`, `IntegrationStatus`, `SyncType`, `SyncLogStatus`, `INTEGRATION_STATUS_VARIANT`, `SYNC_VARIANT`.
 
 Hooks:
+
 - `usePMSIntegrations()`, `usePOSIntegrations()` — metadata (sin credentials)
 - `useCreatePMSIntegration()`, `useUpdatePMSIntegration()`, `useDisablePMSIntegration()` (admin+ only)
 - `useTriggerPMSSync(integrationId, syncType)`, `useTriggerPOSSync(integrationId, syncType)`
@@ -408,10 +412,12 @@ Hooks:
 ### RPCs consumidas
 
 Metadata (todos los miembros):
+
 - `get_pms_integrations(p_hotel_id)` — lista sin credentials
 - `get_pos_integrations(p_hotel_id)` — lista sin credentials
 
 Admin+ (ver `permissions-matrix.md`):
+
 - `create_pms_integration`, `update_pms_integration`, `disable_pms_integration`
 - `create_pos_integration`, `update_pos_integration`, `disable_pos_integration`
 - `trigger_pms_sync(p_integration_id, p_sync_type)` — whitelist sync_type (00029), validación config activa
@@ -419,11 +425,13 @@ Admin+ (ver `permissions-matrix.md`):
 - `get_integration_sync_logs(p_integration_id)` — admin+ (payloads sensibles)
 
 Service-only (llamado por worker, REVOKE authenticated):
+
 - `mark_sync_complete(p_log_id, p_status, p_response, p_error)`
 
 ### Edge Functions
 
 Jobs consumidos desde `automation-worker`:
+
 - `sync_pms` → invoca API externa del PMS, guarda `response_payload`, llama `mark_sync_complete`.
 - `sync_pos` → análogo para POS.
 
@@ -437,7 +445,7 @@ Consume: `automation.job_started|completed|failed` (estado del job asociado).
 
 ### Tests mínimos
 
-Unit: validación whitelist de sync_type, rol admin+ requerido para trigger_*_sync.
+Unit: validación whitelist de sync*type, rol admin+ requerido para trigger*\*\_sync.
 
 Integration: credentials NO leídos con rol operativo (denegado); sync_log payload no leído con rol operativo.
 

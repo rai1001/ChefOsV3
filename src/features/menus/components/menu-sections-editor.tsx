@@ -4,7 +4,11 @@ import { useState, type FormEvent } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useAddMenuSection, useMenuSections, useRemoveMenuSection } from '../application/use-menu-sections'
+import {
+  useAddMenuSection,
+  useMenuSections,
+  useRemoveMenuSection,
+} from '../application/use-menu-sections'
 import { nextSectionSortOrder } from '../domain/invariants'
 import { MenuSectionRecipesPanel } from './menu-section-recipes-panel'
 

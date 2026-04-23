@@ -30,14 +30,7 @@ export const PERMISSIONS = {
   'procurement.approve': ['direction', 'admin', 'superadmin'],
 
   // Inventory
-  'inventory.manage': [
-    'procurement',
-    'warehouse',
-    'head_chef',
-    'direction',
-    'admin',
-    'superadmin',
-  ],
+  'inventory.manage': ['procurement', 'warehouse', 'head_chef', 'direction', 'admin', 'superadmin'],
   'inventory.adjust': ['warehouse', 'direction', 'admin', 'superadmin'],
 
   // Production

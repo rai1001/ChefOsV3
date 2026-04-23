@@ -189,12 +189,12 @@ Completar solo si el PR reutiliza o migra código previo.
 
 ### Motivos de bloqueo si no es aprobable
 
-- 
-- 
-- 
+-
+-
+-
 
 ### Observaciones finales de revisión
 
-- 
-- 
+-
+-
 -

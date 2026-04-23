@@ -7,11 +7,7 @@ import { EscandalloLiveView } from '@/features/recipes/components/escandallo-liv
 
 export const dynamic = 'force-dynamic'
 
-export default async function EscandalloPage({
-  params,
-}: {
-  params: Promise<{ id: string }>
-}) {
+export default async function EscandalloPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const activeHotel = await getActiveHotelOrNull()
   if (!activeHotel) return null
@@ -35,7 +31,8 @@ export default async function EscandalloPage({
           </p>
           <h1>Escandallo live</h1>
           <p className="text-sm text-[color:var(--color-text-secondary)] mt-1">
-            Compara el coste snapshot de la receta con los últimos albaranes recibidos para cada ingrediente. Se actualiza automáticamente cada 2 minutos.
+            Compara el coste snapshot de la receta con los últimos albaranes recibidos para cada
+            ingrediente. Se actualiza automáticamente cada 2 minutos.
           </p>
         </header>
 

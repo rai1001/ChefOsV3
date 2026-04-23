@@ -33,21 +33,21 @@ NO cubre:
 
 ### Datos clave a preparar
 
-| Campo | Valor |
-|---|---|
-| URL producción | [https://chefos-v3.vercel.app] |
-| Hotel demo | Definido por cliente (ej. "Hotel X Demo") |
-| Hotel ID | UUID del hotel sembrado |
-| Fecha evento demo | Un evento confirmed con datos realistas |
+| Campo             | Valor                                     |
+| ----------------- | ----------------------------------------- |
+| URL producción    | [https://chefos-v3.vercel.app]            |
+| Hotel demo        | Definido por cliente (ej. "Hotel X Demo") |
+| Hotel ID          | UUID del hotel sembrado                   |
+| Fecha evento demo | Un evento confirmed con datos realistas   |
 
 ### Credenciales (NO commitear)
 
 Usar plantilla `.local` gitignored. Tres perfiles:
 
-| Perfil | Email | Cuándo |
-|---|---|---|
-| Admin | `demo-admin@<cliente>.es` | Recomendado — ve todo |
-| Head Chef | `demo-head-chef@<cliente>.es` | Si pide vista chef |
+| Perfil    | Email                          | Cuándo                        |
+| --------- | ------------------------------ | ----------------------------- |
+| Admin     | `demo-admin@<cliente>.es`      | Recomendado — ve todo         |
+| Head Chef | `demo-head-chef@<cliente>.es`  | Si pide vista chef            |
 | Comercial | `demo-commercial@<cliente>.es` | Si viene alguien de banquetes |
 
 ### Checklist pre-demo (15 min antes)
@@ -86,7 +86,7 @@ Señalar:
 2. **KPIs** — datos vivos, no hay que pulsar nada.
 3. **Feed operativo** — verde si todo OK, tintado si algo bloquea. "El rojo quiere decir acción antes del próximo servicio."
 
-Frase clave: *"Un hotel de 4★ no necesita otro ERP. Necesita una pantalla que le diga qué está mal hoy."*
+Frase clave: _"Un hotel de 4★ no necesita otro ERP. Necesita una pantalla que le diga qué está mal hoy."_
 
 ### Acto II — Evento (6 min)
 
@@ -99,7 +99,7 @@ Señalar:
 3. Coste estimado en EUR + food cost % proyectado — con precios del **último albarán**
 4. Botón "Generar workflow de producción" → 1 segundo
 
-Frase clave: *"El BEO ya existe el momento que commercial cierra la venta."*
+Frase clave: _"El BEO ya existe el momento que commercial cierra la venta."_
 
 ### Acto III — Escandallos en vivo (5 min)
 
@@ -111,7 +111,7 @@ En vivo:
 2. Buscar ingredientes → mostrar tags de precio (albarán verde, oferta azul, manual gris)
 3. Panel derecho: coste/ración + food cost % vs objetivo + margen
 
-Frase clave: *"Tu head chef sabe si fue rentable ANTES del servicio, no la semana que viene."*
+Frase clave: _"Tu head chef sabe si fue rentable ANTES del servicio, no la semana que viene."_
 
 ### Acto IV — Compras + OCR (8 min) ★ CLIMAX
 
@@ -119,15 +119,15 @@ Navegar: `/procurement` → PO en "sent"
 
 Paso 1 (1 min): "El pedido ya lo aprobó el chef. Mira lo que hace ahora."
 
-Paso 2 (2 min): Subir foto del albarán → procesa (4-6 s). *"Claude Sonnet leyendo la foto. Extrae líneas, cantidades, lotes, caducidades, precios."*
+Paso 2 (2 min): Subir foto del albarán → procesa (4-6 s). _"Claude Sonnet leyendo la foto. Extrae líneas, cantidades, lotes, caducidades, precios."_
 
-Paso 3 (2 min): Resultado — "N líneas: X auto-matched, Y pendientes". Si hay cambio de precio → *"Escandallos recalculados. Food cost vivo, sin pedir nada a nadie."*
+Paso 3 (2 min): Resultado — "N líneas: X auto-matched, Y pendientes". Si hay cambio de precio → _"Escandallos recalculados. Food cost vivo, sin pedir nada a nadie."_
 
 Paso 4 (2 min): Revisar pendientes en `/procurement/ocr-review` → sugerencias con confidence → aceptar/rechazar.
 
 Paso 5 (1 min): `/inventory` → producto ya aparece con stock y caducidad.
 
-Frase clave: *"Los otros te piden teclear el albarán. Nosotros lo leemos con la foto y mantenemos tus costes vivos."*
+Frase clave: _"Los otros te piden teclear el albarán. Nosotros lo leemos con la foto y mantenemos tus costes vivos."_
 
 ### Acto V — Inventario + alertas (4 min)
 
@@ -138,19 +138,19 @@ Señalar:
 1. KPIs arriba — alertas tintadas si hay
 2. Row tintada — producto crítico
 3. Tab "Solo alertas"
-4. (Opcional) `/inventory/forensics` — *"Si el food cost no cuadra, aquí se ve qué lote, cuándo, en qué servicio."*
+4. (Opcional) `/inventory/forensics` — _"Si el food cost no cuadra, aquí se ve qué lote, cuándo, en qué servicio."_
 
 ### Acto VI — Producción (3 min)
 
 Navegar: `/production/kanban` + `/production/mise-en-place` + `/production/kds/cocina_caliente`
 
-Frase clave: *"Todo se generó solo cuando commercial confirmó. El chef no planifica, ejecuta."*
+Frase clave: _"Todo se generó solo cuando commercial confirmó. El chef no planifica, ejecuta."_
 
 ### Acto VII — APPCC + Trazabilidad (2 min)
 
 Navegar: `/compliance/appcc` + `/compliance/trace/search`
 
-Frase clave: *"Inspector entra un lunes. Excel: 3 horas. Aquí: 3 segundos. Con firma digital y timestamp inmutable."*
+Frase clave: _"Inspector entra un lunes. Excel: 3 horas. Aquí: 3 segundos. Con firma digital y timestamp inmutable."_
 
 ### Cierre (5 min)
 
@@ -158,12 +158,12 @@ Frase clave: *"Inspector entra un lunes. Excel: 3 horas. Aquí: 3 segundos. Con 
 
 (Cállate. 90 segundos mínimo.)
 
-| Si dice... | Propón... |
-|---|---|
-| "OCR/albaranes" | Piloto 30 días gratis: 10 albaranes reales, informe al final |
-| "BEO/coordinación" | Piloto 5 eventos reales en 30 días |
-| "food cost real" | Onboarding 2 semanas + auditoría food cost 3 meses |
-| "interesante pero…" | Call con tu head chef la semana que viene |
+| Si dice...          | Propón...                                                    |
+| ------------------- | ------------------------------------------------------------ |
+| "OCR/albaranes"     | Piloto 30 días gratis: 10 albaranes reales, informe al final |
+| "BEO/coordinación"  | Piloto 5 eventos reales en 30 días                           |
+| "food cost real"    | Onboarding 2 semanas + auditoría food cost 3 meses           |
+| "interesante pero…" | Call con tu head chef la semana que viene                    |
 
 **Pricing (solo si preguntan):**
 
@@ -173,20 +173,20 @@ Frase clave: *"Inspector entra un lunes. Excel: 3 horas. Aquí: 3 segundos. Con 
 - OCR incluido (coste Claude ~0.01 €/albarán)
 - Piloto 30 días: 0€. Implantación 1500€ única
 
-Cierre duro: *"¿Qué te impediría firmar hoy un piloto de 30 días gratis?"*
+Cierre duro: _"¿Qué te impediría firmar hoy un piloto de 30 días gratis?"_
 
 ---
 
 ## 2 · Plan B
 
-| Falla | Plan B |
-|---|---|
-| Vercel caído | `npm run dev` local + ngrok. Si no hay tiempo: screenshots carpeta `/demo-screenshots` |
-| Login falla | Verificar `.env.local` Vercel. Timeout → otro usuario demo |
-| OCR error / >20s | "Anthropic a veces rate-limita en demo" → abrir orden con GR ya procesado |
-| Dashboard vacío | `npm run db:seed:demo` — 5 min corte |
-| KDS vacío | SQL manual insert `kitchen_orders` — tener script a mano |
-| Sin internet | Hotspot móvil. Si falla → screenshots + "te mando acceso esta tarde" |
+| Falla            | Plan B                                                                                 |
+| ---------------- | -------------------------------------------------------------------------------------- |
+| Vercel caído     | `npm run dev` local + ngrok. Si no hay tiempo: screenshots carpeta `/demo-screenshots` |
+| Login falla      | Verificar `.env.local` Vercel. Timeout → otro usuario demo                             |
+| OCR error / >20s | "Anthropic a veces rate-limita en demo" → abrir orden con GR ya procesado              |
+| Dashboard vacío  | `npm run db:seed:demo` — 5 min corte                                                   |
+| KDS vacío        | SQL manual insert `kitchen_orders` — tener script a mano                               |
+| Sin internet     | Hotspot móvil. Si falla → screenshots + "te mando acceso esta tarde"                   |
 
 ---
 

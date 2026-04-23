@@ -21,36 +21,36 @@ Israel pidió cerrar AMBAS auditorías antes de seguir con `sprint-03c-import-ex
 
 ### Codex (P0)
 
-| ID        | Resumen                                                                       | Estado |
-|-----------|-------------------------------------------------------------------------------|--------|
-| SEC-001   | `error.message` crudo de Supabase expuesto al cliente en login/forgot-password | abordar |
-| SEC-002   | Sin rate limit en login, forgot-password, accept-invite                        | abordar |
-| PERF-001  | `select('*')` sin `limit/range` en queries de lista (commercial, recipes, menus, tenant-admin) | abordar |
+| ID       | Resumen                                                                                        | Estado  |
+| -------- | ---------------------------------------------------------------------------------------------- | ------- |
+| SEC-001  | `error.message` crudo de Supabase expuesto al cliente en login/forgot-password                 | abordar |
+| SEC-002  | Sin rate limit en login, forgot-password, accept-invite                                        | abordar |
+| PERF-001 | `select('*')` sin `limit/range` en queries de lista (commercial, recipes, menus, tenant-admin) | abordar |
 
 ### Codex (P1)
 
-| ID        | Resumen                                                                                                | Estado |
-|-----------|--------------------------------------------------------------------------------------------------------|--------|
-| ARC-001   | `commercial/server.ts` vacío (`export {}`). Páginas server tiran de hooks client                       | abordar |
-| SEC-003   | `createInviteAction` construye `origin` desde headers `host`/`x-forwarded-proto` sin allowlist         | abordar |
-| SEC-004   | `next.config.ts` sin CSP/HSTS/X-Frame-Options/Referrer-Policy/Permissions-Policy                       | abordar |
-| PERF-002  | `queryClient.invalidateQueries()` global en switch de hotel                                            | abordar |
-| API-001   | Errores heterogéneos: invites mapea a clases de dominio, eventos/clientes lanzan error Supabase crudo | abordar |
+| ID       | Resumen                                                                                               | Estado  |
+| -------- | ----------------------------------------------------------------------------------------------------- | ------- |
+| ARC-001  | `commercial/server.ts` vacío (`export {}`). Páginas server tiran de hooks client                      | abordar |
+| SEC-003  | `createInviteAction` construye `origin` desde headers `host`/`x-forwarded-proto` sin allowlist        | abordar |
+| SEC-004  | `next.config.ts` sin CSP/HSTS/X-Frame-Options/Referrer-Policy/Permissions-Policy                      | abordar |
+| PERF-002 | `queryClient.invalidateQueries()` global en switch de hotel                                           | abordar |
+| API-001  | Errores heterogéneos: invites mapea a clases de dominio, eventos/clientes lanzan error Supabase crudo | abordar |
 
 ### Antigravity
 
-| ID                | Resumen                                                                       | Estado |
-|-------------------|-------------------------------------------------------------------------------|--------|
-| ANTIGR-SEC-01     | Sin tests E2E de aislamiento cross-hotel                                      | abordar |
-| ANTIGR-QW1        | ESLint sin boundaries entre módulos                                           | abordar |
-| ANTIGR-QW2        | Sin script `supabase gen types` ni `src/types/database.ts`                    | abordar |
+| ID            | Resumen                                                    | Estado  |
+| ------------- | ---------------------------------------------------------- | ------- |
+| ANTIGR-SEC-01 | Sin tests E2E de aislamiento cross-hotel                   | abordar |
+| ANTIGR-QW1    | ESLint sin boundaries entre módulos                        | abordar |
+| ANTIGR-QW2    | Sin script `supabase gen types` ni `src/types/database.ts` | abordar |
 
 ### Codex (P2)
 
-| ID        | Resumen                                                              | Estado |
-|-----------|----------------------------------------------------------------------|--------|
-| ARC-002   | README/CHANGELOG desalineados con sprints cerrados (incluyendo 03/03b) | abordar |
-| UX-001    | Listas sin paginación UI                                             | abordar (mínimo: botón "Cargar más") |
+| ID      | Resumen                                                                | Estado                               |
+| ------- | ---------------------------------------------------------------------- | ------------------------------------ |
+| ARC-002 | README/CHANGELOG desalineados con sprints cerrados (incluyendo 03/03b) | abordar                              |
+| UX-001  | Listas sin paginación UI                                               | abordar (mínimo: botón "Cargar más") |
 
 ### Fuera de scope
 

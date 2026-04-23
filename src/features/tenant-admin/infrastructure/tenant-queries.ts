@@ -50,7 +50,11 @@ export async function createHotel(
   })
   if (error) {
     // Si RPC no existe (v2 nunca la expuso), hacemos insert + crear membership admin manual.
-    if (typeof error === 'object' && 'code' in error && (error as { code: string }).code === '42883') {
+    if (
+      typeof error === 'object' &&
+      'code' in error &&
+      (error as { code: string }).code === '42883'
+    ) {
       return insertHotelFallback(supabase, input)
     }
     throw error

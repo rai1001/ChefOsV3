@@ -7,6 +7,7 @@
 ## Fuente
 
 Carpeta local (no versionada si es zip grande):
+
 - `docs/ui-reference/stitch/` — zip + carpeta descomprimida
 
 Si no existe la carpeta descomprimida, este prompt se usa como guía general.

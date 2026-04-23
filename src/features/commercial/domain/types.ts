@@ -107,13 +107,7 @@ export interface EventOperationalImpact {
   product_name: string
   quantity_needed: number
   unit: string | null
-  department:
-    | 'cocina_caliente'
-    | 'cocina_fria'
-    | 'pasteleria'
-    | 'panaderia'
-    | 'bebidas'
-    | 'general'
+  department: 'cocina_caliente' | 'cocina_fria' | 'pasteleria' | 'panaderia' | 'bebidas' | 'general'
   generated_at: string
 }
 

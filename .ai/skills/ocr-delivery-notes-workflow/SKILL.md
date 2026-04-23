@@ -33,11 +33,11 @@ NO cubre:
 
 ## Stack oficial OCR
 
-| Componente | Elección | Razón |
-|---|---|---|
+| Componente | Elección                                     | Razón                                                                                                                                          |
+| ---------- | -------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
 | Modelo OCR | **Claude Sonnet 4.6 Vision** (Anthropic API) | Razonamiento contextual (typos, abreviaturas, "kgs" vs "kg"), multilingüe perfecto, tool use nativo para JSON estructurado, coste ~$0.005/foto |
-| Fallback | Mistral Pixtral | Si Claude falla o coste se dispara |
-| NO usar | Google Document AI | Más complejo, mejor para volumen masivo no restaurante |
+| Fallback   | Mistral Pixtral                              | Si Claude falla o coste se dispara                                                                                                             |
+| NO usar    | Google Document AI                           | Más complejo, mejor para volumen masivo no restaurante                                                                                         |
 
 ---
 
@@ -95,16 +95,16 @@ Usuario en /procurement/orders/[id]
       "product_name_extracted": "Pulpo congelado",
       "quantity": 8.0,
       "unit": "kg",
-      "unit_price": 18.50,
-      "line_total": 148.00,
+      "unit_price": 18.5,
+      "line_total": 148.0,
       "lot_number": "L-NORES-2604-A",
       "expiry_date": "2026-07-23",
       "match_confidence": null
     }
   ],
-  "subtotal": 384.00,
-  "vat_amount": 38.40,
-  "total": 422.40,
+  "subtotal": 384.0,
+  "vat_amount": 38.4,
+  "total": 422.4,
   "warnings": ["línea 3 ilegible parcialmente"]
 }
 ```

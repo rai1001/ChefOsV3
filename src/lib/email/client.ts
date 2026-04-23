@@ -13,7 +13,9 @@ export function getResendClient(): Resend | null {
   const key = process.env.RESEND_API_KEY
   if (!key) {
     if (!warned && process.env.NODE_ENV !== 'test') {
-      console.warn('[email] RESEND_API_KEY no configurada — emails serán skippeados, devolviendo link plano.')
+      console.warn(
+        '[email] RESEND_API_KEY no configurada — emails serán skippeados, devolviendo link plano.'
+      )
       warned = true
     }
     return null

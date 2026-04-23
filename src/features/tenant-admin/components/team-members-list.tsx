@@ -76,10 +76,7 @@ export function TeamMembersList({ hotelId }: { hotelId: string }) {
                 <td className="px-3 py-2 font-code text-xs">{m.email}</td>
                 <td className="px-3 py-2">
                   {isEditing ? (
-                    <Select
-                      value={draftRole}
-                      onValueChange={(v) => setDraftRole(v as Role)}
-                    >
+                    <Select value={draftRole} onValueChange={(v) => setDraftRole(v as Role)}>
                       <SelectTrigger className="h-8">
                         <SelectValue />
                       </SelectTrigger>
@@ -104,11 +101,7 @@ export function TeamMembersList({ hotelId }: { hotelId: string }) {
                   <div className="flex justify-end gap-1">
                     {isEditing ? (
                       <>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => setEditingId(null)}
-                        >
+                        <Button size="sm" variant="ghost" onClick={() => setEditingId(null)}>
                           Cancelar
                         </Button>
                         <Button

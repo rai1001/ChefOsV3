@@ -386,6 +386,7 @@ Absorbe la especificación de `docs/MODULO_EVENTOS.md` de v2 y la migración `00
 Types: `Event`, `Room`, `EventRoom`, `EventMenu`, `EventService`, `Client`, `EventStatus`, `EventType`, `EVENT_STATUSES`, `EVENT_TYPES`, `EVENT_STATUS_LABELS`, `EVENT_STATUS_VARIANT`.
 
 Hooks:
+
 - `useEvents(filters?)` — lista paginada
 - `useEvent(id)` — detalle
 - `useCreateEvent()`, `useUpdateEvent()`, `useTransitionEvent()`
@@ -421,6 +422,7 @@ draft ──→ confirmed ──→ closed
 ```
 
 Transiciones (trigger DB):
+
 - `draft → confirmed` — requiere ≥1 sala, cliente, fecha futura.
 - `confirmed → closed` — solo tras `fecha_fin`.
 - `draft/confirmed → cancelled` — requiere motivo.

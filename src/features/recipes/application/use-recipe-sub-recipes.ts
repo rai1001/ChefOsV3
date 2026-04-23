@@ -11,8 +11,7 @@ import {
 import type { RecipeSubRecipe } from '../domain/types'
 import { CircularSubRecipeError } from '../domain/errors'
 
-const key = (recipeId: string | null | undefined) =>
-  ['recipes', 'sub-recipes', recipeId] as const
+const key = (recipeId: string | null | undefined) => ['recipes', 'sub-recipes', recipeId] as const
 
 export function useRecipeSubRecipes(recipeId: string | null | undefined) {
   return useQuery<RecipeSubRecipe[]>({

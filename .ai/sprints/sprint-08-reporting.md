@@ -380,6 +380,7 @@ Absorbe `docs/MODULO_DASHBOARD.md` de v2 + KPIs y alertas de `00019_m7_alerts_kp
 Types: `Alert`, `AlertSeverity`, `AlertType`, `KPISnapshot`, `DashboardData`, `ALERT_TYPES`, `SEVERITY_VARIANT`, `ALERT_STATUS_LABELS`.
 
 Hooks:
+
 - `useDashboardData()` — RPC live con KPIs agregados
 - `useActiveAlerts(filters?)`
 - `useDismissAlert()`
@@ -411,6 +412,7 @@ Hooks:
 Emite: `kpi.snapshot_created`, `alert.raised`, `alert.dismissed`.
 
 Consume (alimenta dashboard + genera alerts):
+
 - `inventario.lote_expiring` → alert warning
 - `pedido.received_partial` → alert info si impacta evento
 - `tarea_produccion.updated` (blocked) → alert warning

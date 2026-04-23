@@ -360,6 +360,7 @@ Absorbe `docs/MODULO_INVENTARIO.md` + `docs/MODULO_MERMAS_MEJORA_CONTINUA.md` de
 ### Funcionalidades principales
 
 **Inventario**
+
 - **Lotes y caducidades**: cada entrada crea un lote (producto, cantidad, unidad, fecha_entrada, fecha_caducidad obligatoria cuando aplique, ubicación opcional).
 - **FIFO automático**: salidas descuentan del lote más antiguo.
 - **Entradas**: recepción desde PO (foto albarán) o entrada manual.
@@ -371,6 +372,7 @@ Absorbe `docs/MODULO_INVENTARIO.md` + `docs/MODULO_MERMAS_MEJORA_CONTINUA.md` de
 - **Calculate real cost**: coste real post-consumo vs estimado.
 
 **Mermas (mejora continua)**
+
 - Registrar merma desde móvil en ≤10 segundos.
 - Motivos: caducidad, sobreproduccion, error_preparacion, mala_conservacion, rotura_accidente, devolucion, sobras_evento, otros.
 - Análisis: top 10 productos con merma, por motivo, por evento, por semana.
@@ -392,6 +394,7 @@ Absorbe `docs/MODULO_INVENTARIO.md` + `docs/MODULO_MERMAS_MEJORA_CONTINUA.md` de
 Types: `StockLot`, `StockMovement`, `StockReservation`, `StockCount`, `StockCountLine`, `Waste`, `Location`, `WASTE_REASONS`, `MOVEMENT_TYPES`, `COUNT_STATUSES`, `ALERT_VARIANT`, `COUNT_STATUS_VARIANT`.
 
 Hooks:
+
 - `useStockLevels(filters?)`, `useStockLots(productId)`
 - `useStockMovements(filters?)`
 - `useReserveStockForEvent()`, `useConsumeReservation()`, `useReleaseReservation()`

@@ -29,14 +29,14 @@ Antes de usar esta skill, confirmar:
 
 ## Building blocks disponibles
 
-| Clase | Uso |
-|---|---|
-| `.kpi-value` | Número KPI dominante (DM Mono 32px, tabular-nums) |
-| `.kpi-label` | Etiqueta KPI (JetBrains Mono 11px uppercase, letter-spacing 0.08em) |
-| `.co-badge` | Badge 11px uppercase con bg+border tonal |
-| `.co-status-rail` + variante | Left-border 3px en `<tr>`, cards, command cards |
-| `.co-alert-box` + variante | Bg entera tintada + border-left + title FG |
-| `.font-display` / `.font-body-v2` / `.font-data` / `.font-code` | Helpers tipográficos |
+| Clase                                                           | Uso                                                                 |
+| --------------------------------------------------------------- | ------------------------------------------------------------------- |
+| `.kpi-value`                                                    | Número KPI dominante (DM Mono 32px, tabular-nums)                   |
+| `.kpi-label`                                                    | Etiqueta KPI (JetBrains Mono 11px uppercase, letter-spacing 0.08em) |
+| `.co-badge`                                                     | Badge 11px uppercase con bg+border tonal                            |
+| `.co-status-rail` + variante                                    | Left-border 3px en `<tr>`, cards, command cards                     |
+| `.co-alert-box` + variante                                      | Bg entera tintada + border-left + title FG                          |
+| `.font-display` / `.font-body-v2` / `.font-data` / `.font-code` | Helpers tipográficos                                                |
 
 Todos los tokens viven en `src/app/globals.css` con prefijo `--co-*`.
 

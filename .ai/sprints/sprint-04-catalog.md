@@ -362,6 +362,7 @@ Absorbe `docs/MODULO_PRODUCTOS.md` + `docs/MODULO_PROVEEDORES.md` de v2. Migraci
 ### Funcionalidades principales
 
 **Productos (catálogo maestro)**
+
 - Importar productos por hotel desde Excel (alta + update).
 - Separar **Producto** (interno) de **ReferenciaProveedor** (SKU) para evitar duplicados multi-proveedor.
 - Clave única: `hotel_id + proveedor_id + codigo_proveedor` (o fallback `hotel + proveedor + nombre_normalizado + formato`).
@@ -371,6 +372,7 @@ Absorbe `docs/MODULO_PRODUCTOS.md` + `docs/MODULO_PROVEEDORES.md` de v2. Migraci
 - Alias de producto (mejora OCR matching).
 
 **Proveedores (motor silencioso)**
+
 - Configuración operativa: días entrega, hora corte, lead time, pedido mínimo, ventana recepción.
 - Incidencias automáticas: retraso, falta_producto, sustitucion, error_referencia, calidad.
 - Métricas automáticas: % pedidos completos, % entregas a tiempo, incidencias últimos 30 días.
@@ -379,12 +381,14 @@ Absorbe `docs/MODULO_PRODUCTOS.md` + `docs/MODULO_PROVEEDORES.md` de v2. Migraci
 ### Modelo de datos
 
 Productos:
+
 - `Product` — hotel_id, nombre, categoria_id, unidad_stock, proveedor_preferido_id, referencia_preferida_id, activo.
 - `ProductCategory` — hotel_id, nombre, orden.
 - `ProductAlias` — hotel_id, product_id, alias (para OCR matching).
 - `PriceHistory` — referencia_proveedor_id, precio_anterior, precio_nuevo, fecha, origen.
 
 Proveedores:
+
 - `Supplier` — hotel_id, nombre_comercial, tipo, contacto, email_pedidos, activo.
 - `SupplierConfig` — supplier_id, dias_entrega, hora_corte_pedido, lead_time_min_horas, pedido_minimo_importe, ventana_recepcion_inicio/fin.
 - `SupplierOffer` — supplier_id, product_id, codigo_proveedor, unidad_compra, contenido_compra, factor_conversion, precio, moneda, iva, is_preferred.
@@ -396,6 +400,7 @@ Proveedores:
 Types: `Product`, `ProductCategory`, `ProductAlias`, `Supplier`, `SupplierConfig`, `SupplierOffer`, `SupplierIncident`, `PriceHistory`, `PRODUCT_CATEGORIES_DEFAULT`, `INCIDENT_TYPES`, `INCIDENT_SEVERITIES`.
 
 Hooks:
+
 - `useProducts(filters?)`, `useProduct(id)`
 - `useCreateProduct()`, `useUpdateProduct()`, `useImportProducts()` (Excel batch)
 - `useAliases(productId)`, `useAddAlias()`

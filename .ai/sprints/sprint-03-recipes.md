@@ -387,6 +387,7 @@ Absorbe la especificación de `docs/MODULO_RECETAS.md` de v2 y la migración `00
 Types: `Recipe`, `RecipeIngredient`, `RecipeStep`, `SubRecipe`, `Menu`, `MenuSection`, `RecipeStatus`, `RECIPE_STATUSES`, `RECIPE_STATUS_LABELS`, `RECIPE_STATUS_VARIANT`.
 
 Hooks:
+
 - `useRecipes(filters?)`, `useRecipe(id)`
 - `useCreateRecipe()`, `useUpdateRecipe()`, `useTransitionRecipe()`
 - `useRecipeIngredients(recipeId)`, `useAddRecipeIngredient()`, `useRemoveRecipeIngredient()`
@@ -424,6 +425,7 @@ draft ──→ review ──→ approved ──→ deprecated
 ```
 
 Transiciones:
+
 - `draft → review` — requiere ≥1 ingrediente mapeado, rendimiento definido
 - `review → approved` — solo head_chef+ (ver `permissions-matrix.md`)
 - `approved → deprecated` — conserva histórico, no borra

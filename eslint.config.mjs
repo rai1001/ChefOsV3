@@ -58,10 +58,7 @@ const featureBoundaryRule = {
  * componente interno del módulo lo haría.
  */
 const authActionsException = {
-  files: [
-    'src/app/(auth)/**/*.{ts,tsx}',
-    'src/app/(onboard)/**/*.{ts,tsx}',
-  ],
+  files: ['src/app/(auth)/**/*.{ts,tsx}', 'src/app/(onboard)/**/*.{ts,tsx}'],
   rules: {
     'no-restricted-imports': 'off',
   },

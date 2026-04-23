@@ -99,10 +99,7 @@ describe('cellToString', () => {
 
 describe('findOrphanIngredientRecipes', () => {
   it('returns empty when all match', () => {
-    const orphans = findOrphanIngredientRecipes(
-      ['Pollo', 'Bacalao'],
-      ['Pollo', 'Bacalao', 'Pollo']
-    )
+    const orphans = findOrphanIngredientRecipes(['Pollo', 'Bacalao'], ['Pollo', 'Bacalao', 'Pollo'])
     expect(orphans.size).toBe(0)
   })
 

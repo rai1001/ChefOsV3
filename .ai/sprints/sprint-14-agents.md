@@ -383,13 +383,14 @@ Su función es continuar la fase funcional del proyecto con un alcance pequeño,
 
 ## Detalle específico del dominio (heredado de v2)
 
-Absorbe `MODULO_AUTOMATIZACIONES.md` + estado v2 de agentes M15. Migración `00027_m15_agents` + security hardening `00028_security_hardening` (REVOKE EXECUTE run_*_agent to authenticated).
+Absorbe `MODULO_AUTOMATIZACIONES.md` + estado v2 de agentes M15. Migración `00027_m15_agents` + security hardening `00028_security_hardening` (REVOKE EXECUTE run\_\*\_agent to authenticated).
 
 ### Funcionalidades principales
 
 **Asistidos, no autónomos**: los agentes analizan datos y **sugieren**. El humano aprueba/rechaza. Cada sugerencia puede disparar acción (encolar job, crear alerta, etc.) tras aprobación.
 
 **10 agentes de automejora** (análisis/sugerencia):
+
 1. `price_watcher` — detecta subidas recurrentes por producto/proveedor
 2. `waste_analyzer` — patrones de merma (recetas con sobreproducción, motivos recurrentes)
 3. `stock_optimizer` — sugerir aumentar/reducir stock mínimo por producto
@@ -402,6 +403,7 @@ Absorbe `MODULO_AUTOMATIZACIONES.md` + estado v2 de agentes M15. Migración `000
 10. `forecast_prep` — previsión de demanda para próxima semana
 
 **5 agentes de coordinación evento** (solo tras `evento.confirmed|completed`):
+
 - Pre-evento: event_planner + shopping_optimizer + compliance_reminder
 - Post-evento: post_event + waste_analyzer
 
@@ -419,6 +421,7 @@ Absorbe `MODULO_AUTOMATIZACIONES.md` + estado v2 de agentes M15. Migración `000
 Types: `AgentConfig`, `AgentSuggestion`, `AgentType`, `SuggestionStatus`, `SuggestionAction`, `AGENT_TYPES`, `SUGGESTION_STATUS_VARIANT`, `SUGGESTION_STATUS_LABELS`.
 
 Hooks:
+
 - `useAgentSuggestions(filters?)`, `useAgentSuggestion(id)`
 - `useApproveSuggestion()`, `useRejectSuggestion()`
 - `useAgentConfigs()`, `useUpsertAgentConfig()` (admin+ recomendado; UI gating por ahora)
@@ -434,15 +437,18 @@ Hooks:
 ### RPCs consumidas
 
 Service-only (REVOKE public, anon, authenticated — 00028):
+
 - `run_price_watcher_agent`, `run_waste_analyzer_agent`, `run_stock_optimizer_agent`, `run_recipe_cost_alert_agent`, `run_compliance_reminder_agent`
 - `run_event_planner_agent`, `run_shopping_optimizer_agent`, `run_kds_coordinator_agent`, `run_post_event_agent`, `run_forecast_prep_agent`
 - `run_all_automejora_agents` (worker utility)
 - `_create_agent_suggestion` (helper interno)
 
 Ejecución:
+
 - Desde worker vía job `run_agent` con payload `{ agent_type, hotel_id }`.
 
 User-facing (todos los miembros con check_membership, 00028 REVOKE emit_event a authenticated):
+
 - `get_agent_suggestions`, `get_agent_configs`
 - `approve_suggestion(p_suggestion_id)` — whitelist acciones para enqueue (00030 + fix contrato sync_recipe_costs)
 - `reject_suggestion(p_suggestion_id, p_reason)`
@@ -464,7 +470,7 @@ Consume: eventos que dispiaran triggers (arriba).
 
 Unit: state machine suggestion, expiración automática (suggestions >7 días sin review → expired).
 
-Integration: approve_suggestion solo dispara acciones del whitelist (seguridad contra payload arbitrario), REVOKE run_*_agent rechaza invocación authenticated.
+Integration: approve*suggestion solo dispara acciones del whitelist (seguridad contra payload arbitrario), REVOKE run*\*\_agent rechaza invocación authenticated.
 
 E2E: confirmar evento → esperar job → ver suggestion `event_planner` en `/agents` → aprobar → verificar acción derivada encolada.
 
@@ -485,7 +491,7 @@ Los agentes **nunca** ejecutan acciones de negocio de forma autónoma. Solo prop
 ### Referencias cruzadas
 
 - `specs/core-constraints.md` — principio "Asistido NO autónomo"
-- `specs/database-security.md` — REVOKE/GRANT para run_*_agent
+- `specs/database-security.md` — REVOKE/GRANT para run\_\*\_agent
 - `specs/permissions-matrix.md` — agentes M15 post-Codex
 - `sprints/sprint-10-automation.md` — worker ejecuta jobs run_agent
 - `sprints/sprint-11-notifications.md` — nuevas suggestions notifican al admin

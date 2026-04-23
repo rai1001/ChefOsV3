@@ -92,9 +92,7 @@ describe('validatePayload', () => {
   it('rejects ingredient with non-existent recipe_name', () => {
     const report = validatePayload({
       recipes: [recipe({ name: 'Pollo Asado' })],
-      ingredients: [
-        ingredient({ recipe_name: 'No existe', ingredient_name: 'Sal' }),
-      ],
+      ingredients: [ingredient({ recipe_name: 'No existe', ingredient_name: 'Sal' })],
     })
     expect(report.ingredientIssues.length).toBeGreaterThan(0)
     expect(report.validIngredients).toHaveLength(0)

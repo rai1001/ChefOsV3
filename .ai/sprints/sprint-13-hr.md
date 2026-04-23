@@ -385,6 +385,7 @@ Gestión de personal operativo + turnos + generación automática de horarios ba
 Types: `Personnel`, `PersonnelRole`, `ContractType`, `ShiftDefinition`, `ShiftType`, `ScheduleRule`, `ScheduleAssignment`, `ScheduleOrigin`, `ScheduleStatus`, `SCHEDULE_STATUS_VARIANT`, `PERSONNEL_ROLES`.
 
 Hooks:
+
 - `usePersonnel(filters?)`, `usePerson(id)`
 - `useCreatePerson()`, `useUpdatePerson()`
 - `useShiftDefinitions()`, `useCreateShiftDefinition()`, `useUpdateShiftDefinition()`

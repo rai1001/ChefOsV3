@@ -209,58 +209,70 @@ Sprint 01 solo se considera cerrado cuando:
 ### Tarea 01.01 - Definir responsabilidad exacta del módulo identity
 
 Objetivo:
+
 - fijar qué pertenece al módulo
 - fijar qué queda fuera
 - fijar ownership funcional
 
 Salida esperada:
+
 - definición cerrada del alcance del módulo
 
 ### Tarea 01.02 - Definir contrato público base de identity
 
 Objetivo:
+
 - establecer qué debe exponer públicamente el módulo
 - evitar acceso informal a internals
 - preparar consumo controlado desde otros módulos
 
 Salida esperada:
+
 - contrato público base documentado o implementado
 
 ### Tarea 01.03 - Resolver sesión, usuario y tenant actual mediante contrato claro
 
 Objetivo:
+
 - definir la forma oficial de obtener contexto actual
 - impedir accesos dispersos desde múltiples capas
 
 Salida esperada:
+
 - punto de entrada claro para contexto de identidad actual
 
 ### Tarea 01.04 - Definir restricciones base de acceso
 
 Objetivo:
+
 - identificar comprobaciones mínimas de permisos base
 - dejar claro qué validaciones pertenecen a identity
 
 Salida esperada:
+
 - reglas base de acceso asociadas al módulo
 
 ### Tarea 01.05 - Validar tenancy y permisos del contrato base
 
 Objetivo:
+
 - asegurar que el contrato inicial no ignora aislamiento multi-tenant
 - proteger escenarios permitidos y denegados
 
 Salida esperada:
+
 - cobertura mínima de validación para tenancy y acceso
 
 ### Tarea 01.06 - Revisar el módulo contra arquitectura y definition of done
 
 Objetivo:
+
 - asegurar que identity queda bien ubicado
 - asegurar que no invade otros módulos
 - asegurar que el sprint cierra de forma verificable
 
 Salida esperada:
+
 - validación estructurada del sprint
 
 ---
@@ -270,27 +282,32 @@ Salida esperada:
 ### Riesgo 1. Intentar resolver toda la seguridad del sistema
 
 Mitigación:
+
 - limitar el sprint a contrato base de identidad, tenant y acceso inicial
 
 ### Riesgo 2. Mezclar identity con lógica de otros módulos
 
 Mitigación:
+
 - mantener ownership estricto
 - no introducir permisos funcionales específicos de otros dominios
 
 ### Riesgo 3. Acabar con un módulo ambiguo o demasiado abstracto
 
 Mitigación:
+
 - exigir contratos concretos, entradas claras y salidas claras
 
 ### Riesgo 4. Ignorar multi-tenant al definir identidad
 
 Mitigación:
+
 - tratar tenant actual como parte obligatoria del contrato base
 
 ### Riesgo 5. Poner lógica de identidad en páginas, layouts o componentes
 
 Mitigación:
+
 - concentrar la lógica del módulo en `src/features/identity/` y exponer frontera pública
 
 ---
@@ -375,12 +392,12 @@ Este archivo define el Sprint 01 oficial del módulo `identity` en ChefOS v3.
 
 ### Verificación final
 
-| Check | Resultado |
-|---|---|
-| `npm run typecheck` | 0 errores |
-| `npm run lint` | 0 errores, 0 warnings |
-| `npm run test` | 21/21 passed |
-| `npm run build` | 9 rutas generadas OK |
+| Check                             | Resultado                 |
+| --------------------------------- | ------------------------- |
+| `npm run typecheck`               | 0 errores                 |
+| `npm run lint`                    | 0 errores, 0 warnings     |
+| `npm run test`                    | 21/21 passed              |
+| `npm run build`                   | 9 rutas generadas OK      |
 | `npm run test:e2e` (sin Supabase) | smoke + auth-proxy verdes |
 
 ### Checklist de cierre

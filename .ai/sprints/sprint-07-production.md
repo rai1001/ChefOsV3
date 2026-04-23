@@ -389,6 +389,7 @@ Absorbe `docs/MODULO_PRODUCCION.md` + input de `skills/production-module-improve
 Types: `ProductionPlan`, `ProductionTask`, `TaskChecklist`, `Workflow`, `WorkflowTask`, `MiseEnPlaceList`, `MiseEnPlaceItem`, `KitchenOrder`, `KitchenOrderItem`, `RecurringTaskTemplate`, `TASK_TYPES`, `TASK_STATES`, `KO_ITEM_STATES`, `PLAN_STATUS_VARIANT`.
 
 Hooks:
+
 - `useProductionPlans(date?)`, `useProductionPlan(id)`
 - `useWorkflow(eventoId)`, `useWorkflowDetail(id)`
 - `useTasks(filters?)`, `useTransitionTask()`, `useMarkTaskBlocked()`
@@ -423,6 +424,7 @@ Hooks:
 TaskState: `pendiente → en_proceso → done` (+ `bloqueada` con motivo + `cancelada`).
 
 Reglas anti-abuso:
+
 - `pendiente → done` directo: BLOQUEADO.
 - Timestamp `hora_inicio` en `en_proceso`, `hora_fin` en `done`.
 - (MVP 2) Pedir comentario si tiempo real < 20% del estimado.

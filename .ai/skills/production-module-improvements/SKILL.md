@@ -30,6 +30,7 @@ El equipo al abrir sprint-07 decide cuáles entran:
 **Problema**: mezclar tareas operativas con elaboraciones (recetas) complica compras/inventario.
 
 **Propuesta**: campo `tipo_tarea` con opciones:
+
 - **elaboracion** (receta con cantidades y rendimiento — impacta compras/inventario)
 - **operativa** (limpieza, orden, mise en place general — no impacta inventario)
 - **control** (verificación/firmas: etiquetado, temperatura, cierre — genera evento compliance)
@@ -47,6 +48,7 @@ El equipo al abrir sprint-07 decide cuáles entran:
 **Propuesta**: subtareas tipo checkbox dentro de una tarea.
 
 Ejemplo "Revisar etiquetado":
+
 - [ ] Etiquetas con fecha
 - [ ] Etiquetas legibles
 - [ ] Productos sin caducar
@@ -60,6 +62,7 @@ Ejemplo "Revisar etiquetado":
 **Problema**: a veces no se sabe quién estará, pero sí el puesto.
 
 **Propuesta**: permitir asignación a:
+
 - persona concreta
 - turno
 - **rol/puesto** (ej. "partida caliente", "ayudante")
@@ -83,6 +86,7 @@ Ejemplo "Revisar etiquetado":
 **Problema**: marcar "Terminado" sin hacerlo desvirtúa datos.
 
 **Propuesta mínima**:
+
 - No permitir `Terminado` sin pasar por `En proceso`
 - Registrar timestamps: `hora_inicio`, `hora_fin`
 - (Opcional) pedir comentario si se termina "demasiado rápido"
@@ -98,6 +102,7 @@ Ejemplo "Revisar etiquetado":
 **Ejemplo**: "Elaboración base salsa aún no iniciada — evento hoy 20:30".
 
 **Propuesta**: alertas al jefe cuando:
+
 - tarea crítica no inicia antes de cierta hora
 - tarea bloqueada demasiado tiempo
 - tarea pendiente cerca del deadline
@@ -113,6 +118,7 @@ Ejemplo "Revisar etiquetado":
 **Problema**: tareas "fantasma" que nadie retoma.
 
 **Propuesta**: acción `Cerrar turno` con:
+
 - lista de tareas pendientes
 - opciones: mover a siguiente turno / reasignar / marcar no realizada (con motivo)
 
@@ -123,6 +129,7 @@ Ejemplo "Revisar etiquetado":
 ## 8 · Historial y trazabilidad (MVP 1 — básico)
 
 **Guardar**:
+
 - quién crea la tarea
 - quién la ejecuta
 - cuándo inicia/termina
@@ -139,6 +146,7 @@ Ejemplo "Revisar etiquetado":
 **Principio**: el personal no debe navegar.
 
 **Propuesta**: pantalla "Hoy / Mi semana":
+
 - tareas del turno
 - orden: 1) críticas primero, 2) por hora objetivo
 - botones grandes: ▶️ Iniciar · ✅ Terminar
@@ -150,11 +158,13 @@ Ejemplo "Revisar etiquetado":
 ## 10 · Resumen de prioridades
 
 ### Mantener (MVP 1 ya bien definido en v2)
+
 - Doble vista: jefe vs personal
 - Tareas manuales y repetitivas
 - Estados simples
 
 ### Añadir pronto (MVP 1-2)
+
 - Separar tareas/elaboraciones (ya previsto)
 - Reglas de estados + timestamps (anti-abuso)
 - Historial básico
@@ -162,6 +172,7 @@ Ejemplo "Revisar etiquetado":
 - Cierre de turno
 
 ### Añadir más adelante (MVP 3)
+
 - Dependencias entre tareas
 - Asignación por rol
 - Alertas automáticas avanzadas (vía agente)

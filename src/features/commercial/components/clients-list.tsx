@@ -37,11 +37,7 @@ export function ClientsList({ hotelId }: { hotelId: string }) {
           </thead>
           <tbody>
             {items.map((c) => (
-              <tr
-                key={c.id}
-                className="border-t"
-                style={{ borderColor: 'var(--color-border)' }}
-              >
+              <tr key={c.id} className="border-t" style={{ borderColor: 'var(--color-border)' }}>
                 <td className="px-3 py-2">{c.name}</td>
                 <td className="px-3 py-2 text-[color:var(--color-text-secondary)]">
                   {c.company ?? '—'}

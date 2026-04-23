@@ -39,10 +39,7 @@ export function useAddRecipeToSection(hotelId: string | undefined) {
   })
 }
 
-export function useRemoveRecipeFromSection(
-  hotelId: string | undefined,
-  sectionId: string
-) {
+export function useRemoveRecipeFromSection(hotelId: string | undefined, sectionId: string) {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (sectionRecipeId: string) => {

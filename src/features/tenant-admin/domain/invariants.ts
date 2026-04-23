@@ -20,7 +20,10 @@ export const INVITE_STATUS_VARIANT: Record<InviteStatus, StatusVariant> = {
 
 // ─── Invariantes puros ────────────────────────────────────────────────────────
 
-export function isInviteExpired(invite: Pick<Invite, 'expires_at'>, now: Date = new Date()): boolean {
+export function isInviteExpired(
+  invite: Pick<Invite, 'expires_at'>,
+  now: Date = new Date()
+): boolean {
   return new Date(invite.expires_at).getTime() <= now.getTime()
 }
 
@@ -58,8 +61,6 @@ export function computeInviteStatus(
   return 'pending'
 }
 
-export function canRevokeInvite(
-  invite: Pick<Invite, 'accepted_at' | 'revoked_at'>
-): boolean {
+export function canRevokeInvite(invite: Pick<Invite, 'accepted_at' | 'revoked_at'>): boolean {
   return !isInviteAccepted(invite) && !isInviteRevoked(invite)
 }

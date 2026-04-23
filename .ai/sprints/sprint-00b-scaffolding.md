@@ -176,7 +176,7 @@ Coverage threshold 90% no se fuerza todavía (no hay archivos en `features/*/dom
 ### Riesgo 3. Middleware `updateSession` redirige a `/login` que no existe
 
 - **Mitigación:** middleware activo solo bajo rutas distintas a `/login|/signup|/callback|/forgot-password`. Hasta sprint-01-identity, visitar `/` triggeará redirect a `/login` → 404. Aceptable en scaffolding; el test smoke E2E apunta directamente a `/` y el middleware lo deja pasar mientras no haya auth real.
-  *Nota*: si se quiere probar manualmente antes de sprint-01, desactivar middleware temporalmente o añadir `/` a `AUTH_FREE_PATHS`.
+  _Nota_: si se quiere probar manualmente antes de sprint-01, desactivar middleware temporalmente o añadir `/` a `AUTH_FREE_PATHS`.
 
 ### Riesgo 4. CI E2E gated
 
@@ -216,14 +216,14 @@ Este archivo define el Sprint 00b oficial de ChefOS v3.
 
 Verificación final ejecutada:
 
-| Check | Resultado |
-|---|---|
-| `npm install` | 568 paquetes, 0 vulnerabilidades |
-| `npm run typecheck` | 0 errores |
-| `npm run lint` | 0 errores, 0 warnings |
-| `npm run test` | 3/3 passed |
-| `npm run build` | OK (Turbopack) |
-| `npm run test:e2e` | 1/1 smoke passed |
+| Check               | Resultado                        |
+| ------------------- | -------------------------------- |
+| `npm install`       | 568 paquetes, 0 vulnerabilidades |
+| `npm run typecheck` | 0 errores                        |
+| `npm run lint`      | 0 errores, 0 warnings            |
+| `npm run test`      | 3/3 passed                       |
+| `npm run build`     | OK (Turbopack)                   |
+| `npm run test:e2e`  | 1/1 smoke passed                 |
 
 Correcciones aplicadas durante verificación:
 

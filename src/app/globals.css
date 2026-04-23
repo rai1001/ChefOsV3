@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
   /* ChefOS v3 — Industrial Control Surface
@@ -75,22 +75,36 @@ body {
   line-height: 1.5;
 }
 
-h1, h2, h3, h4 {
+h1,
+h2,
+h3,
+h4 {
   font-family: var(--font-display);
   font-weight: 600;
   letter-spacing: -0.01em;
 }
-h1 { font-weight: 700; font-size: 28px; line-height: 1.15; }
-h2 { font-size: 22px; line-height: 1.2; }
-h3 { font-size: 17px; }
+h1 {
+  font-weight: 700;
+  font-size: 28px;
+  line-height: 1.15;
+}
+h2 {
+  font-size: 22px;
+  line-height: 1.2;
+}
+h3 {
+  font-size: 17px;
+}
 
-code, kbd, samp {
+code,
+kbd,
+samp {
   font-family: var(--font-code);
   font-size: 0.85em;
 }
-[class*="font-data"],
-[class*="font-code"],
-[class*="font-mono"] {
+[class*='font-data'],
+[class*='font-code'],
+[class*='font-mono'] {
   font-variant-numeric: tabular-nums;
 }
 
@@ -99,10 +113,18 @@ code, kbd, samp {
   color: var(--accent-fg);
 }
 
-.text-success { color: var(--color-success-fg); }
-.text-warning { color: var(--color-warning-fg); }
-.text-danger  { color: var(--color-danger-fg); }
-.text-info    { color: var(--color-info-fg); }
+.text-success {
+  color: var(--color-success-fg);
+}
+.text-warning {
+  color: var(--color-warning-fg);
+}
+.text-danger {
+  color: var(--color-danger-fg);
+}
+.text-info {
+  color: var(--color-info-fg);
+}
 
 *:focus-visible {
   outline: 2px solid var(--color-border-focus);
@@ -123,11 +145,31 @@ code, kbd, samp {
   gap: 4px;
   border: 1px solid;
 }
-.badge-status.urgent  { color: #e88070; background: var(--urgent-bg);  border-color: var(--urgent-border); }
-.badge-status.warning { color: #d4a574; background: var(--warning-bg); border-color: var(--warning-border); }
-.badge-status.success { color: #8baf8b; background: var(--success-bg); border-color: var(--success-border); }
-.badge-status.info    { color: #8ba6b8; background: var(--info-bg);    border-color: var(--info-border); }
-.badge-status.neutral { color: var(--color-text-secondary); background: var(--color-bg-card); border-color: var(--color-border); }
+.badge-status.urgent {
+  color: #e88070;
+  background: var(--urgent-bg);
+  border-color: var(--urgent-border);
+}
+.badge-status.warning {
+  color: #d4a574;
+  background: var(--warning-bg);
+  border-color: var(--warning-border);
+}
+.badge-status.success {
+  color: #8baf8b;
+  background: var(--success-bg);
+  border-color: var(--success-border);
+}
+.badge-status.info {
+  color: #8ba6b8;
+  background: var(--info-bg);
+  border-color: var(--info-border);
+}
+.badge-status.neutral {
+  color: var(--color-text-secondary);
+  background: var(--color-bg-card);
+  border-color: var(--color-border);
+}
 
 /* KPI label */
 .kpi-label {

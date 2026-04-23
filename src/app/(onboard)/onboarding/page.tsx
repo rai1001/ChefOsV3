@@ -10,8 +10,8 @@ export default function OnboardingPage() {
           <p className="kpi-label">Bienvenido a ChefOS</p>
           <h1>Crea tu primer hotel</h1>
           <p className="text-sm text-[color:var(--color-text-secondary)]">
-            Vamos a configurar tu grupo y tu primer hotel. Te daremos rol de admin
-            para empezar a operar.
+            Vamos a configurar tu grupo y tu primer hotel. Te daremos rol de admin para empezar a
+            operar.
           </p>
         </header>
 

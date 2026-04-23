@@ -118,12 +118,12 @@ export interface EscandalloIngredient {
   quantity_gross: number
   quantity_net: number
   waste_pct: number
-  recipe_unit_cost: number                 // snapshot guardado en la receta
-  latest_gr_unit_cost: number | null       // último albarán (goods_receipt)
+  recipe_unit_cost: number // snapshot guardado en la receta
+  latest_gr_unit_cost: number | null // último albarán (goods_receipt)
   latest_gr_date: string | null
   signal: 'up' | 'down' | 'same' | 'no_data'
-  delta_abs: number | null                 // latest - recipe
-  delta_pct: number | null                 // % cambio
+  delta_abs: number | null // latest - recipe
+  delta_pct: number | null // % cambio
 }
 
 export interface EscandalloLive {
@@ -131,7 +131,7 @@ export interface EscandalloLive {
   servings: number
   ingredients: EscandalloIngredient[]
   recipe_total_cost: number
-  latest_total_cost: number                // recomputado con latest_gr prices
+  latest_total_cost: number // recomputado con latest_gr prices
   delta_abs: number
   delta_pct: number
   last_computed_at: string
@@ -159,5 +159,7 @@ export interface RecipeTechSheet {
   recipe: Recipe
   ingredients: RecipeIngredient[]
   steps: RecipeStep[]
-  sub_recipes: (RecipeSubRecipe & { sub_recipe: Pick<Recipe, 'id' | 'name' | 'cost_per_serving'> })[]
+  sub_recipes: (RecipeSubRecipe & {
+    sub_recipe: Pick<Recipe, 'id' | 'name' | 'cost_per_serving'>
+  })[]
 }

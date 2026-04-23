@@ -26,7 +26,10 @@ export const createHotelSchema = z.object({
 
 export const createInviteSchema = z.object({
   hotel_id: z.string().uuid(),
-  email: z.string().email('Email no válido').transform((v) => v.trim().toLowerCase()),
+  email: z
+    .string()
+    .email('Email no válido')
+    .transform((v) => v.trim().toLowerCase()),
   role: z.enum(ROLES),
 })
 

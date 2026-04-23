@@ -3,6 +3,7 @@
 Edge Functions de Supabase.
 
 Operaciones que DEBEN correr aquí (ver `.ai/specs/core-constraints.md § 5`):
+
 - Generación de PDFs / documentos firmados
 - Dispatcher de notificaciones (email, push)
 - Worker de automatizaciones

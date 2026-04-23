@@ -44,9 +44,7 @@
   )}
 >
   <td className="px-4 py-3 text-sm">{row.name}</td>
-  <td className="px-4 py-3 text-sm font-data text-right">
-    {row.amount.toFixed(2)}
-  </td>
+  <td className="px-4 py-3 text-sm font-data text-right">{row.amount.toFixed(2)}</td>
   <td className="px-4 py-3">
     <span className={cn('co-badge', X_STATUS_VARIANT[row.status])}>
       {X_STATUS_LABELS[row.status]}
@@ -56,6 +54,7 @@
 ```
 
 **Reglas**:
+
 - Left-border rail en el `<tr>`, NO en el `<td>`.
 - Números siempre a la derecha + `font-data` (DM Mono tabular-nums).
 - IDs (lotes, albaranes, BEO) con `font-code` (JetBrains Mono).
@@ -70,7 +69,12 @@
 1. Define el enum en `src/features/<feature>/domain/types.ts`:
 
 ```ts
-export const TASTING_SESSION_STATUSES = ['scheduled', 'in_progress', 'completed', 'cancelled'] as const
+export const TASTING_SESSION_STATUSES = [
+  'scheduled',
+  'in_progress',
+  'completed',
+  'cancelled',
+] as const
 export type TastingSessionStatus = (typeof TASTING_SESSION_STATUSES)[number]
 
 export const TASTING_SESSION_STATUS_LABELS: Record<TastingSessionStatus, string> = {
@@ -88,10 +92,10 @@ export const TASTING_SESSION_STATUS_VARIANT: Record<
   TastingSessionStatus,
   'neutral' | 'info' | 'warning' | 'success' | 'urgent'
 > = {
-  scheduled:   'info',
+  scheduled: 'info',
   in_progress: 'warning',
-  completed:   'success',
-  cancelled:   'urgent',
+  completed: 'success',
+  cancelled: 'urgent',
 }
 ```
 
@@ -101,12 +105,12 @@ export const TASTING_SESSION_STATUS_VARIANT: Record<
 
 **Guía de mapeo**:
 
-| Variante | Cuándo |
-|---|---|
-| `urgent` | Acción inmediata · crítico · cancelado |
+| Variante  | Cuándo                                     |
+| --------- | ------------------------------------------ |
+| `urgent`  | Acción inmediata · crítico · cancelado     |
 | `warning` | Atención · pendiente · progreso con riesgo |
-| `info` | Neutro informativo · enviado · consolidado |
-| `success` | Confirmado · aprobado · completado OK |
+| `info`    | Neutro informativo · enviado · consolidado |
+| `success` | Confirmado · aprobado · completado OK      |
 | `neutral` | Sin estado especial · borrador · archivado |
 
 **Nota**: los mappings viven en `domain/types.ts` del feature, **no inline** en componente.
@@ -116,7 +120,10 @@ export const TASTING_SESSION_STATUS_VARIANT: Record<
 ## Receta 3 — Añadir KPI card
 
 ```tsx
-<div className="rounded-md border p-4" style={{ background: 'var(--co-surface)', borderColor: 'var(--co-border)' }}>
+<div
+  className="rounded-md border p-4"
+  style={{ background: 'var(--co-surface)', borderColor: 'var(--co-border)' }}
+>
   <p className="kpi-label">Productos en stock</p>
   <p className="kpi-value mt-2">{total}</p>
 </div>
@@ -125,16 +132,17 @@ export const TASTING_SESSION_STATUS_VARIANT: Record<
 Con rail de estado cuando relevante:
 
 ```tsx
-<div className={cn(
-  'co-status-rail rounded-r-md p-4',
-  alertCount > 0 ? 'urgent' : ''
-)} style={{ background: 'var(--co-surface)' }}>
+<div
+  className={cn('co-status-rail rounded-r-md p-4', alertCount > 0 ? 'urgent' : '')}
+  style={{ background: 'var(--co-surface)' }}
+>
   <p className="kpi-label">Alertas</p>
   <p className="kpi-value mt-2">{alertCount}</p>
 </div>
 ```
 
 Tokens usados:
+
 - `kpi-value` — DM Mono 32px tabular-nums
 - `kpi-label` — JetBrains Mono 11px uppercase tracking 0.08em
 
@@ -145,43 +153,46 @@ Si el valor es texto corto (ej. "Sin plan"), `kpi-value` también lo renderiza b
 ## Receta 4 — Añadir modal
 
 ```tsx
-{open && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-    <div
-      className="w-full max-w-lg rounded-lg p-6 shadow-xl space-y-4"
-      style={{ background: 'var(--co-surface)' }}
-    >
-      <h2 className="text-base font-semibold">Título</h2>
-      <p className="text-sm" style={{ color: 'var(--co-text-muted)' }}>
-        Subtítulo o contexto
-      </p>
+{
+  open && (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+      <div
+        className="w-full max-w-lg rounded-lg p-6 shadow-xl space-y-4"
+        style={{ background: 'var(--co-surface)' }}
+      >
+        <h2 className="text-base font-semibold">Título</h2>
+        <p className="text-sm" style={{ color: 'var(--co-text-muted)' }}>
+          Subtítulo o contexto
+        </p>
 
-      {/* contenido */}
+        {/* contenido */}
 
-      <div className="flex gap-3 pt-2">
-        <button
-          type="button"
-          onClick={() => setOpen(false)}
-          className="flex-1 rounded-md border py-2 text-sm"
-          style={{ borderColor: 'var(--co-border)', color: 'var(--co-text-secondary)' }}
-        >
-          Cancelar
-        </button>
-        <button
-          type="submit"
-          onClick={handleSubmit}
-          className="flex-1 rounded-md py-2 text-sm disabled:opacity-50"
-          style={{ background: 'var(--co-accent)', color: 'var(--co-accent-fg)' }}
-        >
-          Guardar
-        </button>
+        <div className="flex gap-3 pt-2">
+          <button
+            type="button"
+            onClick={() => setOpen(false)}
+            className="flex-1 rounded-md border py-2 text-sm"
+            style={{ borderColor: 'var(--co-border)', color: 'var(--co-text-secondary)' }}
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            onClick={handleSubmit}
+            className="flex-1 rounded-md py-2 text-sm disabled:opacity-50"
+            style={{ background: 'var(--co-accent)', color: 'var(--co-accent-fg)' }}
+          >
+            Guardar
+          </button>
+        </div>
       </div>
     </div>
-  </div>
-)}
+  )
+}
 ```
 
 **Reglas**:
+
 - Overlay: `bg-black/60`
 - Modal: `rounded-lg` (10px) — NO `rounded-xl` ni `rounded-2xl`
 - Primary: `--co-accent` + `--co-accent-fg`
@@ -232,15 +243,14 @@ npm run lint
 ```tsx
 <div className="co-alert-box urgent">
   <p className="co-alert-title">Stock crítico</p>
-  <p className="text-sm mt-1">
-    Pulpo congelado — quedan 2kg. Pedido en curso llega el viernes.
-  </p>
+  <p className="text-sm mt-1">Pulpo congelado — quedan 2kg. Pedido en curso llega el viernes.</p>
 </div>
 ```
 
 Variantes: `urgent | warning | success | info`.
 
 **Diferencia con `.co-status-rail`**:
+
 - `.co-alert-box` → bg entera tintada + FG claro en título → **atención requerida**
 - `.co-status-rail` → solo border-left → **contexto de estado**
 
@@ -260,13 +270,13 @@ Regla: si el usuario debe hacer algo por el mensaje, es alert-box. Si solo infor
 
 ## Debugging rápido
 
-| Síntoma | Causa | Fix |
-|---|---|---|
-| Botón accent con texto invisible | `text-white` sobre `--co-accent` | Usar `color: var(--co-accent-fg)` |
-| `co-status-rail` no se ve | Falta variante o el `<tr>` no tiene `border-left` | DevTools: debe haber `border-left-width: 3px` |
-| `co-badge` sin estilo | Typo en variante | Válidas: `urgent warning success info neutral` |
-| Columna numérica desalineada | Falta `font-data` | `className="... font-data text-right"` |
-| Skeleton no pulsa | Olvidaste `.skeleton` o pusiste `animate-pulse` manual | `className="skeleton h-4 w-20"` |
+| Síntoma                          | Causa                                                  | Fix                                            |
+| -------------------------------- | ------------------------------------------------------ | ---------------------------------------------- |
+| Botón accent con texto invisible | `text-white` sobre `--co-accent`                       | Usar `color: var(--co-accent-fg)`              |
+| `co-status-rail` no se ve        | Falta variante o el `<tr>` no tiene `border-left`      | DevTools: debe haber `border-left-width: 3px`  |
+| `co-badge` sin estilo            | Typo en variante                                       | Válidas: `urgent warning success info neutral` |
+| Columna numérica desalineada     | Falta `font-data`                                      | `className="... font-data text-right"`         |
+| Skeleton no pulsa                | Olvidaste `.skeleton` o pusiste `animate-pulse` manual | `className="skeleton h-4 w-20"`                |
 
 ---
 

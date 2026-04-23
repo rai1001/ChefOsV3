@@ -81,6 +81,7 @@ Agrupación por perfil UX (ver `features/identity/domain/types.ts`): `cocina`, `
 Toda la ruta de objetos en Supabase Storage empieza por `<hotel_id>/...`. Los buckets tienen políticas que validan el segmento inicial de la ruta contra `is_member_of(hotel_id)`.
 
 Ejemplo:
+
 - `delivery-notes/11111111-.../2026-04-21-<hash>.jpg` ✅
 - `delivery-notes/2026-04-21-<hash>.jpg` ❌ (sin hotel_id)
 

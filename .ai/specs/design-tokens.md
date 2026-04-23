@@ -31,35 +31,38 @@ Este documento es normativo.
 
 ### Stack oficial
 
-| Rol | Fuente | Peso | Uso |
-|-----|--------|------|-----|
-| Display / Módulos | **Syne** | 600–700 | Títulos de página, nombres de módulo, hero |
-| Body / UI | **DM Sans** | 400–500 | Párrafos, formularios, labels, nav, botones |
-| Datos / Números | **DM Mono** | 400–500 | KPIs, cantidades, precios, porcentajes, timestamps |
-| Códigos / Status | **JetBrains Mono** | 400–500 | Lote IDs, refs proveedor, APPCC IDs, badges estado |
+| Rol               | Fuente             | Peso    | Uso                                                |
+| ----------------- | ------------------ | ------- | -------------------------------------------------- |
+| Display / Módulos | **Syne**           | 600–700 | Títulos de página, nombres de módulo, hero         |
+| Body / UI         | **DM Sans**        | 400–500 | Párrafos, formularios, labels, nav, botones        |
+| Datos / Números   | **DM Mono**        | 400–500 | KPIs, cantidades, precios, porcentajes, timestamps |
+| Códigos / Status  | **JetBrains Mono** | 400–500 | Lote IDs, refs proveedor, APPCC IDs, badges estado |
 
 ### Carga (Google Fonts)
 
 ```html
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&family=JetBrains+Mono:wght@400;500;600&display=swap"
+  rel="stylesheet"
+/>
 ```
 
 ### Escala
 
-| Nivel | Fuente | Tamaño | Peso | Uso |
-|-------|--------|--------|------|-----|
-| Display | Syne | 36–48px | 700 | Hero del módulo |
-| H1 | Syne | 28px | 700 | Título de página |
-| H2 | Syne | 22px | 600 | Sección, nombre evento |
-| H3 | Syne | 17px | 600 | Título de card |
-| Body | DM Sans | **17.6px** (110% de 16px) | 400 | Texto base |
-| Body SM | DM Sans | 14px | 400 | Captions, metadata |
-| Label | DM Sans | 13px | 500 | Form labels, th |
-| KPI | DM Mono | 28–40px | 500 | Números dominantes |
-| Data | DM Mono | 13–15px | 400 | Valores de tabla, precios |
-| Code | JetBrains Mono | 11–13px | 400–500 | IDs, badges, audit |
+| Nivel   | Fuente         | Tamaño                    | Peso    | Uso                       |
+| ------- | -------------- | ------------------------- | ------- | ------------------------- |
+| Display | Syne           | 36–48px                   | 700     | Hero del módulo           |
+| H1      | Syne           | 28px                      | 700     | Título de página          |
+| H2      | Syne           | 22px                      | 600     | Sección, nombre evento    |
+| H3      | Syne           | 17px                      | 600     | Título de card            |
+| Body    | DM Sans        | **17.6px** (110% de 16px) | 400     | Texto base                |
+| Body SM | DM Sans        | 14px                      | 400     | Captions, metadata        |
+| Label   | DM Sans        | 13px                      | 500     | Form labels, th           |
+| KPI     | DM Mono        | 28–40px                   | 500     | Números dominantes        |
+| Data    | DM Mono        | 13–15px                   | 400     | Valores de tabla, precios |
+| Code    | JetBrains Mono | 11–13px                   | 400–500 | IDs, badges, audit        |
 
 ### Reglas
 
@@ -78,44 +81,44 @@ Este documento es normativo.
 ```css
 :root {
   /* Superficies */
-  --co-bg:           #1a1a1a;
-  --co-surface:      #242424;
-  --co-surface-2:    #1e1e1e;   /* sidebar, command band */
-  --co-surface-3:    #2a2a2a;   /* hover, selected */
-  --co-border:       #2e2e2e;
-  --co-border-strong:#3a3a3a;
+  --co-bg: #1a1a1a;
+  --co-surface: #242424;
+  --co-surface-2: #1e1e1e; /* sidebar, command band */
+  --co-surface-3: #2a2a2a; /* hover, selected */
+  --co-border: #2e2e2e;
+  --co-border-strong: #3a3a3a;
 
   /* Texto (WCAG AA sobre bg-card #242424) */
-  --co-text-primary:   #d4d4d4;  /* 9.9:1 */
-  --co-text-secondary: #a0a0a0;  /* 5.8:1 */
-  --co-text-muted:     #949494;  /* 4.8:1 */
+  --co-text-primary: #d4d4d4; /* 9.9:1 */
+  --co-text-secondary: #a0a0a0; /* 5.8:1 */
+  --co-text-muted: #949494; /* 4.8:1 */
 
   /* Accent — SOLO CTA primario y nav activo */
-  --co-accent:     #e8e4dc;      /* Tungsten White */
-  --co-accent-fg:  #1a1a1a;
+  --co-accent: #e8e4dc; /* Tungsten White */
+  --co-accent-fg: #1a1a1a;
 
   /* Estado — base SATURADO (solo bg-/border-) */
-  --co-urgent:        #c0392b;
-  --co-urgent-bg:     rgba(192, 57, 43, 0.12);
+  --co-urgent: #c0392b;
+  --co-urgent-bg: rgba(192, 57, 43, 0.12);
   --co-urgent-border: rgba(192, 57, 43, 0.25);
 
-  --co-warning:        #b87333;   /* cobre, no amber */
-  --co-warning-bg:     rgba(184, 115, 51, 0.12);
+  --co-warning: #b87333; /* cobre, no amber */
+  --co-warning-bg: rgba(184, 115, 51, 0.12);
   --co-warning-border: rgba(184, 115, 51, 0.25);
 
-  --co-success:        #5a7a5a;   /* desaturado intencionalmente */
-  --co-success-bg:     rgba(90, 122, 90, 0.12);
+  --co-success: #5a7a5a; /* desaturado intencionalmente */
+  --co-success-bg: rgba(90, 122, 90, 0.12);
   --co-success-border: rgba(90, 122, 90, 0.25);
 
-  --co-info:        #4a6070;
-  --co-info-bg:     rgba(74, 96, 112, 0.12);
+  --co-info: #4a6070;
+  --co-info-bg: rgba(74, 96, 112, 0.12);
   --co-info-border: rgba(74, 96, 112, 0.25);
 
   /* Foregrounds CLAROS para texto de estado (WCAG AA sobre bg-card) */
   --co-success-fg: #8baf8b; /* 5.5:1 */
   --co-warning-fg: #d4a574; /* 5.7:1 */
-  --co-danger-fg:  #e88070; /* 5.2:1 */
-  --co-info-fg:    #8ba6b8; /* 5.3:1 */
+  --co-danger-fg: #e88070; /* 5.2:1 */
+  --co-info-fg: #8ba6b8; /* 5.3:1 */
 
   --co-focus-ring: #e8e4dc;
 }
@@ -125,10 +128,10 @@ Este documento es normativo.
 
 ```css
 --co-chart-food-cost: #6b8fa3;
---co-chart-stock:     #8fa36b;
---co-chart-spend:     #a38b6b;
---co-chart-waste:     #8b6ba3;
---co-chart-alerts:    #a36b6b;
+--co-chart-stock: #8fa36b;
+--co-chart-spend: #a38b6b;
+--co-chart-waste: #8b6ba3;
+--co-chart-alerts: #a36b6b;
 ```
 
 ### Reglas críticas
@@ -153,16 +156,39 @@ Para mensajes que requieren atención (alertas, sugerencias agente, banners acci
   border-radius: 0 8px 8px 0;
   padding: 12px 16px;
 }
-.co-alert-box.urgent  { background: var(--co-urgent-bg); border-left-color: var(--co-urgent); }
-.co-alert-box.warning { background: var(--co-warning-bg); border-left-color: var(--co-warning); }
-.co-alert-box.success { background: var(--co-success-bg); border-left-color: var(--co-success); }
-.co-alert-box.info    { background: var(--co-info-bg); border-left-color: var(--co-info); }
+.co-alert-box.urgent {
+  background: var(--co-urgent-bg);
+  border-left-color: var(--co-urgent);
+}
+.co-alert-box.warning {
+  background: var(--co-warning-bg);
+  border-left-color: var(--co-warning);
+}
+.co-alert-box.success {
+  background: var(--co-success-bg);
+  border-left-color: var(--co-success);
+}
+.co-alert-box.info {
+  background: var(--co-info-bg);
+  border-left-color: var(--co-info);
+}
 
-.co-alert-title { font-weight: 600; margin-bottom: 4px; }
-.co-alert-box.urgent  .co-alert-title { color: var(--co-danger-fg); }
-.co-alert-box.warning .co-alert-title { color: var(--co-warning-fg); }
-.co-alert-box.success .co-alert-title { color: var(--co-success-fg); }
-.co-alert-box.info    .co-alert-title { color: var(--co-info-fg); }
+.co-alert-title {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.co-alert-box.urgent .co-alert-title {
+  color: var(--co-danger-fg);
+}
+.co-alert-box.warning .co-alert-title {
+  color: var(--co-warning-fg);
+}
+.co-alert-box.success .co-alert-title {
+  color: var(--co-success-fg);
+}
+.co-alert-box.info .co-alert-title {
+  color: var(--co-info-fg);
+}
 ```
 
 ### `.co-status-rail` — solo border-left 3px
@@ -174,14 +200,26 @@ Para estado de trabajo o contexto (banda de mando, KPI cards summary, integracio
   border-left: 3px solid var(--co-border);
   border-radius: 0 8px 8px 0;
 }
-.co-status-rail.urgent  { border-left-color: var(--co-urgent); }
-.co-status-rail.warning { border-left-color: var(--co-warning); }
-.co-status-rail.success { border-left-color: var(--co-success); }
-.co-status-rail.info    { border-left-color: var(--co-info); }
+.co-status-rail.urgent {
+  border-left-color: var(--co-urgent);
+}
+.co-status-rail.warning {
+  border-left-color: var(--co-warning);
+}
+.co-status-rail.success {
+  border-left-color: var(--co-success);
+}
+.co-status-rail.info {
+  border-left-color: var(--co-info);
+}
 
 /* Rows <tr> urgent/warning tintan automáticamente */
-tbody tr.co-status-rail.urgent  { background: var(--co-urgent-bg); }
-tbody tr.co-status-rail.warning { background: var(--co-warning-bg); }
+tbody tr.co-status-rail.urgent {
+  background: var(--co-urgent-bg);
+}
+tbody tr.co-status-rail.warning {
+  background: var(--co-warning-bg);
+}
 ```
 
 ---
@@ -190,17 +228,17 @@ tbody tr.co-status-rail.warning { background: var(--co-warning-bg); }
 
 Base: 4px. Densidad compacta por defecto.
 
-| Token | Valor | Uso |
-|-------|-------|-----|
-| `space-1` | 4px | gaps internos mínimos |
-| `space-2` | 8px | padding badge, gap icono |
-| `space-3` | 12px | padding tabla (compact) |
-| `space-4` | 16px | padding card, gap form group |
-| `space-5` | 20px | padding sección interior |
-| `space-6` | 24px | padding layout principal |
-| `space-8` | 32px | separación secciones |
-| `space-12` | 48px | separación bloques grandes |
-| `space-16` | 64px | margen página |
+| Token      | Valor | Uso                          |
+| ---------- | ----- | ---------------------------- |
+| `space-1`  | 4px   | gaps internos mínimos        |
+| `space-2`  | 8px   | padding badge, gap icono     |
+| `space-3`  | 12px  | padding tabla (compact)      |
+| `space-4`  | 16px  | padding card, gap form group |
+| `space-5`  | 20px  | padding sección interior     |
+| `space-6`  | 24px  | padding layout principal     |
+| `space-8`  | 32px  | separación secciones         |
+| `space-12` | 48px  | separación bloques grandes   |
+| `space-16` | 64px  | margen página                |
 
 ---
 
@@ -234,6 +272,7 @@ Nunca más de 10px en componentes de producto.
 ```
 
 Reglas:
+
 - Banda horizontal primero, cards después.
 - Preferir tablas largas / timelines / kanban sobre mosaicos de KPIs.
 - Cada pantalla necesita un "anchor panel" legible desde 3 metros.

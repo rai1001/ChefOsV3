@@ -79,12 +79,16 @@ export async function GET() {
     [''],
     ['Reglas:'],
     ['1. Las columnas con * son obligatorias.'],
-    ['2. categoria debe ser uno de: starter, main, dessert, sauce, side, drink, bread, pastry, other.'],
+    [
+      '2. categoria debe ser uno de: starter, main, dessert, sauce, side, drink, bread, pastry, other.',
+    ],
     ['3. servings debe ser un entero positivo (1, 2, 3...).'],
     ['4. cantidad_bruta debe ser > 0 (acepta coma o punto decimal).'],
     ['5. merma_pct va entre 0 y 100.'],
     ['6. alergenos y tags son CSV separados por coma o punto y coma. Ej: "gluten, lactosa".'],
-    ['7. receta_nombre en Ingredientes debe coincidir EXACTO con nombre en Recetas (case-insensitive, ignora espacios extra).'],
+    [
+      '7. receta_nombre en Ingredientes debe coincidir EXACTO con nombre en Recetas (case-insensitive, ignora espacios extra).',
+    ],
     [''],
     ['Sprint-03c · ChefOS v3'],
   ])

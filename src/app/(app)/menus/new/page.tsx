@@ -5,10 +5,7 @@ import { MenuForm } from '@/features/menus/components/menu-form'
 export const dynamic = 'force-dynamic'
 
 export default async function NewMenuPage() {
-  const [user, activeHotel] = await Promise.all([
-    getCurrentUserOrNull(),
-    getActiveHotelOrNull(),
-  ])
+  const [user, activeHotel] = await Promise.all([getCurrentUserOrNull(), getActiveHotelOrNull()])
   if (!user || !activeHotel) return null
 
   return (

@@ -27,25 +27,25 @@ Este documento es normativo.
 
 ## Módulos oficiales (17)
 
-| # | Módulo | Responsabilidad principal | Sprint |
-|---|---|---|---|
-| 1 | `identity` | Auth, sesión, memberships (consulta), roles, perfiles UX, active hotel context | sprint-01 |
-| 2 | `commercial` | Eventos, clientes, BEO, calendario comercial | sprint-02 |
-| 3 | `tenant-admin` | Tenants, hoteles (creación), memberships (mutación), invites email+token | sprint-02b |
-| 4 | `recipes` | Recetas, ingredientes, pasos, sub-recetas, costeo recursivo, escandallo live | sprint-03 |
-| 5 | `menus` | Menús, secciones, recetas en secciones, alérgenos agregados, tipos | sprint-03b |
-| 6 | `import` | Importación bulk desde Excel/CSV (recetas, productos, inventario, etc.) + import_runs log | sprint-03c |
-| 7 | `catalog` | Productos, categorías, proveedores, ofertas, alias | sprint-04 |
-| 8 | `procurement` | PR / PO / GR, consolidación, OCR albaranes | sprint-05 |
-| 9 | `inventory` | Lotes FIFO, reservations, counts, waste, forensics | sprint-06 |
-| 10 | `production` | Workflows, mise en place, KDS, kanban, shopping list | sprint-07 |
-| 11 | `reporting` | KPIs, food cost, variance, dashboard, alerts, snapshots | sprint-08 |
-| 12 | `compliance` | APPCC, temperaturas, etiquetado, trazabilidad | sprint-09 |
-| 13 | `automation` | Jobs queue, worker, triggers automatizados | sprint-10 |
-| 14 | `notifications` | In-app Realtime, email, preferencias, severity | sprint-11 |
-| 15 | `integrations` | PMS (Mews, OPERA), POS (Lightspeed, Simphony), sync | sprint-12 |
-| 16 | `hr` | Personnel, shifts, schedules, rotación | sprint-13 |
-| 17 | `agents` | 15 agentes asistidos (sugerencias, no autónomos) | sprint-14 |
+| #   | Módulo          | Responsabilidad principal                                                                 | Sprint     |
+| --- | --------------- | ----------------------------------------------------------------------------------------- | ---------- |
+| 1   | `identity`      | Auth, sesión, memberships (consulta), roles, perfiles UX, active hotel context            | sprint-01  |
+| 2   | `commercial`    | Eventos, clientes, BEO, calendario comercial                                              | sprint-02  |
+| 3   | `tenant-admin`  | Tenants, hoteles (creación), memberships (mutación), invites email+token                  | sprint-02b |
+| 4   | `recipes`       | Recetas, ingredientes, pasos, sub-recetas, costeo recursivo, escandallo live              | sprint-03  |
+| 5   | `menus`         | Menús, secciones, recetas en secciones, alérgenos agregados, tipos                        | sprint-03b |
+| 6   | `import`        | Importación bulk desde Excel/CSV (recetas, productos, inventario, etc.) + import_runs log | sprint-03c |
+| 7   | `catalog`       | Productos, categorías, proveedores, ofertas, alias                                        | sprint-04  |
+| 8   | `procurement`   | PR / PO / GR, consolidación, OCR albaranes                                                | sprint-05  |
+| 9   | `inventory`     | Lotes FIFO, reservations, counts, waste, forensics                                        | sprint-06  |
+| 10  | `production`    | Workflows, mise en place, KDS, kanban, shopping list                                      | sprint-07  |
+| 11  | `reporting`     | KPIs, food cost, variance, dashboard, alerts, snapshots                                   | sprint-08  |
+| 12  | `compliance`    | APPCC, temperaturas, etiquetado, trazabilidad                                             | sprint-09  |
+| 13  | `automation`    | Jobs queue, worker, triggers automatizados                                                | sprint-10  |
+| 14  | `notifications` | In-app Realtime, email, preferencias, severity                                            | sprint-11  |
+| 15  | `integrations`  | PMS (Mews, OPERA), POS (Lightspeed, Simphony), sync                                       | sprint-12  |
+| 16  | `hr`            | Personnel, shifts, schedules, rotación                                                    | sprint-13  |
+| 17  | `agents`        | 15 agentes asistidos (sugerencias, no autónomos)                                          | sprint-14  |
 
 > **Nota ADR-0009:** `tenant-admin` se añadió en sprint-02b. Convive con `identity` sin solape: identity resuelve sesión + active hotel context; tenant-admin mutante tenants/hoteles/memberships/invites. Ver `specs/decisions-log.md § ADR-0009`.
 

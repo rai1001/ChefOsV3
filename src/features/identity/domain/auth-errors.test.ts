@@ -5,13 +5,17 @@ describe('mapAuthError', () => {
   it('maps invalid_credentials to neutral login message', () => {
     const result = mapAuthError({ message: 'Invalid login credentials', status: 400 })
     expect(result.code).toBe('invalid_credentials')
-    expect(result.userMessage).toBe('Credenciales incorrectas. Si el problema persiste, contacta con soporte.')
+    expect(result.userMessage).toBe(
+      'Credenciales incorrectas. Si el problema persiste, contacta con soporte.'
+    )
     expect(result.internalMessage).toBe('Invalid login credentials')
   })
 
   it('uses neutral reset message for reset flow', () => {
     const result = mapAuthError({ message: 'Invalid login credentials', status: 400 }, 'reset')
-    expect(result.userMessage).toBe('No hemos podido procesar la solicitud. Inténtalo de nuevo en unos minutos.')
+    expect(result.userMessage).toBe(
+      'No hemos podido procesar la solicitud. Inténtalo de nuevo en unos minutos.'
+    )
   })
 
   it('detects rate limit by status 429', () => {
@@ -53,7 +57,9 @@ describe('mapAuthError', () => {
   it('falls back to generic for unknown errors', () => {
     const result = mapAuthError({ message: 'Something weird' })
     expect(result.code).toBe('generic')
-    expect(result.userMessage).toBe('Credenciales incorrectas. Si el problema persiste, contacta con soporte.')
+    expect(result.userMessage).toBe(
+      'Credenciales incorrectas. Si el problema persiste, contacta con soporte.'
+    )
     expect(result.internalMessage).toBe('Something weird')
   })
 

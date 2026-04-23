@@ -2,7 +2,11 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { updateSession } from '@/lib/supabase/middleware'
 import { checkRateLimit, identifierFromHeaders, type RateLimitPreset } from '@/lib/rate-limit'
 
-const RATE_LIMITED_PATHS: Array<{ pathPrefix: string; methods: string[]; preset: RateLimitPreset }> = [
+const RATE_LIMITED_PATHS: Array<{
+  pathPrefix: string
+  methods: string[]
+  preset: RateLimitPreset
+}> = [
   { pathPrefix: '/login', methods: ['POST'], preset: 'login' },
   { pathPrefix: '/signup', methods: ['POST'], preset: 'signup' },
   { pathPrefix: '/forgot-password', methods: ['POST'], preset: 'forgot-password' },

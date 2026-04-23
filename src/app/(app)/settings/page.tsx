@@ -31,8 +31,7 @@ export default async function SettingsPage() {
             <p className="kpi-label mb-2">tenant-admin</p>
             <h2>Hoteles</h2>
             <p className="mt-2 text-sm text-[color:var(--color-text-secondary)]">
-              Gestiona los hoteles de {activeHotel.hotel_name} y añade nuevos bajo el
-              mismo grupo.
+              Gestiona los hoteles de {activeHotel.hotel_name} y añade nuevos bajo el mismo grupo.
             </p>
           </Link>
 

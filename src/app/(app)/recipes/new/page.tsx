@@ -5,10 +5,7 @@ import { RecipeForm } from '@/features/recipes/components/recipe-form'
 export const dynamic = 'force-dynamic'
 
 export default async function NewRecipePage() {
-  const [user, activeHotel] = await Promise.all([
-    getCurrentUserOrNull(),
-    getActiveHotelOrNull(),
-  ])
+  const [user, activeHotel] = await Promise.all([getCurrentUserOrNull(), getActiveHotelOrNull()])
   if (!user || !activeHotel) return null
 
   return (

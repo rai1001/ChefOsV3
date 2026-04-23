@@ -28,12 +28,13 @@ export function OperationalImpactPanel({ items }: { items: BeoImpactByDept[] }) 
           className="rounded border p-3"
           style={{ borderColor: 'var(--color-border)', background: 'var(--color-bg-card)' }}
         >
-          <h3 className="mb-2 kpi-label">
-            {DEPT_LABELS[dept.department] ?? dept.department}
-          </h3>
+          <h3 className="mb-2 kpi-label">{DEPT_LABELS[dept.department] ?? dept.department}</h3>
           <ul className="space-y-1 text-sm">
             {dept.items.map((it, idx) => (
-              <li key={`${it.product_id ?? it.product_name}-${idx}`} className="flex justify-between gap-2">
+              <li
+                key={`${it.product_id ?? it.product_name}-${idx}`}
+                className="flex justify-between gap-2"
+              >
                 <span>{it.product_name}</span>
                 <span className="font-data text-[color:var(--color-text-secondary)]">
                   {it.quantity_needed} {it.unit ?? ''}

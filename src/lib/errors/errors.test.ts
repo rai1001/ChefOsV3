@@ -108,9 +108,13 @@ describe('mapSupabaseError', () => {
   })
 
   it('falls back to message heuristics when no code is set', () => {
-    expect(mapSupabaseError({ message: 'item not found' }, { resource: 'recipe' })).toBeInstanceOf(NotFoundError)
+    expect(mapSupabaseError({ message: 'item not found' }, { resource: 'recipe' })).toBeInstanceOf(
+      NotFoundError
+    )
     expect(mapSupabaseError({ message: 'duplicate entry' })).toBeInstanceOf(ConflictError)
-    expect(mapSupabaseError({ message: 'permission denied for table' })).toBeInstanceOf(ForbiddenError)
+    expect(mapSupabaseError({ message: 'permission denied for table' })).toBeInstanceOf(
+      ForbiddenError
+    )
     expect(mapSupabaseError({ message: 'unauthorized' })).toBeInstanceOf(UnauthorizedError)
   })
 

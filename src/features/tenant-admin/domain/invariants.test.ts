@@ -14,12 +14,14 @@ const NOW = new Date('2026-04-22T10:00:00Z')
 const FUTURE = '2026-05-01T10:00:00Z'
 const PAST = '2026-04-01T10:00:00Z'
 
-function invite(overrides: Partial<{
-  expires_at: string
-  accepted_at: string | null
-  revoked_at: string | null
-  email: string
-}> = {}) {
+function invite(
+  overrides: Partial<{
+    expires_at: string
+    accepted_at: string | null
+    revoked_at: string | null
+    email: string
+  }> = {}
+) {
   return {
     expires_at: FUTURE,
     accepted_at: null,

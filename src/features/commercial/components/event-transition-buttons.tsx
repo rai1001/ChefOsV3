@@ -35,7 +35,11 @@ export function EventTransitionButtons({ hotelId, eventId, currentStatus, menuCo
   const [cancelReason, setCancelReason] = useState('')
 
   if (next.length === 0) {
-    return <p className="text-sm text-[color:var(--color-text-muted)]">Estado terminal — sin transiciones disponibles.</p>
+    return (
+      <p className="text-sm text-[color:var(--color-text-muted)]">
+        Estado terminal — sin transiciones disponibles.
+      </p>
+    )
   }
 
   const handleTransition = (to: EventStatus) => {

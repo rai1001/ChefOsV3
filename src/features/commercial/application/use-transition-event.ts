@@ -24,7 +24,9 @@ export function useTransitionEvent(hotelId: string | undefined) {
       queryClient.invalidateQueries({ queryKey: ['commercial', 'events'] })
       queryClient.invalidateQueries({ queryKey: ['commercial', 'event', hotelId, vars.eventId] })
       queryClient.invalidateQueries({ queryKey: ['commercial', 'events-calendar'] })
-      queryClient.invalidateQueries({ queryKey: ['commercial', 'event-beo', hotelId, vars.eventId] })
+      queryClient.invalidateQueries({
+        queryKey: ['commercial', 'event-beo', hotelId, vars.eventId],
+      })
     },
   })
 }

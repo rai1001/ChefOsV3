@@ -381,6 +381,7 @@ Absorbe `docs/MODULO_ALERTAS_NOTIFICACIONES.md` de v2. Migración `00022_m14_not
 Types: `Notification`, `NotificationPreference`, `NotificationSeverity`, `NotificationType`, `NotificationChannel`, `NOTIFICATION_TYPES`, `NOTIFICATION_SEVERITY_DOT`, `NOTIFICATION_SEVERITY_COLORS`, `SEVERITY_VARIANT`.
 
 Hooks:
+
 - `useNotifications(limit?)` — lista
 - `useNotificationCount()` — badge count
 - `useNotificationRealtime()` — suscripción Realtime (background)
@@ -403,12 +404,14 @@ Hooks:
 - `get_preferences()`, `upsert_preference(p_type, p_channel, p_enabled)`
 
 Trigger `trg_auto_notify`:
+
 - Se dispara tras `create_notification` insert.
 - Si canal email activo para ese user+type → encola job `send_notification_email`.
 
 ### Edge Function
 
 `notification-dispatcher`:
+
 - Valida `Authorization: Bearer <service_role>`.
 - Lee notification desde DB por `id` (no confía en payload del webhook).
 - Reconstruye email desde DB usando `APP_BASE_URL` como prefijo interno (safeUrl solo rutas internas — post-Codex audit 2026-04-15).
@@ -419,6 +422,7 @@ Trigger `trg_auto_notify`:
 Emite: `notification.created`, `notification.read`, `notification.email_sent`.
 
 Consume (dispara creación de notificaciones):
+
 - `inventario.lote_expiring` → warning
 - `inventario.lote_expired` → urgent
 - `pedido.received_partial` (si impacta evento) → warning

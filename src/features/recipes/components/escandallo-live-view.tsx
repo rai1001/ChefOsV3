@@ -67,11 +67,7 @@ export function EscandalloLiveView({ hotelId, recipeId }: Props) {
         <Button variant="secondary" size="sm" onClick={() => refetch()}>
           Refrescar
         </Button>
-        <Button
-          size="sm"
-          disabled={sync.isPending}
-          onClick={() => sync.mutate(recipeId)}
-        >
+        <Button size="sm" disabled={sync.isPending} onClick={() => sync.mutate(recipeId)}>
           {sync.isPending ? 'Sincronizando…' : 'Sincronizar con albarán'}
         </Button>
       </div>

@@ -77,29 +77,29 @@ Este sprint introduce el **17º módulo `import`** (ADR-0013) como owner transve
 
 Hoja **`Recetas`**:
 
-| Columna           | Required | Tipo      | Notas                                         |
-|-------------------|----------|-----------|-----------------------------------------------|
-| nombre            | sí       | texto     | Único dentro del Excel (case-insensitive trim)|
-| categoria         | sí       | enum      | starter, main, dessert, sauce, side, drink, bread, pastry, other |
-| servings          | sí       | int > 0   | Pax base                                      |
-| descripcion       | no       | texto     |                                               |
-| tiempo_prep       | no       | int min   |                                               |
-| tiempo_coccion    | no       | int min   |                                               |
-| precio_objetivo   | no       | decimal   | EUR                                           |
-| alergenos         | no       | CSV       | "gluten, lactosa, frutos_secos"               |
-| tags              | no       | CSV       | "vegano, sin_gluten"                          |
+| Columna         | Required | Tipo    | Notas                                                            |
+| --------------- | -------- | ------- | ---------------------------------------------------------------- |
+| nombre          | sí       | texto   | Único dentro del Excel (case-insensitive trim)                   |
+| categoria       | sí       | enum    | starter, main, dessert, sauce, side, drink, bread, pastry, other |
+| servings        | sí       | int > 0 | Pax base                                                         |
+| descripcion     | no       | texto   |                                                                  |
+| tiempo_prep     | no       | int min |                                                                  |
+| tiempo_coccion  | no       | int min |                                                                  |
+| precio_objetivo | no       | decimal | EUR                                                              |
+| alergenos       | no       | CSV     | "gluten, lactosa, frutos_secos"                                  |
+| tags            | no       | CSV     | "vegano, sin_gluten"                                             |
 
 Hoja **`Ingredientes`**:
 
-| Columna           | Required | Tipo      | Notas                                         |
-|-------------------|----------|-----------|-----------------------------------------------|
-| receta_nombre     | sí       | texto     | FK a Recetas.nombre (case-insensitive trim)   |
-| ingrediente       | sí       | texto     |                                               |
-| cantidad_bruta    | sí       | decimal>0 |                                               |
-| unidad            | no       | texto     | Sin lookup en sprint-03c (queda en notas)     |
-| merma_pct         | no       | decimal 0-100 |                                           |
-| coste_unitario    | no       | decimal≥0 | EUR                                           |
-| notas             | no       | texto     |                                               |
+| Columna        | Required | Tipo          | Notas                                       |
+| -------------- | -------- | ------------- | ------------------------------------------- |
+| receta_nombre  | sí       | texto         | FK a Recetas.nombre (case-insensitive trim) |
+| ingrediente    | sí       | texto         |                                             |
+| cantidad_bruta | sí       | decimal>0     |                                             |
+| unidad         | no       | texto         | Sin lookup en sprint-03c (queda en notas)   |
+| merma_pct      | no       | decimal 0-100 |                                             |
+| coste_unitario | no       | decimal≥0     | EUR                                         |
+| notas          | no       | texto         |                                             |
 
 ---
 

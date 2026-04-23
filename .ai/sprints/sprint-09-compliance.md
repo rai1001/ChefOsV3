@@ -374,14 +374,17 @@ Absorbe `docs/MODULO_ETIQUETADO_TRAZABILIDAD.md` de v2 + APPCC + temperatures. M
 ### Modelo de datos
 
 APPCC:
+
 - `APPCCTemplate` — hotel_id, nombre, tipo, categoria, frecuencia (turno|diario|semanal|mensual), campos (jsonb), activa.
 - `APPCCRecord` — template_id, usuario_id, fecha, valores (jsonb), observaciones, firma (path o hash), estado (draft|submitted|reviewed).
 
 Temperaturas:
+
 - `Equipment` — hotel_id, nombre, tipo (camara|congelador|horno), rango_min, rango_max.
 - `TemperatureLog` — equipment_id, usuario_id, fecha, temperatura, is_within_range, observaciones.
 
 Etiquetado + trazabilidad:
+
 - `LabelTemplate` — hotel_id, nombre, tipo (preparacion|producto|sobras|congelado|pasteurizado), campos_visibles, activa.
 - `Label` — hotel_id, codigo_barra (único), tipo, template_id, producto_id, receta_id, nombre_libre, cantidad, unidad, fechas (elaboracion|apertura|congelacion|descongelacion|caducidad), tratamiento, ubicacion_id, origen, evento_id, tarea_id, pedido_id, usuario_id.
 - `LabelInventoryLink` — label_id, lot_id (vincula label con lote sin duplicar stock).
@@ -392,6 +395,7 @@ Etiquetado + trazabilidad:
 Types: `APPCCTemplate`, `APPCCRecord`, `Equipment`, `TemperatureLog`, `LabelTemplate`, `Label`, `LabelInventoryLink`, `ExpiryRule`, `APPCC_STATUS_VARIANT`, `LABEL_TYPES`, `TREATMENT_TYPES`.
 
 Hooks:
+
 - `useAPPCCTemplates()`, `useCreateAPPCCRecord()`, `useAPPCCRecords(filters?)`
 - `useTemperatureLogs(equipmentId?)`, `useLogTemperature()`
 - `useLabelTemplates()`, `useCreateLabel()`, `useLabels(filters?)`

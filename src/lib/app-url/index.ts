@@ -11,10 +11,7 @@
 
 const DEFAULT_DEV_URL = 'http://localhost:3000'
 
-const DEFAULT_ALLOWLIST = [
-  'http://localhost:3000',
-  'http://127.0.0.1:3000',
-] as const
+const DEFAULT_ALLOWLIST = ['http://localhost:3000', 'http://127.0.0.1:3000'] as const
 
 function parseAllowlist(): string[] {
   const envList = process.env.APP_URL_ALLOWLIST
@@ -42,7 +39,10 @@ export interface AppUrlOptions {
 
 export class InvalidAppUrlError extends Error {
   readonly code = 'INVALID_APP_URL' as const
-  constructor(public readonly attemptedUrl: string, public readonly allowlist: string[]) {
+  constructor(
+    public readonly attemptedUrl: string,
+    public readonly allowlist: string[]
+  ) {
     super(
       `App URL "${attemptedUrl}" no está en la allowlist permitida. Configurada: ${allowlist.join(', ')}`
     )

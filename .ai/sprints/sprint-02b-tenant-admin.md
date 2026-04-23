@@ -68,7 +68,7 @@ type Invite = {
   id: string
   hotel_id: string
   tenant_id: string
-  email: string                 // lowercased
+  email: string // lowercased
   role: Role
   expires_at: string
   created_by: string
@@ -127,10 +127,12 @@ pending ──acceptado──→ accepted  (terminal)
 ## RPCs consumidas
 
 **Existentes en v2 (consume):**
+
 - `create_tenant_with_hotel(p_tenant_name, p_hotel_name, p_hotel_slug, p_timezone, p_currency) → jsonb {tenant_id, hotel_id}`
 - `create_hotel(p_tenant_id, p_hotel_name, p_hotel_slug, p_timezone, p_currency) → uuid` (si existe; si no, select directo)
 
 **Nuevas (sprint-02b):**
+
 - `create_invite(p_hotel_id, p_email, p_role) → jsonb {invite_id, token, email, expires_at}` — SECURITY DEFINER con `check_membership` admin/direction/superadmin en primera línea.
 - `accept_invite(p_token) → jsonb {hotel_id, tenant_id, role}` — SECURITY DEFINER. **Excepción ADR-0009**: no lleva `check_membership` (el user aún no es miembro). Valida: auth.uid + token_hash + expiración + email match.
 - `revoke_invite(p_invite_id) → void` — SECURITY DEFINER con `check_membership` admin/direction/superadmin.
@@ -138,6 +140,7 @@ pending ──acceptado──→ accepted  (terminal)
 ## Eventos de dominio
 
 Emite:
+
 - `tenant.created` (al completar onboarding)
 - `hotel.created` (al crear hotel adicional)
 - `member.invited` (create_invite)
@@ -149,12 +152,14 @@ Emite:
 ## Tests mínimos
 
 **Unit (domain):**
+
 - `isInviteExpired` (expires_at pasado/futuro)
 - `isInviteAcceptable` (4 estados terminales + email match)
 - `computeInviteStatus` (cubre todos los casos derivados)
 - `INVITE_STATUS_LABELS` cubre todos los estados
 
 **E2E:**
+
 - `onboarding.spec.ts` — user sin hotel activo → /onboarding → rellena form → redirect dashboard (env-aware; skipea si signups OFF).
 - `invite-flow.spec.ts` (parcial) — admin crea invite → recibe token en respuesta → visita /invite/[token] con otro user logueado → aceptación OK.
 - `invite-revoke.spec.ts` — crear + revocar + intentar aceptar → error.

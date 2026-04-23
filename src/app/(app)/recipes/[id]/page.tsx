@@ -13,11 +13,7 @@ import { isRecipeLocked } from '@/features/recipes'
 
 export const dynamic = 'force-dynamic'
 
-export default async function RecipeDetailPage({
-  params,
-}: {
-  params: Promise<{ id: string }>
-}) {
+export default async function RecipeDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const activeHotel = await getActiveHotelOrNull()
   if (!activeHotel) return null
@@ -48,7 +44,9 @@ export default async function RecipeDetailPage({
             <h1>{recipe.name}</h1>
             <div className="flex flex-wrap items-center gap-2">
               <RecipeStatusBadge status={recipe.status} />
-              <span className="badge-status neutral">{RECIPE_CATEGORY_LABELS[recipe.category]}</span>
+              <span className="badge-status neutral">
+                {RECIPE_CATEGORY_LABELS[recipe.category]}
+              </span>
               <span className="badge-status neutral">{DIFFICULTY_LABELS[recipe.difficulty]}</span>
               <span className="badge-status neutral">{recipe.servings} pax</span>
             </div>
@@ -162,19 +160,11 @@ export default async function RecipeDetailPage({
             </TabsContent>
 
             <TabsContent value="ingredients">
-              <IngredientsEditor
-                hotelId={activeHotel.hotel_id}
-                recipeId={id}
-                readOnly={locked}
-              />
+              <IngredientsEditor hotelId={activeHotel.hotel_id} recipeId={id} readOnly={locked} />
             </TabsContent>
 
             <TabsContent value="steps">
-              <StepsEditor
-                hotelId={activeHotel.hotel_id}
-                recipeId={id}
-                readOnly={locked}
-              />
+              <StepsEditor hotelId={activeHotel.hotel_id} recipeId={id} readOnly={locked} />
             </TabsContent>
 
             <TabsContent value="allergens">
@@ -204,9 +194,7 @@ export default async function RecipeDetailPage({
                 <div>
                   <p className="kpi-label mb-2">Dietary tags</p>
                   {recipe.dietary_tags.length === 0 ? (
-                    <p className="text-sm text-[color:var(--color-text-muted)]">
-                      Ninguno.
-                    </p>
+                    <p className="text-sm text-[color:var(--color-text-muted)]">Ninguno.</p>
                   ) : (
                     <div className="flex flex-wrap gap-2">
                       {recipe.dietary_tags.map((d) => (

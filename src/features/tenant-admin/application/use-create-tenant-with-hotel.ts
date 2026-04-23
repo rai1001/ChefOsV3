@@ -2,7 +2,10 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
-import { createTenantWithHotel, type CreateTenantWithHotelResult } from '../infrastructure/tenant-queries'
+import {
+  createTenantWithHotel,
+  type CreateTenantWithHotelResult,
+} from '../infrastructure/tenant-queries'
 import type { TenantWithHotelInput } from '../domain/types'
 
 export function useCreateTenantWithHotel() {

@@ -19,8 +19,8 @@ export function ImportResultSummary({ result, onReset }: Props) {
     variant === 'success'
       ? { bg: 'var(--color-bg-card)', border: 'var(--color-success-border, #2a6f3f)' }
       : variant === 'warning'
-      ? { bg: 'var(--color-bg-card)', border: 'var(--color-warning-border, #b58400)' }
-      : { bg: 'var(--urgent-bg)', border: 'var(--urgent-border)' }
+        ? { bg: 'var(--color-bg-card)', border: 'var(--color-warning-border, #b58400)' }
+        : { bg: 'var(--urgent-bg)', border: 'var(--urgent-border)' }
 
   return (
     <div className="space-y-4">
@@ -34,7 +34,8 @@ export function ImportResultSummary({ result, onReset }: Props) {
         </p>
         {isSuccess && (
           <p className="text-sm mt-1">
-            Todas las filas importadas. Las nuevas recetas están en estado <strong>borrador</strong>.
+            Todas las filas importadas. Las nuevas recetas están en estado <strong>borrador</strong>
+            .
           </p>
         )}
         {isPartial && (
@@ -44,9 +45,7 @@ export function ImportResultSummary({ result, onReset }: Props) {
           </p>
         )}
         {isFailed && (
-          <p className="text-sm mt-1">
-            No se importó ninguna fila. Revisa los errores abajo.
-          </p>
+          <p className="text-sm mt-1">No se importó ninguna fila. Revisa los errores abajo.</p>
         )}
       </div>
 

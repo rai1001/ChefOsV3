@@ -98,6 +98,7 @@ Ejemplos:
 - validación aislada
 
 Cobertura típica:
+
 - unit
 
 ### Riesgo medio
@@ -111,6 +112,7 @@ Ejemplos:
 - colaboración entre dominio e infraestructura
 
 Cobertura típica:
+
 - unit
 - integration
 
@@ -127,6 +129,7 @@ Ejemplos:
 - cambios visibles de punta a punta
 
 Cobertura típica:
+
 - unit
 - integration
 - e2e cuando el flujo completo lo justifique

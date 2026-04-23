@@ -14,10 +14,7 @@ import type { MenuSection } from '../domain/types'
 const key = (hotelId: string | undefined, menuId: string | null | undefined) =>
   ['menus', 'sections', hotelId, menuId] as const
 
-export function useMenuSections(
-  hotelId: string | undefined,
-  menuId: string | null | undefined
-) {
+export function useMenuSections(hotelId: string | undefined, menuId: string | null | undefined) {
   return useQuery<MenuSection[]>({
     queryKey: key(hotelId, menuId),
     enabled: !!hotelId && !!menuId,

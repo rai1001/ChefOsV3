@@ -7,11 +7,7 @@ import { Input } from '@/components/ui/input'
 import { parseRecipesExcel } from '../application/parse-excel'
 import { validatePayload } from '../application/validate-payload'
 import { useImportRecipes } from '../application/use-import-recipes'
-import {
-  EmptyImportError,
-  ExcelParseError,
-  MissingSheetError,
-} from '../domain/errors'
+import { EmptyImportError, ExcelParseError, MissingSheetError } from '../domain/errors'
 import type { ImportResult, ValidationReport } from '../domain/types'
 import { ImportPreviewTable } from './import-preview-table'
 import { ImportResultSummary } from './import-result-summary'
@@ -52,12 +48,12 @@ export function ImportRecipesForm({ hotelId }: Props) {
         err instanceof MissingSheetError
           ? err.message
           : err instanceof EmptyImportError
-          ? err.message
-          : err instanceof ExcelParseError
-          ? err.message
-          : err instanceof Error
-          ? err.message
-          : 'Error desconocido leyendo el Excel'
+            ? err.message
+            : err instanceof ExcelParseError
+              ? err.message
+              : err instanceof Error
+                ? err.message
+                : 'Error desconocido leyendo el Excel'
       setPhase({ kind: 'error', message })
     }
   }
@@ -96,7 +92,7 @@ export function ImportRecipesForm({ hotelId }: Props) {
           unit_cost: i.unit_cost,
           preparation_notes: i.unit
             ? `Unidad original Excel: ${i.unit}${i.preparation_notes ? `. ${i.preparation_notes}` : ''}`
-            : i.preparation_notes ?? null,
+            : (i.preparation_notes ?? null),
         })),
       }
 
@@ -167,23 +163,16 @@ export function ImportRecipesForm({ hotelId }: Props) {
             <Button variant="ghost" onClick={reset}>
               Cancelar
             </Button>
-            <Button
-              disabled={phase.report.validRecipes.length === 0}
-              onClick={onConfirm}
-            >
+            <Button disabled={phase.report.validRecipes.length === 0} onClick={onConfirm}>
               Importar {phase.report.validRecipes.length} recetas
             </Button>
           </div>
         </>
       )}
 
-      {phase.kind === 'committing' && (
-        <p className="kpi-label">Subiendo al servidor…</p>
-      )}
+      {phase.kind === 'committing' && <p className="kpi-label">Subiendo al servidor…</p>}
 
-      {phase.kind === 'done' && (
-        <ImportResultSummary result={phase.result} onReset={reset} />
-      )}
+      {phase.kind === 'done' && <ImportResultSummary result={phase.result} onReset={reset} />}
     </div>
   )
 }

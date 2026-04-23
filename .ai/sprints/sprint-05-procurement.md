@@ -389,6 +389,7 @@ GR.quality_status: `accepted | partial | rejected` (solo `accepted` crea lotes s
 Types: `PurchaseRequest`, `PurchaseRequestLine`, `PurchaseOrder`, `PurchaseOrderLine`, `GoodsReceipt`, `GoodsReceiptLine`, `PriceChangeLog`, `PR_STATUSES`, `PO_STATUSES`, `GR_QUALITY_STATUSES`, `PR_STATUS_VARIANT`, `PO_STATUS_VARIANT`, `URGENCY_VARIANT`.
 
 Hooks:
+
 - `usePurchaseRequests(filters?)`, `usePurchaseRequest(id)`
 - `usePurchaseOrders(filters?)`, `usePurchaseOrder(id)`
 - `useGoodsReceipts(poId?)`, `useGoodsReceipt(id)`

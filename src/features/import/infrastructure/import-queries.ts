@@ -12,31 +12,35 @@ import {
 // ─── RPC bulk ────────────────────────────────────────────────────────────────
 
 export interface ImportRecipesRpcPayload {
-  recipes: Array<Pick<
-    ParsedRecipeRow,
-    | 'name'
-    | 'category'
-    | 'servings'
-    | 'description'
-    | 'subcategory'
-    | 'prep_time_min'
-    | 'cook_time_min'
-    | 'rest_time_min'
-    | 'target_price'
-    | 'allergens'
-    | 'dietary_tags'
-    | 'notes'
-    | 'difficulty'
-  >>
-  ingredients: Array<Pick<
-    ParsedIngredientRow,
-    | 'recipe_name'
-    | 'ingredient_name'
-    | 'quantity_gross'
-    | 'waste_pct'
-    | 'unit_cost'
-    | 'preparation_notes'
-  >>
+  recipes: Array<
+    Pick<
+      ParsedRecipeRow,
+      | 'name'
+      | 'category'
+      | 'servings'
+      | 'description'
+      | 'subcategory'
+      | 'prep_time_min'
+      | 'cook_time_min'
+      | 'rest_time_min'
+      | 'target_price'
+      | 'allergens'
+      | 'dietary_tags'
+      | 'notes'
+      | 'difficulty'
+    >
+  >
+  ingredients: Array<
+    Pick<
+      ParsedIngredientRow,
+      | 'recipe_name'
+      | 'ingredient_name'
+      | 'quantity_gross'
+      | 'waste_pct'
+      | 'unit_cost'
+      | 'preparation_notes'
+    >
+  >
 }
 
 export async function importRecipesBulk(

@@ -57,9 +57,7 @@ export function IngredientsEditor({ hotelId, recipeId, readOnly = false }: Props
       {ingredientsQ.isLoading ? (
         <p className="kpi-label">Cargando ingredientes…</p>
       ) : items.length === 0 ? (
-        <p className="text-sm text-[color:var(--color-text-muted)]">
-          Sin ingredientes todavía.
-        </p>
+        <p className="text-sm text-[color:var(--color-text-muted)]">Sin ingredientes todavía.</p>
       ) : (
         <div
           className="overflow-hidden rounded border"
@@ -96,9 +94,7 @@ export function IngredientsEditor({ hotelId, recipeId, readOnly = false }: Props
                     })}
                   </td>
                   <td className="px-3 py-2">
-                    <span
-                      className={`badge-status ${ing.product_id ? 'success' : 'warning'}`}
-                    >
+                    <span className={`badge-status ${ing.product_id ? 'success' : 'warning'}`}>
                       {ing.product_id ? 'Mapeado' : 'Pendiente'}
                     </span>
                   </td>
@@ -191,9 +187,7 @@ export function IngredientsEditor({ hotelId, recipeId, readOnly = false }: Props
               {add.isPending ? 'Añadiendo…' : 'Añadir ingrediente'}
             </Button>
           </div>
-          {error && (
-            <div className="md:col-span-5 text-xs text-danger">{error}</div>
-          )}
+          {error && <div className="md:col-span-5 text-xs text-danger">{error}</div>}
         </form>
       )}
     </div>

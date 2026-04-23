@@ -233,6 +233,7 @@ Push no debe usarse para:
 Todo cambio relevante debe pasar por Pull Request.
 
 **Un PR debe dejar claro:**
+
 - objetivo del cambio
 - alcance incluido
 - fuera de alcance
@@ -244,6 +245,7 @@ Todo cambio relevante debe pasar por Pull Request.
 - relación con sprint o tarea
 
 **No válido en un PR:**
+
 - varios objetivos mezclados
 - cambios sin contexto
 - cambios sin tests cuando aplican
@@ -347,6 +349,7 @@ Si la respuesta es no, no está listo para merge.
 Debe reflejar exactamente qué documento se crea o actualiza.
 
 Ejemplos válidos:
+
 - `docs: add git workflow spec`
 - `docs: add sprint 12 integrations`
 
@@ -355,6 +358,7 @@ Ejemplos válidos:
 La documentación debe incluirse en la misma rama y el mismo PR.
 
 No separar artificialmente:
+
 - contrato funcional
 - tests del contrato
 - documentación del contrato

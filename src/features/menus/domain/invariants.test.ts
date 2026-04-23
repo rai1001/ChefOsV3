@@ -43,10 +43,7 @@ describe('nextSectionSortOrder', () => {
 
 describe('aggregateAllergens', () => {
   it('dedup + sort', () => {
-    const rs = [
-      { allergens: ['gluten', 'dairy'] },
-      { allergens: ['dairy', 'nuts'] },
-    ]
+    const rs = [{ allergens: ['gluten', 'dairy'] }, { allergens: ['dairy', 'nuts'] }]
     expect(aggregateAllergens(rs)).toEqual(['dairy', 'gluten', 'nuts'])
   })
   it('vacío → []', () => {

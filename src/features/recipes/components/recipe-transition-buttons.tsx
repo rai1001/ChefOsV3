@@ -16,12 +16,7 @@ interface Props {
   ingredients: ReadonlyArray<RecipeIngredient>
 }
 
-export function RecipeTransitionButtons({
-  hotelId,
-  recipeId,
-  currentStatus,
-  ingredients,
-}: Props) {
+export function RecipeTransitionButtons({ hotelId, recipeId, currentStatus, ingredients }: Props) {
   const transition = useTransitionRecipe(hotelId)
   const next = getValidRecipeTransitions(currentStatus)
 
@@ -45,11 +40,7 @@ export function RecipeTransitionButtons({
     <div className="flex flex-wrap gap-2">
       {next.map((to) => {
         const variant =
-          to === 'draft' || to === 'archived'
-            ? 'ghost'
-            : to === 'deprecated'
-              ? 'danger'
-              : 'primary'
+          to === 'draft' || to === 'archived' ? 'ghost' : to === 'deprecated' ? 'danger' : 'primary'
         return (
           <Button
             key={to}

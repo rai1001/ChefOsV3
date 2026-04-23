@@ -15,10 +15,7 @@ import type { RecipeStep } from '../domain/types'
 const key = (hotelId: string | undefined, recipeId: string | null | undefined) =>
   ['recipes', 'steps', hotelId, recipeId] as const
 
-export function useRecipeSteps(
-  hotelId: string | undefined,
-  recipeId: string | null | undefined
-) {
+export function useRecipeSteps(hotelId: string | undefined, recipeId: string | null | undefined) {
   return useQuery<RecipeStep[]>({
     queryKey: key(hotelId, recipeId),
     enabled: !!hotelId && !!recipeId,
@@ -44,13 +41,7 @@ export function useAddRecipeStep(hotelId: string | undefined) {
 export function useUpdateRecipeStep(hotelId: string | undefined, recipeId: string) {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: async ({
-      stepId,
-      input,
-    }: {
-      stepId: string
-      input: UpdateRecipeStepInput
-    }) => {
+    mutationFn: async ({ stepId, input }: { stepId: string; input: UpdateRecipeStepInput }) => {
       if (!hotelId) throw new Error('hotelId requerido')
       const supabase = createClient()
       return updateRecipeStep(supabase, hotelId, stepId, input)

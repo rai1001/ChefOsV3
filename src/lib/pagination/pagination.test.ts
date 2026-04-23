@@ -72,7 +72,11 @@ describe('pageRange', () => {
   })
 
   it('clamps oversized pageSize', () => {
-    expect(pageRange({ pageSize: 999 })).toEqual({ from: 0, to: MAX_PAGE_SIZE - 1, pageSize: MAX_PAGE_SIZE })
+    expect(pageRange({ pageSize: 999 })).toEqual({
+      from: 0,
+      to: MAX_PAGE_SIZE - 1,
+      pageSize: MAX_PAGE_SIZE,
+    })
   })
 })
 

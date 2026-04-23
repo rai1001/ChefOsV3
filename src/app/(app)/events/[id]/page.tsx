@@ -158,9 +158,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
                   style={{ borderColor: 'var(--color-border)' }}
                 >
                   <span>{m.menu_name}</span>
-                  <span className="kpi-label">
-                    {m.servings_override ?? event.guest_count} pax
-                  </span>
+                  <span className="kpi-label">{m.servings_override ?? event.guest_count} pax</span>
                 </li>
               ))}
             </ul>

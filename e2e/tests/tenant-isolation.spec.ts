@@ -42,10 +42,7 @@ test.describe('tenant-isolation', () => {
   test.describe('SELECT cross-hotel devuelve vacío', () => {
     test('events de otro hotel → array vacío', async () => {
       const client = await authenticatedSupabaseClient()
-      const { data, error } = await client
-        .from('events')
-        .select('*')
-        .eq('hotel_id', FAKE_HOTEL_ID)
+      const { data, error } = await client.from('events').select('*').eq('hotel_id', FAKE_HOTEL_ID)
 
       // RLS es transparente: filtra silenciosamente, no devuelve error.
       expect(error).toBeNull()
@@ -54,10 +51,7 @@ test.describe('tenant-isolation', () => {
 
     test('clients de otro hotel → array vacío', async () => {
       const client = await authenticatedSupabaseClient()
-      const { data, error } = await client
-        .from('clients')
-        .select('*')
-        .eq('hotel_id', FAKE_HOTEL_ID)
+      const { data, error } = await client.from('clients').select('*').eq('hotel_id', FAKE_HOTEL_ID)
 
       expect(error).toBeNull()
       expect(data).toEqual([])
@@ -65,10 +59,7 @@ test.describe('tenant-isolation', () => {
 
     test('recipes de otro hotel → array vacío', async () => {
       const client = await authenticatedSupabaseClient()
-      const { data, error } = await client
-        .from('recipes')
-        .select('*')
-        .eq('hotel_id', FAKE_HOTEL_ID)
+      const { data, error } = await client.from('recipes').select('*').eq('hotel_id', FAKE_HOTEL_ID)
 
       expect(error).toBeNull()
       expect(data).toEqual([])
@@ -76,10 +67,7 @@ test.describe('tenant-isolation', () => {
 
     test('menus de otro hotel → array vacío', async () => {
       const client = await authenticatedSupabaseClient()
-      const { data, error } = await client
-        .from('menus')
-        .select('*')
-        .eq('hotel_id', FAKE_HOTEL_ID)
+      const { data, error } = await client.from('menus').select('*').eq('hotel_id', FAKE_HOTEL_ID)
 
       expect(error).toBeNull()
       expect(data).toEqual([])
@@ -87,10 +75,7 @@ test.describe('tenant-isolation', () => {
 
     test('invites de otro hotel → array vacío', async () => {
       const client = await authenticatedSupabaseClient()
-      const { data, error } = await client
-        .from('invites')
-        .select('*')
-        .eq('hotel_id', FAKE_HOTEL_ID)
+      const { data, error } = await client.from('invites').select('*').eq('hotel_id', FAKE_HOTEL_ID)
 
       expect(error).toBeNull()
       expect(data).toEqual([])

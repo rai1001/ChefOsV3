@@ -38,7 +38,9 @@ Todos los eventos comparten la misma estructura:
   "occurred_at": "ISO-8601 timestamp",
   "hotel_id": "uuid",
   "actor_user_id": "uuid | null",
-  "payload": { /* específico por evento */ }
+  "payload": {
+    /* específico por evento */
+  }
 }
 ```
 
@@ -220,9 +222,7 @@ select public.emit_event(
   "event_type": "pedido.received_partial",
   "payload": {
     "pedido_id": "uuid",
-    "faltantes": [
-      { "producto_id": "uuid", "cantidad_faltante": 5, "unidad": "kg" }
-    ],
+    "faltantes": [{ "producto_id": "uuid", "cantidad_faltante": 5, "unidad": "kg" }],
     "impacta_eventos": ["uuid", "uuid"]
   }
 }
@@ -276,18 +276,18 @@ La función `handle_*` implementa la reacción del módulo: generar alerta, enco
 
 ### Matriz de consumo (resumen)
 
-| Evento | Alertas | Automation | Notifications | Dashboard |
-|---|---|---|---|---|
-| `evento.updated` | ✅ | ✅ | ✅ | ✅ |
-| `evento.cancelled` | ✅ | ✅ | ✅ | ✅ |
-| `tarea_produccion.updated` | ✅ | ❌ | ⚠️ (si blocked) | ✅ |
-| `pedido.sent` | ❌ | ❌ | ✅ | ✅ |
-| `pedido.received_partial` | ✅ | ❌ | ✅ | ✅ |
-| `inventario.lote_expiring` | ✅ | ❌ | ✅ | ✅ |
-| `inventario.merma_recorded` | ✅ | ✅ | ❌ | ✅ |
-| `proveedor.incidencia_created` | ✅ | ❌ | ✅ | ✅ |
-| `automatizacion.pedido_sugerido` | ❌ | ❌ | ✅ | ✅ |
-| `alert.raised` | — | ❌ | ✅ | ✅ |
+| Evento                           | Alertas | Automation | Notifications   | Dashboard |
+| -------------------------------- | ------- | ---------- | --------------- | --------- |
+| `evento.updated`                 | ✅      | ✅         | ✅              | ✅        |
+| `evento.cancelled`               | ✅      | ✅         | ✅              | ✅        |
+| `tarea_produccion.updated`       | ✅      | ❌         | ⚠️ (si blocked) | ✅        |
+| `pedido.sent`                    | ❌      | ❌         | ✅              | ✅        |
+| `pedido.received_partial`        | ✅      | ❌         | ✅              | ✅        |
+| `inventario.lote_expiring`       | ✅      | ❌         | ✅              | ✅        |
+| `inventario.merma_recorded`      | ✅      | ✅         | ❌              | ✅        |
+| `proveedor.incidencia_created`   | ✅      | ❌         | ✅              | ✅        |
+| `automatizacion.pedido_sugerido` | ❌      | ❌         | ✅              | ✅        |
+| `alert.raised`                   | —       | ❌         | ✅              | ✅        |
 
 Cada módulo define en su sprint qué eventos consume y cómo reacciona.
 

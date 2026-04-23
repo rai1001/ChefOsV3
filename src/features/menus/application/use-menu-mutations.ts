@@ -26,13 +26,7 @@ export function useCreateMenu(hotelId: string | undefined, userId: string | unde
 export function useUpdateMenu(hotelId: string | undefined) {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: async ({
-      menuId,
-      input,
-    }: {
-      menuId: string
-      input: UpdateMenuInput
-    }) => {
+    mutationFn: async ({ menuId, input }: { menuId: string; input: UpdateMenuInput }) => {
       if (!hotelId) throw new Error('hotelId requerido')
       const supabase = createClient()
       return updateMenu(supabase, hotelId, menuId, input)
