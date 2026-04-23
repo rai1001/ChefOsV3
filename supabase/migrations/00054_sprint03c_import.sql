@@ -8,15 +8,15 @@ begin;
 
 -- ─── 1. Enums ────────────────────────────────────────────────────────────────
 
-do $$ begin
+do $enum_kind$ begin
   create type public.import_kind as enum ('recipes');
-exception when duplicate_object then null; end $$;
+exception when duplicate_object then null; end $enum_kind$;
 
-do $$ begin
+do $enum_status$ begin
   create type public.import_status as enum (
     'pending', 'running', 'completed', 'partial', 'failed'
   );
-exception when duplicate_object then null; end $$;
+exception when duplicate_object then null; end $enum_status$;
 
 -- ─── 2. Tabla import_runs ────────────────────────────────────────────────────
 
@@ -89,7 +89,7 @@ returns jsonb
 language plpgsql
 security definer
 set search_path = public
-as $$
+as $fn_import$
 declare
   v_user_id uuid := auth.uid();
   v_role public.app_role;
@@ -262,7 +262,7 @@ begin
     'failed', v_errors
   );
 end;
-$$;
+$fn_import$;
 
 revoke all on function public.import_recipes_bulk(uuid, jsonb) from public;
 grant execute on function public.import_recipes_bulk(uuid, jsonb) to authenticated;

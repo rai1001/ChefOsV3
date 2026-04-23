@@ -64,3 +64,6 @@ pnpm-debug.log*
 *.pfx
 secrets/
 .claude/
+
+# Codex (OpenAI CLI) — genera AGENTS.md duplicado, ignorar
+AGENTS.md
