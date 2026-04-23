@@ -8,6 +8,17 @@ import {
 
 describe('parseRecipesExcel', () => {
   const mockBuffer = new ArrayBuffer(0)
+  const createOptions = (mockWorkbook: unknown) => ({
+    loadExcelJS: async () => {
+      function MockWorkbook() {
+        return mockWorkbook
+      }
+
+      return {
+        Workbook: MockWorkbook as any,
+      }
+    },
+  })
 
   it('throws ExcelParseError when ExcelJS fails to load', async () => {
     const options = {
@@ -30,11 +41,7 @@ describe('parseRecipesExcel', () => {
         load: vi.fn().mockRejectedValue(new Error('Invalid buffer')),
       },
     }
-    const options = {
-      loadExcelJS: async () => ({
-        Workbook: vi.fn().mockReturnValue(mockWorkbook),
-      } as any),
-    }
+    const options = createOptions(mockWorkbook)
 
     await expect(parseRecipesExcel(mockBuffer, options)).rejects.toThrow(
       ExcelParseError
@@ -54,11 +61,7 @@ describe('parseRecipesExcel', () => {
         return {}
       }),
     }
-    const options = {
-      loadExcelJS: async () => ({
-        Workbook: vi.fn().mockReturnValue(mockWorkbook),
-      } as any),
-    }
+    const options = createOptions(mockWorkbook)
 
     await expect(parseRecipesExcel(mockBuffer, options)).rejects.toThrow(
       MissingSheetError
@@ -78,11 +81,7 @@ describe('parseRecipesExcel', () => {
         return {}
       }),
     }
-    const options = {
-      loadExcelJS: async () => ({
-        Workbook: vi.fn().mockReturnValue(mockWorkbook),
-      } as any),
-    }
+    const options = createOptions(mockWorkbook)
 
     await expect(parseRecipesExcel(mockBuffer, options)).rejects.toThrow(
       MissingSheetError
@@ -102,11 +101,7 @@ describe('parseRecipesExcel', () => {
       },
       getWorksheet: vi.fn().mockReturnValue(mockSheet),
     }
-    const options = {
-      loadExcelJS: async () => ({
-        Workbook: vi.fn().mockReturnValue(mockWorkbook),
-      } as any),
-    }
+    const options = createOptions(mockWorkbook)
 
     await expect(parseRecipesExcel(mockBuffer, options)).rejects.toThrow(
       EmptyImportError
@@ -136,11 +131,7 @@ describe('parseRecipesExcel', () => {
         return null
       }),
     }
-    const options = {
-      loadExcelJS: async () => ({
-        Workbook: vi.fn().mockReturnValue(mockWorkbook),
-      } as any),
-    }
+    const options = createOptions(mockWorkbook)
 
     const result = await parseRecipesExcel(mockBuffer, options)
 
