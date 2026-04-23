@@ -121,4 +121,47 @@ describe('parseRecipesExcel', () => {
     expect(parsed.recipes[0]?.name).toBe('Paella')
     expect(parsed.ingredients[0]?.ingredient_name).toBe('Arroz')
   })
+
+  it('parses aliased headers and normalizes rich values on successful imports', async () => {
+    const Workbook = createWorkbookMock({
+      recipesRows: [
+        ['receta', 'categoría', 'raciones', 'tiempo de preparación', 'alérgenos', 'difficulty'],
+        [
+          { richText: [{ text: 'Risotto' }] },
+          'main',
+          3.9,
+          12.7,
+          'lácteos, gluten',
+          'HARD',
+        ],
+      ],
+      ingredientsRows: [
+        ['recipe', 'ingredient', 'quantity', 'unit', 'waste', 'precio', 'preparation'],
+        ['Risotto', { text: 'Parmesano' }, { result: 120.5 }, 'g', 2.4, 1.75, 'Rallar fino'],
+      ],
+    })
+
+    const parsed = await parseRecipesExcel(new ArrayBuffer(8), {
+      loadExcelJS: async () => ({ Workbook } as unknown as typeof import('exceljs')),
+    })
+
+    expect(parsed.recipes).toEqual([
+      expect.objectContaining({
+        name: 'Risotto',
+        servings: 3,
+        prep_time_min: 12,
+        allergens: ['lácteos', 'gluten'],
+        difficulty: 'hard',
+      }),
+    ])
+    expect(parsed.ingredients).toEqual([
+      expect.objectContaining({
+        recipe_name: 'Risotto',
+        ingredient_name: 'Parmesano',
+        quantity_gross: 120.5,
+        waste_pct: 2.4,
+        unit_cost: 1.75,
+      }),
+    ])
+  })
 })
