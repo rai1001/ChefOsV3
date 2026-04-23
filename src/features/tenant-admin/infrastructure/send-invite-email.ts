@@ -37,15 +37,15 @@ const ROLE_LABELS_ES: Record<Role, string> = {
 }
 
 function formatExpiry(iso: string): string {
-  try {
-    return new Date(iso).toLocaleDateString('es-ES', {
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric',
-    })
-  } catch {
+  const date = new Date(iso)
+  if (Number.isNaN(date.getTime())) {
     return iso
   }
+  return date.toLocaleDateString('es-ES', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+  })
 }
 
 function buildHtml(input: SendInviteEmailInput): string {
