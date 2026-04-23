@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
-vi.mock('server-only', () => ({}))
+vi.mock('server-only', () => ({}), { virtual: true })
 
 import { sendInviteEmail, type SendInviteEmailInput } from './send-invite-email'
 import { getResendClient, DEFAULT_FROM } from '@/lib/email/client'
