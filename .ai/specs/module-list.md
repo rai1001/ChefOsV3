@@ -35,7 +35,7 @@ Este documento es normativo.
 | 4 | `recipes` | Recetas, ingredientes, pasos, sub-recetas, costeo recursivo, escandallo live | sprint-03 |
 | 5 | `menus` | Menús, secciones, recetas en secciones, alérgenos agregados, tipos | sprint-03b |
 | 6 | `import` | Importación bulk desde Excel/CSV (recetas, productos, inventario, etc.) + import_runs log | sprint-03c |
-| 7 | `catalog` | Productos, categorías, proveedores, ofertas, alias | sprint-04 |
+| 7 | `catalog` | Productos, categorías, proveedores, ofertas, alias | sprint-04a / 04b / 04c (ADR-0014) |
 | 8 | `procurement` | PR / PO / GR, consolidación, OCR albaranes | sprint-05 |
 | 9 | `inventory` | Lotes FIFO, reservations, counts, waste, forensics | sprint-06 |
 | 10 | `production` | Workflows, mise en place, KDS, kanban, shopping list | sprint-07 |

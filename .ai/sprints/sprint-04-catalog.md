@@ -1,4 +1,12 @@
-# ChefOS v3 Sprint 04 - Catalog
+# ChefOS v3 Sprint 04 - Catalog (DOC PARAGUAS — NO IMPLEMENTAR)
+
+> **Estado 2026-04-23 (ADR-0014):** este sprint se ha partido en 3 sub-sprints independientes. NO implementar contra este archivo. Implementar contra:
+>
+> - [`sprint-04a-catalog-core.md`](./sprint-04a-catalog-core.md) — units + products + categories + aliases + mapping import. Desbloquea NULL de sprint-03c.
+> - [`sprint-04b-catalog-suppliers.md`](./sprint-04b-catalog-suppliers.md) — suppliers + config + offers + product_supplier_refs + precedencia offer>manual.
+> - [`sprint-04c-catalog-observability.md`](./sprint-04c-catalog-observability.md) — incidencias + métricas + eventos + precedencia GR. **Ejecutar tras sprint-05-procurement.**
+>
+> Este documento se conserva como referencia del dominio completo del módulo catalog (herencia v2). El "Detalle específico del dominio" al final sigue siendo canónico como visión global.
 
 ## Objetivo del sprint
 
