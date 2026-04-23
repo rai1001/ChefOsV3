@@ -13,10 +13,24 @@ export interface LogContext {
 }
 
 export function newCorrelationId(): string {
-  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+  if (typeof crypto === 'undefined') {
+    throw new Error('Secure cryptographic primitives are not available in this environment')
+  }
+
+  if (typeof crypto.randomUUID === 'function') {
     return crypto.randomUUID()
   }
-  return `corr_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`
+
+  if (typeof crypto.getRandomValues === 'function') {
+    const array = new Uint8Array(16)
+    crypto.getRandomValues(array)
+    const hex = Array.from(array)
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('')
+    return `corr_${hex}`
+  }
+
+  throw new Error('Secure cryptographic primitives are not available in this environment')
 }
 
 function emit(level: LogLevel, message: string, context?: LogContext): void {
