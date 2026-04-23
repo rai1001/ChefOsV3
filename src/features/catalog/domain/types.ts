@@ -124,3 +124,89 @@ export interface ProductsFilter {
   categoryId?: string | null
   activeOnly?: boolean
 }
+
+// ─── Sprint-04b: Suppliers + Offers + ProductSupplierRefs + Prices ────────────
+
+export interface Supplier {
+  id: string
+  hotel_id: string
+  name: string
+  contact_name: string | null
+  email: string | null
+  phone: string | null
+  address: string | null
+  tax_id: string | null
+  payment_terms: string | null
+  delivery_days: unknown // jsonb
+  min_order_amount: number | null
+  rating: number
+  notes: string | null
+  is_active: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface SupplierConfig {
+  id: string
+  hotel_id: string
+  supplier_id: string
+  delivery_days: unknown // jsonb
+  cutoff_time: string | null
+  lead_time_hours: number | null
+  min_order_amount: number | null
+  min_order_units: number | null
+  reception_window_start: string | null
+  reception_window_end: string | null
+  allows_urgent_delivery: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface SupplierOffer {
+  id: string
+  hotel_id: string
+  supplier_id: string
+  product_id: string
+  unit_id: string | null
+  unit_price: number
+  min_quantity: number | null
+  valid_from: string | null
+  valid_to: string | null
+  is_preferred: boolean
+  sku_supplier: string | null
+  notes: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface ProductSupplierRef {
+  id: string
+  hotel_id: string
+  product_id: string
+  supplier_id: string
+  supplier_code: string
+  supplier_name: string | null
+  purchase_unit_id: string | null
+  conversion_factor: number
+  notes: string | null
+  created_at: string
+  updated_at: string
+}
+
+// RPC get_catalog_prices result entry.
+export interface CatalogPrice {
+  product_id: string
+  price: number | null
+  unit_id: string | null
+  supplier_id: string | null
+  offer_id: string | null
+  source: 'offer_preferred' | 'offer_cheapest' | null
+  is_preferred: boolean | null
+  currency: string
+}
+
+export interface SuppliersFilter {
+  hotelId: string
+  search?: string
+  activeOnly?: boolean
+}
