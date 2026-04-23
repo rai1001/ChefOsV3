@@ -25,7 +25,7 @@ describe('tenant-admin domain errors', () => {
       new MembershipNotFoundError('uuid-x'),
     ]
     const codes = errs.map((e) => e.code)
-    expect(new Set(codes).size).toBe(codes.length) // todos únicos
+    expect(new Set(codes).size).toBe(codes.length) // asegurar unicidad de códigos
   })
 
   it('HotelSlugConflictError retiene slug', () => {
