@@ -744,6 +744,60 @@ Cuando se construyan ≥3 RPCs bulk (recipes + products + inventory), reevaluar 
 
 ---
 
+### ADR-0014 — Módulo `catalog` partido en 3 sub-sprints
+
+**Fecha**: 2026-04-23
+**Estado**: aceptada
+**Módulo / área afectada**: `catalog` (nuevo), `recipes` (consumidor mapping), `supabase/migrations`, module-list, sprint docs
+
+#### Contexto
+
+`sprint-04-catalog.md` absorbe el dominio completo de v2 (Product + ProductCategory + ProductAlias + PriceHistory + Supplier + SupplierConfig + SupplierOffer + SupplierIncident + ProductSupplierRef + métricas + bus de eventos + precedencia GR>offer>manual). El alcance es ~20h de trabajo y mezcla concerns de niveles muy distintos:
+
+1. Maestro básico de productos/unidades/alias — **desbloqueo crítico** para mapear ingredientes NULL que dejó sprint-03c.
+2. Proveedores + ofertas con SKU/conversión — **habilitador** para escandallo con precios reales y sprint-05-procurement.
+3. Incidencias + métricas + eventos + precedencia GR — **observabilidad y calidad** que requiere datos reales de sprint-05-procurement (GRs) para tener sentido.
+
+Ejecutarlo como un único sprint produce un PR gigante, riesgo alto de regresión, y acopla entregables con dependencias temporales distintas (04c sin GRs no tiene datos que alimentarlo).
+
+#### Opciones consideradas
+
+1. **Sprint único (doc tal cual)** — fiel al doc, pero ~20h, PR inmanejable, bloquea recipes más tiempo del necesario.
+2. **Partir en 3 sub-sprints** — 04a (core + mapping import), 04b (suppliers + offers), 04c (incidencias + métricas + eventos, post sprint-05).
+3. **Recortar scope permanente** — borrar del doc incidencias/métricas/eventos. Rechazado: v2 lleva esto en producción y Eurostars lo usa; no es scope fantasma.
+
+#### Decisión
+
+**Partir `sprint-04-catalog` en 3 sub-sprints** mantenidos como documentos independientes bajo `.ai/sprints/`:
+
+- **`sprint-04a-catalog-core.md`** — units + products + product_categories (por hotel) + product_aliases + price_history (tabla solo, sin triggers) + RPC `resolve_ingredient_mapping_bulk` + RPC `match_product_by_alias`. UI: `/catalog/products`, `/catalog/units`, `/recipes/mapping`. Estimado 4-5h. Cierra el NULL de sprint-03c.
+- **`sprint-04b-catalog-suppliers.md`** — suppliers + supplier_config + supplier_offers + product_supplier_refs + RPC `get_catalog_prices` (precedencia offer > manual; GR en 04c) + RPC `mark_offer_preferred`. UI: `/catalog/suppliers`. Estimado 5-6h. Habilita escandallo con precios reales.
+- **`sprint-04c-catalog-observability.md`** — supplier_incidents + triggers desde `goods_receipts` + RPC `record_supplier_incident` + RPC `get_supplier_metrics` + bus de eventos dominio + extender `get_catalog_prices` con precedencia GR. Estimado 3-4h. **Se ejecuta DESPUÉS de sprint-05-procurement** (dependencia de datos).
+
+El `sprint-04-catalog.md` original se conserva como **doc paraguas** (apunta a los 3 sub-docs y no se implementa directamente).
+
+#### Razón
+
+- 04a desbloquea mapping NULL de sprint-03c (alto valor, bajo riesgo, independiente).
+- 04b entrega proveedores sin depender de incidencias (independiente de 05).
+- 04c sin 05 es código muerto (incidencias y métricas necesitan GRs reales).
+- PRs de tamaño revisable (<1000 LOC cada uno).
+- Permite pausar entre bloques para probar en producción.
+- Preserva el doc paraguas: el dominio completo sigue reflejado, no se pierde contexto v2.
+
+#### Consecuencias
+
+- `module-list.md` mantiene 17 módulos. `catalog` (módulo 7) sigue siendo el mismo, pero el sprint de entrega se parte en 04a/04b/04c.
+- Numeración migraciones: 00055-00058 en 04a, 00059-00062 en 04b, 00073-00075 en 04c (tras sprint-05).
+- ADR-0014 puede revisarse si 04a descubre que productos dependen más de lo esperado de units/categories y fuerza merge de 04a+04b.
+- Eventos de dominio consolidados en 04c + sprint-14-agents (infrastructure de bus). Hasta entonces, emisiones stubbed.
+
+#### Revisable
+
+Si al cerrar 04a se descubre que separar suppliers+offers es artificial (el UI necesita crear supplier inline al crear oferta), fusionar 04b en 04a y renombrar. Revisar tras 04a.
+
+---
+
 ## Mantenimiento
 
 Cada ADR debe poder leerse en <5 minutos. Si una decisión requiere más, dividirla en varias ADRs.
