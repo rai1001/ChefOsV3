@@ -6,6 +6,7 @@ import {
   useUnmappedIngredients,
 } from '../application/use-resolve-mapping'
 import { useMatchProductByAlias } from '../application/use-product-aliases'
+import { useProducts } from '../application/use-products'
 import { useUnits } from '../application/use-units'
 import {
   mappingResultSummary,
@@ -22,7 +23,14 @@ interface RowState {
 
 export function MappingTable({ hotelId }: { hotelId: string }) {
   const { data: unmapped = [], isLoading, error } = useUnmappedIngredients(hotelId)
-  const { data: units = [] } = useUnits(hotelId)
+  const { data: units = [], error: unitsError } = useUnits(hotelId)
+  // Lista completa de productos activos del hotel — fallback por si el RPC
+  // trigram no devuelve sugerencias. Paginado a 200 suficiente para MVP.
+  const { data: productsPage, error: productsError } = useProducts(
+    { hotelId, activeOnly: true },
+    { pageSize: 200 }
+  )
+  const allProducts = productsPage?.rows ?? []
   const resolve = useResolveMappingBulk()
 
   const [draft, setDraft] = useState<Record<string, RowState>>({})
@@ -82,8 +90,24 @@ export function MappingTable({ hotelId }: { hotelId: string }) {
     }
   }
 
+  // Errores silenciosos de productos/unidades se muestran como warning inline.
+  const loadErrors = [productsError?.message, unitsError?.message].filter(Boolean)
+
   return (
     <div className="space-y-4">
+      {loadErrors.length > 0 && (
+        <div
+          className="rounded border p-3 text-sm"
+          style={{
+            borderColor: 'var(--color-warning-fg)',
+            background: 'var(--color-warning-bg)',
+            color: 'var(--color-warning-fg)',
+          }}
+        >
+          <strong>Aviso:</strong> error cargando catálogo — {loadErrors.join(' · ')}
+        </div>
+      )}
+
       <div className="flex items-center gap-3">
         <p className="text-sm text-[color:var(--color-text-muted)]">
           {unmapped.length} ingrediente{unmapped.length === 1 ? '' : 's'} sin mapear
@@ -149,6 +173,7 @@ export function MappingTable({ hotelId }: { hotelId: string }) {
                   hotelId={hotelId}
                   row={row}
                   units={units}
+                  allProducts={allProducts}
                   draft={d}
                   onDraftChange={(next) =>
                     setDraft((prev) => ({ ...prev, [row.ingredient_id]: next }))
@@ -167,6 +192,7 @@ function MappingRow({
   hotelId,
   row,
   units,
+  allProducts,
   draft,
   onDraftChange,
 }: {
@@ -180,6 +206,7 @@ function MappingRow({
     unit_id: string | null
   }
   units: Array<{ id: string; name: string; abbreviation: string }>
+  allProducts: Array<{ id: string; name: string }>
   draft: RowState
   onDraftChange: (next: RowState) => void
 }) {
@@ -189,6 +216,12 @@ function MappingRow({
 
   const currentProductId = draft.productId ?? row.product_id
   const currentUnitId = draft.unitId ?? row.unit_id
+
+  // Productos restantes que no están en sugerencias (para lista completa).
+  const matchedIds = new Set(matches.map((m) => m.product_id))
+  const remainingProducts = allProducts
+    .filter((p) => !matchedIds.has(p.id))
+    .sort((a, b) => a.name.localeCompare(b.name))
 
   return (
     <tr className="border-t" style={{ borderColor: 'var(--color-border)' }}>
@@ -209,11 +242,24 @@ function MappingRow({
           }}
         >
           <option value="">— Sin mapear —</option>
-          {matches.map((m) => (
-            <option key={m.product_id} value={m.product_id}>
-              {m.product_name} ({(m.similarity * 100).toFixed(0)}%)
-            </option>
-          ))}
+          {matches.length > 0 && (
+            <optgroup label="Sugerencias (match fuzzy)">
+              {matches.map((m) => (
+                <option key={m.product_id} value={m.product_id}>
+                  {m.product_name} ({(m.similarity * 100).toFixed(0)}%)
+                </option>
+              ))}
+            </optgroup>
+          )}
+          {remainingProducts.length > 0 && (
+            <optgroup label="Todos los productos">
+              {remainingProducts.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name}
+                </option>
+              ))}
+            </optgroup>
+          )}
         </select>
       </td>
       <td className="px-3 py-2">

@@ -8,16 +8,23 @@ import {
   UNIT_TYPES,
 } from './types'
 
+// Zod 4 `.uuid()` aplica RFC 4122 estricto (version + variant bits).
+// Rechaza UUIDs demo/test (ej. 22222222-2222-2222-2222-222222222222) que
+// Postgres acepta sin problema. Usamos regex laxo que valida formato canónico
+// 8-4-4-4-12 hex sin imponer version/variant — consistente con Postgres uuid.
+const UUID_LOOSE = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/
+const uuidString = () => z.string().regex(UUID_LOOSE, 'Invalid UUID')
+
 // ─── Unidades de medida (v2 per-hotel) ────────────────────────────────────────
 
 export const unitOfMeasureSchema = z.object({
-  id: z.string().uuid(),
-  hotel_id: z.string().uuid(),
+  id: uuidString(),
+  hotel_id: uuidString(),
   name: z.string().min(1).max(64),
   abbreviation: z.string().min(1).max(16),
   unit_type: z.enum(UNIT_TYPES),
   conversion_factor: z.number().positive(),
-  base_unit_id: z.string().uuid().nullable(),
+  base_unit_id: uuidString().nullable(),
   is_default: z.boolean(),
   created_at: z.string(),
 })
@@ -31,13 +38,13 @@ export const allergensSchema = z
   .default([])
 
 export const productSchema = z.object({
-  id: z.string().uuid(),
-  hotel_id: z.string().uuid(),
-  category_id: z.string().uuid().nullable(),
+  id: uuidString(),
+  hotel_id: uuidString(),
+  category_id: uuidString().nullable(),
   name: z.string().min(1).max(200),
   description: z.string().nullable(),
   sku: z.string().max(64).nullable(),
-  default_unit_id: z.string().uuid().nullable(),
+  default_unit_id: uuidString().nullable(),
   min_stock: z.number().nullable(),
   max_stock: z.number().nullable(),
   reorder_point: z.number().nullable(),
@@ -51,12 +58,12 @@ export const productSchema = z.object({
 
 // Input para crear/editar producto desde UI.
 export const productInputSchema = z.object({
-  hotel_id: z.string().uuid(),
-  category_id: z.string().uuid().nullable().optional(),
+  hotel_id: uuidString(),
+  category_id: uuidString().nullable().optional(),
   name: z.string().trim().min(1, 'Nombre requerido').max(200),
   description: z.string().max(2000).nullable().optional(),
   sku: z.string().max(64).nullable().optional(),
-  default_unit_id: z.string().uuid().nullable().optional(),
+  default_unit_id: uuidString().nullable().optional(),
   min_stock: z.number().nonnegative().nullable().optional(),
   max_stock: z.number().nonnegative().nullable().optional(),
   reorder_point: z.number().nonnegative().nullable().optional(),
@@ -71,9 +78,9 @@ export type ProductInput = z.infer<typeof productInputSchema>
 // ─── Aliases ──────────────────────────────────────────────────────────────────
 
 export const aliasSchema = z.object({
-  id: z.string().uuid(),
-  hotel_id: z.string().uuid(),
-  product_id: z.string().uuid(),
+  id: uuidString(),
+  hotel_id: uuidString(),
+  product_id: uuidString(),
   alias_name: z.string().min(1).max(200),
   source_type: z.enum(ALIAS_SOURCE_TYPES),
   confidence_score: z.number().min(0).max(1),
@@ -81,8 +88,8 @@ export const aliasSchema = z.object({
 })
 
 export const aliasInputSchema = z.object({
-  hotel_id: z.string().uuid(),
-  product_id: z.string().uuid(),
+  hotel_id: uuidString(),
+  product_id: uuidString(),
   alias_name: z.string().trim().min(1, 'Alias requerido').max(200),
   source_type: z.enum(ALIAS_SOURCE_TYPES).default('manual'),
   confidence_score: z.number().min(0).max(1).default(1.0),
@@ -93,10 +100,10 @@ export type AliasInput = z.infer<typeof aliasInputSchema>
 // ─── Mapping bulk ─────────────────────────────────────────────────────────────
 
 export const mappingEntrySchema = z.object({
-  recipe_id: z.string().uuid(),
+  recipe_id: uuidString(),
   ingredient_name: z.string().trim().min(1),
-  product_id: z.string().uuid().nullable(),
-  unit_id: z.string().uuid().nullable(),
+  product_id: uuidString().nullable(),
+  unit_id: uuidString().nullable(),
 })
 
 export const mappingPayloadSchema = z.object({
@@ -108,8 +115,8 @@ export type MappingPayload = z.infer<typeof mappingPayloadSchema>
 // ─── Filtros listado productos ────────────────────────────────────────────────
 
 export const productsFilterSchema = z.object({
-  hotelId: z.string().uuid(),
+  hotelId: uuidString(),
   search: z.string().trim().max(200).optional(),
-  categoryId: z.string().uuid().nullable().optional(),
+  categoryId: uuidString().nullable().optional(),
   activeOnly: z.boolean().default(true),
 })
