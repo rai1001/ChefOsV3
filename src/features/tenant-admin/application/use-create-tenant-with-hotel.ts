@@ -14,7 +14,7 @@ export function useCreateTenantWithHotel() {
       return createTenantWithHotel(supabase, input)
     },
     onSuccess: () => {
-      // Invalida todo: el user ahora tiene hotel activo que antes era null.
+      // Revalidate the layout because the user's active hotel changed from null.
       queryClient.invalidateQueries()
     },
   })
