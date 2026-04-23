@@ -24,15 +24,20 @@ function formatZodIssues(excelRow: number, issues: ZodIssue[]): RowValidationIss
 }
 
 export function validatePayload(payload: ParsedRecipesPayload): ValidationReport {
+  const { recipeIssues, validRecipes } = validateRecipes(payload.recipes)
+  const { ingredientIssues, validIngredients } = validateIngredients(payload.ingredients, validRecipes)
+
+  return { recipeIssues, ingredientIssues, validRecipes, validIngredients }
+}
+
+function validateRecipes(recipes: ParsedRecipeRow[]) {
   const recipeIssues: RowValidationIssue[] = []
-  const ingredientIssues: RowValidationIssue[] = []
   const validRecipes: ParsedRecipeRow[] = []
-  const validIngredients: ParsedIngredientRow[] = []
 
   // ─── Validar recetas con Zod ─────────────────────────────────────────────
   // Detectar duplicados de nombre dentro del mismo Excel.
   const seenNames = new Map<string, number>() // normalized name → first excel_row
-  for (const row of payload.recipes) {
+  for (const row of recipes) {
     const result = parsedRecipeRowSchema.safeParse(row)
     if (!result.success) {
       recipeIssues.push(...formatZodIssues(row.excel_row, result.error.issues))
@@ -53,14 +58,21 @@ export function validatePayload(payload: ParsedRecipesPayload): ValidationReport
     validRecipes.push(result.data as ParsedRecipeRow)
   }
 
+  return { recipeIssues, validRecipes }
+}
+
+function validateIngredients(ingredients: ParsedIngredientRow[], validRecipes: ParsedRecipeRow[]) {
+  const ingredientIssues: RowValidationIssue[] = []
+  const validIngredients: ParsedIngredientRow[] = []
+
   // ─── Validar ingredientes con Zod ────────────────────────────────────────
   const validRecipeNames = validRecipes.map((r) => r.name)
   const orphans = findOrphanIngredientRecipes(
     validRecipeNames,
-    payload.ingredients.map((i) => i.recipe_name)
+    ingredients.map((i) => i.recipe_name)
   )
 
-  for (const row of payload.ingredients) {
+  for (const row of ingredients) {
     const result = parsedIngredientRowSchema.safeParse(row)
     if (!result.success) {
       ingredientIssues.push(...formatZodIssues(row.excel_row, result.error.issues))
@@ -79,5 +91,5 @@ export function validatePayload(payload: ParsedRecipesPayload): ValidationReport
     validIngredients.push(result.data as ParsedIngredientRow)
   }
 
-  return { recipeIssues, ingredientIssues, validRecipes, validIngredients }
+  return { ingredientIssues, validIngredients }
 }
