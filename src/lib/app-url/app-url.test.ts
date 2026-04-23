@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   buildAbsoluteUrl,
+  getAllowedAppOrigin,
   getCanonicalAppUrl,
   InvalidAppUrlError,
   MissingAppUrlError,
@@ -94,5 +95,19 @@ describe('buildAbsoluteUrl', () => {
   it('throws if base URL fails allowlist enforcement', () => {
     process.env.NEXT_PUBLIC_APP_URL = 'https://evil.com'
     expect(() => buildAbsoluteUrl('/x', { enforceAllowlist: true })).toThrow(InvalidAppUrlError)
+  })
+})
+
+describe('getAllowedAppOrigin', () => {
+  it('returns preferred origin when it is in allowlist', () => {
+    process.env.NEXT_PUBLIC_APP_URL = 'https://app.chefos.dev'
+    process.env.APP_URL_ALLOWLIST = 'https://app.chefos.dev,https://staging.chefos.dev'
+    expect(getAllowedAppOrigin('https://staging.chefos.dev')).toBe('https://staging.chefos.dev')
+  })
+
+  it('falls back to canonical origin when preferred origin is not in allowlist', () => {
+    process.env.NEXT_PUBLIC_APP_URL = 'https://app.chefos.dev'
+    process.env.APP_URL_ALLOWLIST = 'https://app.chefos.dev,https://staging.chefos.dev'
+    expect(getAllowedAppOrigin('https://attacker.com')).toBe('https://app.chefos.dev')
   })
 })
