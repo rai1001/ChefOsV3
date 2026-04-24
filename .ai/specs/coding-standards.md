@@ -260,6 +260,20 @@ salvo que el contexto los justifique de forma muy clara.
 - `buildInventorySnapshot`
 - `runComplianceCheck`
 
+### Naming de objetos de base de datos (ADR-0015)
+
+Todos los objetos de DB creados por v3 llevan prefijo `v3_`:
+
+- **Tablas**: `v3_products`, `v3_suppliers`, `v3_recipes`, etc.
+- **Enums**: `v3_app_role`, `v3_recipe_status`, etc.
+- **Funciones / RPCs**: `v3_check_membership`, `v3_get_catalog_prices`, etc.
+- **Triggers**: `v3_tg_price_history_from_offer`, etc.
+- **Archivos de migración**: `NNNNN_v3_<descripcion>.sql`.
+
+Los **types TypeScript internos NO llevan prefijo**: `Product`, `Supplier`, `RecipeIngredient`. El prefijo `v3_` vive solo en DB y en la capa `infrastructure/` (`supabase.from('v3_products')`, `supabase.rpc('v3_get_catalog_prices')`). Esto preserva la DX: el código de dominio y aplicación trabaja con nombres limpios.
+
+Al sunset de v2 (fecha por determinar), una migración renombrará `v3_*` → nombre limpio. Ver ADR-0015 en `decisions-log.md`.
+
 ---
 
 ## Reglas de funciones y componentes

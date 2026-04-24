@@ -798,6 +798,81 @@ Si al cerrar 04a se descubre que separar suppliers+offers es artificial (el UI n
 
 ---
 
+### ADR-0015 — Namespace `v3_` total (tablas + RPCs + enums + triggers + índices)
+
+**Fecha**: 2026-04-24
+**Estado**: aceptada
+**Módulo / área afectada**: TODO v3 (todos los módulos) + supabase/migrations + capa infrastructure
+
+#### Contexto
+
+Desde el arranque de v3 se aplicó ADR-0003 (Supabase compartido con v2). Consecuencia práctica: v3 reutiliza tablas v2 directamente (`products`, `suppliers`, `recipes`, etc.) y crea tablas propias sin prefijo (`invites`, `import_runs`). Durante sprint-04 esto generó tres clases de fricción repetidas:
+
+1. **Colisiones de schema**: el plan inicial de sprint-04a intentó crear `products`/`units` como tablas paralelas; la DB ya las tenía de v2 con schema diferente. Rollback + rediseño sobre schema v2.
+2. **Bugs por asumir schema v3 cuando era v2**: constraint unique compuesto distinto al esperado (`supplier_configs` `onConflict`), enums con valores no documentados (`storage_type` = ambient/refrigerated/frozen, no los que v3 supuso), RLS con policy solo SELECT donde v3 necesita INSERT (`price_history`).
+3. **Imposibilidad de refactor atómico**: cambiar la forma de una tabla sin romper Eurostars producción v2.
+
+La productividad esperada se ve erosionada porque **cada sprint nuevo repite el mismo patrón**: descubrir schema v2 → adaptar v3 → topar con diferencia → fix. Sprint-05-procurement iba a ser el siguiente caso (PO/PR/GR son tablas que también existen en v2 con nombres distintos).
+
+Alternativa considerada en sprint-04: prefijo `v3_` solo en tablas nuevas (las que v2 no tiene). Aceptada en una revisión previa pero descartada porque no resuelve el problema real — v3 sigue mutando tablas compartidas con v2.
+
+El patrón RestoOS v2 (documentado en memoria usuario) prefija con `v2_` todas las tablas nuevas y migraciones. Al sunset de v1 → migración final renombra `v2_*` → nombres limpios y dropea v1.
+
+#### Opciones consideradas
+
+1. **Rewrite total con prefijo `v3_`** (esta ADR). Costoso ahora, liberador después.
+2. **Status quo con ADR-0014 revisado** (solo prefijo en tablas nuevas que v2 no tiene). Rechazada porque no elimina la fricción en módulos que mutan tablas v2.
+3. **Fork Supabase project separado para v3**. Clean slate pero duplica ops (auth, buckets, edge functions, URL producción, dominios) y rompe ADR-0003. Rechazada por coste operacional alto y porque retrasa entrega.
+
+#### Decisión
+
+**Rewrite total con prefijo `v3_`.** Aplica a:
+
+- **Tablas**: `v3_tenants`, `v3_hotels`, `v3_memberships`, `v3_profiles`, `v3_events`, `v3_invites`, `v3_recipes`, `v3_recipe_ingredients`, `v3_recipe_steps`, `v3_menus`, `v3_menu_sections`, `v3_products`, `v3_product_aliases`, `v3_units_of_measure`, `v3_suppliers`, `v3_supplier_configs`, `v3_supplier_offers`, `v3_product_supplier_refs`, `v3_price_history`, `v3_import_runs`, + cualquier tabla nueva en sprints 05+.
+- **Enums**: `v3_app_role`, `v3_recipe_status`, `v3_recipe_category`, `v3_recipe_difficulty`, `v3_product_storage_type`, `v3_unit_type`, `v3_alias_source_type`, `v3_import_kind`, `v3_import_status`, `v3_price_source`, + cualquier enum nuevo.
+- **Funciones/RPCs**: `v3_check_membership`, `v3_is_member_of`, `v3_get_member_role`, `v3_get_active_hotel`, `v3_create_invite`, `v3_accept_invite`, `v3_revoke_invite`, `v3_preview_invite`, `v3_import_recipes_bulk`, `v3_match_product_by_alias`, `v3_resolve_ingredient_mapping_bulk`, `v3_mark_offer_preferred`, `v3_get_catalog_prices`, + RPCs nuevos.
+- **Triggers**: `v3_tg_price_history_from_offer`, + triggers nuevos.
+- **Índices**: `v3_products_name_trgm`, `v3_product_aliases_alias_name_trgm`, etc. (incluso si el índice es autogenerado por PK / FK, debe cumplir la convención cuando sea posible).
+- **Migraciones**: `NNNNN_v3_<descripcion>.sql`.
+
+**Data v2 se migra con seed** (copia `products → v3_products`, `recipes → v3_recipes`, etc.) una sola vez al crear el schema v3_. A partir de ese punto v2 y v3 **divergen**. Cambios en v3 NO se propagan a v2 y viceversa. Eurostars Iago (cliente v1/v2) sigue con v2 hasta que se migre a v3 explícitamente.
+
+**Types TS internos mantienen nombre corto** (`Product`, `Supplier`, `RecipeIngredient`). El prefijo `v3_` vive solo en DB y en infra (`supabase.from('v3_products')`, `supabase.rpc('v3_get_catalog_prices')`). Eso preserva la DX para features TS y queda como detalle de infraestructura.
+
+**Migración futura al sunset v2**: una migración única renombra `v3_*` → nombre limpio y dropea tablas v2 equivalentes. Generable automáticamente con script que lee este ADR.
+
+#### Razón
+
+- **Coste una vez vs. coste repetido**: el refactor es 20-30h. Sin él, cada sprint futuro pierde 3-5h en descubrimientos v2.
+- **Aislamiento total de v2**: Eurostars producción blindada. v3 puede mutar schema libremente.
+- **Testing limpio**: los smokes y E2E trabajan sobre data v3 que podemos resetear sin miedo.
+- **DX mejor**: `v3_` deja claro en la query qué es v3. Al leer código, `supabase.from('v3_products')` vs `supabase.from('products')` da contexto.
+- **ADR-0003 sigue válido**: Supabase se comparte a nivel proyecto, solo cambia la convención dentro del schema `public`.
+- **Replica patrón RestoOS v2 probado**: mismo patrón ya aplicado en otro proyecto de Israel.
+
+#### Consecuencias
+
+- ADR-0003 pasa a estado "vigente pero aumentado por 0015": mismo proyecto, schema namespaced.
+- PR #46 (sprint-04b) **cerrado sin merge** 2026-04-24. Código rescatado a branch `feature/v3-namespace-rewrite` para rewrite.
+- ADR-0014 (catalog partido en 04a/04b/04c) vigente pero migraciones 00055-00057 pierden su valor incremental — pasan a ser baseline del rewrite que se ejecutará entero en la rama nueva.
+- Numeración migraciones rewrite: 00058+ con patrón `NNNNN_v3_<nombre>.sql`.
+- Seed script debe copiar data de Eurostars demo hotel (`22222222-2222-2222-2222-222222222222`) como mínimo. Otros hoteles según política que se decida al aplicar.
+- Refactor TS en cada feature folder (identity, commercial, tenant-admin, recipes, menus, import, catalog): buscar/reemplazar `.from('X')` → `.from('v3_X')` y `.rpc('Y')` → `.rpc('v3_Y')`.
+- `src/types/database.ts` se regenera una vez completas las migraciones. Pierde todos los types v2; tendrá solo types v3_.
+- Tests: los mocks cambian nombre de tabla/RPC. Los tests de dominio (invariants, schemas) no cambian.
+
+#### Revisable
+
+Si durante el rewrite se descubre que:
+
+- Un hotel nuevo (que no sea el Eurostars demo) vive en v2 y debe migrarse también → ampliar seed.
+- Dos módulos chocan en el mismo nombre de tabla (improbable, pero posible si el prefijo se aplicó de forma inconsistente) → revisión de naming.
+- Edge functions v2 siguen tocando tablas v2 → decidir si reapuntarlas a v3 o dejarlas legacy (probable: dejar legacy, planificar migración).
+
+Si dentro de 30 días tras aplicar ADR-0015 el rewrite no se cerró y está generando más fricción que beneficio → re-evaluar o revertir a Fork Supabase project.
+
+---
+
 ## Mantenimiento
 
 Cada ADR debe poder leerse en <5 minutos. Si una decisión requiere más, dividirla en varias ADRs.
