@@ -12,6 +12,7 @@
 // ── Types ────────────────────────────────────────────────────────────────────
 export type {
   AliasSourceType,
+  CatalogPrice,
   MappingEntry,
   MappingFailReason,
   MappingFailure,
@@ -23,6 +24,11 @@ export type {
   ProductMatchKind,
   ProductsFilter,
   ProductStorageType,
+  ProductSupplierRef,
+  Supplier,
+  SupplierConfig,
+  SupplierOffer,
+  SuppliersFilter,
   UnitOfMeasure,
   UnitType,
 } from './domain/types'
@@ -41,13 +47,24 @@ export {
   allergensSchema,
   mappingEntrySchema,
   mappingPayloadSchema,
+  offerInputSchema,
   productInputSchema,
   productSchema,
   productsFilterSchema,
+  supplierConfigInputSchema,
+  supplierInputSchema,
+  suppliersFilterSchema,
   unitOfMeasureSchema,
 } from './domain/schemas'
 
-export type { AliasInput, MappingPayload, ProductInput } from './domain/schemas'
+export type {
+  AliasInput,
+  MappingPayload,
+  OfferInput,
+  ProductInput,
+  SupplierConfigInput,
+  SupplierInput,
+} from './domain/schemas'
 
 // ── Invariants + labels ──────────────────────────────────────────────────────
 export {
@@ -57,6 +74,11 @@ export {
   convertUnit,
   dedupeMatchesByProduct,
   filterProductsClient,
+  filterSuppliersClient,
+  formatCatalogPrice,
+  groupOffersBySupplier,
+  isOfferDateRangeValid,
+  isOfferValidNow,
   isProductEditable,
   mappingResultSummary,
   normalizeAllergens,
@@ -71,8 +93,11 @@ export {
   CategoryNotFoundError,
   MappingAmbiguousError,
   MappingNoMatchError,
+  OfferInvalidDateRangeError,
+  OfferNotFoundError,
   ProductNotFoundError,
   ProductWrongHotelError,
+  SupplierNotFoundError,
   UnitWrongHotelError,
 } from './domain/errors'
 
@@ -101,3 +126,34 @@ export {
   useResolveMappingBulk,
   useUnmappedIngredients,
 } from './application/use-resolve-mapping'
+
+// Sprint-04b — suppliers + offers + prices
+export {
+  useArchiveSupplier,
+  useCreateSupplier,
+  useRestoreSupplier,
+  useSupplier,
+  useSuppliers,
+  useUpdateSupplier,
+} from './application/use-suppliers'
+
+export {
+  useSupplierConfig,
+  useUpsertSupplierConfig,
+} from './application/use-supplier-config'
+
+export {
+  useCreateOffer,
+  useDeleteOffer,
+  useMarkOfferPreferred,
+  useOffersByProduct,
+  useOffersBySupplier,
+  useUpdateOffer,
+} from './application/use-supplier-offers'
+
+export {
+  useProductSupplierRefs,
+  useRefsBySupplier,
+} from './application/use-product-supplier-refs'
+
+export { useCatalogPrices } from './application/use-catalog-prices'

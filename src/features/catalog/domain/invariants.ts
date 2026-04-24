@@ -3,11 +3,14 @@
 
 import type {
   AliasSourceType,
+  CatalogPrice,
   MappingEntry,
   MappingResult,
   Product,
   ProductMatch,
   ProductStorageType,
+  Supplier,
+  SupplierOffer,
   UnitOfMeasure,
   UnitType,
 } from './types'
@@ -158,4 +161,73 @@ export function filterProductsClient(
       (p.description?.toLowerCase().includes(q) ?? false) ||
       (p.sku?.toLowerCase().includes(q) ?? false)
   )
+}
+
+// ─── Sprint-04b: Suppliers + Offers ───────────────────────────────────────────
+
+export function filterSuppliersClient(
+  suppliers: Supplier[],
+  search: string
+): Supplier[] {
+  const q = search.trim().toLowerCase()
+  if (!q) return suppliers
+  return suppliers.filter(
+    (s) =>
+      s.name.toLowerCase().includes(q) ||
+      (s.contact_name?.toLowerCase().includes(q) ?? false) ||
+      (s.tax_id?.toLowerCase().includes(q) ?? false) ||
+      (s.email?.toLowerCase().includes(q) ?? false)
+  )
+}
+
+/**
+ * Determina si una oferta está vigente hoy.
+ */
+export function isOfferValidNow(
+  offer: Pick<SupplierOffer, 'valid_from' | 'valid_to'>,
+  today: Date = new Date()
+): boolean {
+  const iso = today.toISOString().slice(0, 10)
+  if (offer.valid_from && offer.valid_from > iso) return false
+  if (offer.valid_to && offer.valid_to < iso) return false
+  return true
+}
+
+/**
+ * Valida rango de fechas de oferta antes de submit.
+ */
+export function isOfferDateRangeValid(
+  valid_from: string | null | undefined,
+  valid_to: string | null | undefined
+): boolean {
+  if (!valid_from || !valid_to) return true
+  return valid_from <= valid_to
+}
+
+/**
+ * Formatea un CatalogPrice a string legible ES.
+ */
+export function formatCatalogPrice(cp: CatalogPrice): string {
+  if (cp.price === null) return 'Sin precio'
+  const formatted = cp.price.toLocaleString('es-ES', {
+    style: 'currency',
+    currency: cp.currency ?? 'EUR',
+  })
+  if (cp.source === 'offer_preferred') return `${formatted} (preferida)`
+  if (cp.source === 'offer_cheapest') return `${formatted} (más barata)`
+  return formatted
+}
+
+/**
+ * Agrupa ofertas por supplier_id para UI (tabla supplier → sus ofertas).
+ */
+export function groupOffersBySupplier(
+  offers: SupplierOffer[]
+): Record<string, SupplierOffer[]> {
+  const map: Record<string, SupplierOffer[]> = {}
+  for (const o of offers) {
+    const bucket = map[o.supplier_id] ?? (map[o.supplier_id] = [])
+    bucket.push(o)
+  }
+  return map
 }
