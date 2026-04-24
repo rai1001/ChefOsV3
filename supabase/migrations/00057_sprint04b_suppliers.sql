@@ -15,6 +15,8 @@
 create or replace function public.tg_price_history_from_offer()
 returns trigger
 language plpgsql
+security definer
+set search_path = public
 as $fn_price_hist$
 declare
   v_old_price numeric;

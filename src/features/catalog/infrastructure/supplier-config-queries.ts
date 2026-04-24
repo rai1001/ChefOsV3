@@ -37,7 +37,7 @@ export async function upsertSupplierConfig(
         reception_window_end: input.reception_window_end ?? null,
         allows_urgent_delivery: input.allows_urgent_delivery,
       },
-      { onConflict: 'supplier_id' }
+      { onConflict: 'hotel_id,supplier_id' }
     )
     .select('*')
     .single()
