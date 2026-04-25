@@ -41,8 +41,8 @@ export async function createInviteAction(input: CreateInviteInput): Promise<Crea
   const [{ data: inviterData }, { data: hotelRow }] = await Promise.all([
     supabase.auth.getUser(),
     supabase
-      .from('hotels')
-      .select('name, tenants(name)')
+      .from('v3_hotels')
+      .select('name, tenants:v3_tenants(name)')
       .eq('id', input.hotel_id)
       .maybeSingle(),
   ])
