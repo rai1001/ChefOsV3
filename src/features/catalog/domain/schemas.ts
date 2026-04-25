@@ -15,7 +15,7 @@ import {
 const UUID_LOOSE = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/
 const uuidString = () => z.string().regex(UUID_LOOSE, 'Invalid UUID')
 
-// ─── Unidades de medida (v2 per-hotel) ────────────────────────────────────────
+// ─── Unidades de medida (v3 per-hotel) ────────────────────────────────────────
 
 export const unitOfMeasureSchema = z.object({
   id: uuidString(),
@@ -31,8 +31,8 @@ export const unitOfMeasureSchema = z.object({
 
 // ─── Productos ────────────────────────────────────────────────────────────────
 
-// allergens en v2 es jsonb. Aceptamos array de strings para uso normal,
-// pero tolerante a JSON libre (algunas filas v2 pueden venir como objeto).
+// allergens es jsonb. Aceptamos array de strings para uso normal,
+// pero tolerante a JSON libre (algunas filas heredadas pueden venir como objeto).
 export const allergensSchema = z
   .union([z.array(z.string()), z.record(z.string(), z.unknown())])
   .default([])

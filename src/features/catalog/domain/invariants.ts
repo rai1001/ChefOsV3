@@ -50,7 +50,7 @@ export function normalizeIngredientName(name: string): string {
 // ─── Helpers alérgenos ────────────────────────────────────────────────────────
 
 /**
- * Normaliza el campo `allergens` (jsonb en v2, puede venir como array o objeto).
+ * Normaliza el campo `allergens` (jsonb, puede venir como array u objeto).
  * Devuelve siempre string[] para uso consistente en UI.
  */
 export function normalizeAllergens(raw: unknown): string[] {
@@ -69,8 +69,8 @@ export function normalizeAllergens(raw: unknown): string[] {
 // ─── Helpers unidades ─────────────────────────────────────────────────────────
 
 /**
- * Convierte una cantidad de `from` a `to` aplicando conversion_factor de v2.
- * En v2, cada unidad guarda factor relativo a su base_unit_id dentro del mismo unit_type.
+ * Convierte una cantidad de `from` a `to` aplicando conversion_factor.
+ * Cada unidad guarda factor relativo a su base_unit_id dentro del mismo unit_type.
  * qty_base = qty_from * from.conversion_factor
  * qty_to   = qty_base / to.conversion_factor
  */

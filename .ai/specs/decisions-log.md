@@ -858,8 +858,16 @@ El patrón RestoOS v2 (documentado en memoria usuario) prefija con `v2_` todas l
 - Numeración migraciones rewrite: 00058+ con patrón `NNNNN_v3_<nombre>.sql`.
 - Seed script debe copiar data de Eurostars demo hotel (`22222222-2222-2222-2222-222222222222`) como mínimo. Otros hoteles según política que se decida al aplicar.
 - Refactor TS en cada feature folder (identity, commercial, tenant-admin, recipes, menus, import, catalog): buscar/reemplazar `.from('X')` → `.from('v3_X')` y `.rpc('Y')` → `.rpc('v3_Y')`.
-- `src/types/database.ts` se regenera una vez completas las migraciones. Pierde todos los types v2; tendrá solo types v3_.
+- `src/types/database.ts` se regenera una vez completas las migraciones. Mientras ADR-0003 siga vigente, conviven types v2 y v3_; la capa v3 consume solo `v3_*`.
 - Tests: los mocks cambian nombre de tabla/RPC. Los tests de dominio (invariants, schemas) no cambian.
+
+#### Estado de implementación
+
+- **Fase 1 DB cerrada**: 2026-04-24, commit `cd192f0`. Migraciones `00058`–`00062` aplicadas: 32 tablas `v3_*`, 18 enums, 40 funciones/RPCs `v3_*`, 1 trigger, 33 policies y seed Eurostars demo.
+- **Fase 2 TS cerrada**: 2026-04-25, commits `ee9ea48..a79ce79` más commit de cierre docs/smoke. `src/` y `e2e/` ya no tienen callsites `.from()` / `.rpc()` a tablas/RPCs v2, salvo comentario documental en `src/lib/errors/map-supabase-error.ts`.
+- **Smoke end-to-end**: 2026-04-25, cuenta `demo-admin@eurostars-demo.es`, hotel `22222222-2222-2222-2222-222222222222`. Verificado login, dashboard, productos (32), proveedores (4), ofertas (30 vía detalle proveedor), recetas (6), escandallo live, creación de evento con limpieza posterior, menús (2), mapping y equipo (3 memberships).
+- **Limpieza heredada smoke 04b**: eliminados fixtures exactos documentados (2 `recipe_ingredients`, 3 `product_aliases`, 1 `product`, 1 `supplier_config`, 1 `supplier`). No existían ofertas ni price_history asociadas al fixture al ejecutar la limpieza.
+- **Deuda heredada a sprint-05**: `v3_get_escandallo_live` y `v3_sync_escandallo_prices` siguen leyendo `public.goods_receipts` / `public.purchase_orders` v2 hasta que sprint-05 cree `v3_goods_receipts` / `v3_purchase_orders`. `v3_supplier_incidents.purchase_order_id` mantiene FK omitida hasta existir target v3.
 
 #### Revisable
 

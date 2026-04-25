@@ -63,7 +63,7 @@ export interface ProductAlias {
 }
 
 export interface PriceHistory {
-  // Schema exacto v2 por verificar si se toca en sprint-04b.
+  // Schema exacto v3_price_history por endurecer cuando se toque este flujo.
   id: string
   hotel_id: string
   product_id: string
