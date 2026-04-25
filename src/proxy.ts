@@ -21,7 +21,7 @@ function matchRateLimit(request: NextRequest): RateLimitPreset | null {
 }
 
 async function maybeHandleRateLimit(request: NextRequest, preset: RateLimitPreset): Promise<NextResponse | null> {
-  const id = identifierFromHeaders(request.headers)
+  const id = identifierFromHeaders(request.headers, request.ip)
   const limit = await checkRateLimit(preset, id)
   if (!limit.ok) {
     return new NextResponse(

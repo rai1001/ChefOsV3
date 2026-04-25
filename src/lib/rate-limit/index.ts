@@ -95,10 +95,17 @@ export async function checkRateLimit(
   }
 }
 
-// Identificador para rate limit. Usa IP cuando está disponible (Vercel Edge), fallback "anonymous".
+// Identificador para rate limit. Usa IP proporcionada por el proxy de confianza (Vercel),
+// fallback a headers si es necesario (con precaución) o "anonymous".
 // Para flows autenticados, combinar con el user id externamente: `${ip}:${userId}`.
-export function identifierFromHeaders(headers: Headers): string {
+export function identifierFromHeaders(headers: Headers, trustedIp?: string): string {
+  // Si tenemos una IP ya validada por la plataforma (NextRequest.ip), la usamos directamente.
+  // Esto previene spoofing de headers como X-Forwarded-For.
+  if (trustedIp) return trustedIp
+
+  // Fallback para entornos donde NextRequest.ip no esté disponible:
   // Vercel Edge incluye 'x-forwarded-for' con la IP real al frente.
+  // NOTA: Solo confiar en estos headers si sabemos que vienen de un proxy de confianza.
   const forwarded = headers.get('x-forwarded-for')
   if (forwarded) {
     const first = forwarded.split(',')[0]?.trim()

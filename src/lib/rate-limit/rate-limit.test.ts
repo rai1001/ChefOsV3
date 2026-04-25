@@ -26,7 +26,12 @@ describe('checkRateLimit (skip mode without Upstash vars)', () => {
 })
 
 describe('identifierFromHeaders', () => {
-  it('uses x-forwarded-for first IP when present', () => {
+  it('prioritizes trustedIp when provided', () => {
+    const headers = new Headers({ 'x-forwarded-for': 'spoofed.ip.address' })
+    expect(identifierFromHeaders(headers, '1.2.3.4')).toBe('1.2.3.4')
+  })
+
+  it('uses x-forwarded-for first IP when present and no trustedIp', () => {
     const headers = new Headers({ 'x-forwarded-for': '203.0.113.5, 10.0.0.1' })
     expect(identifierFromHeaders(headers)).toBe('203.0.113.5')
   })
