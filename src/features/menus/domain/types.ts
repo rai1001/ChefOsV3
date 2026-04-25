@@ -1,5 +1,5 @@
 // Dominio menus — 16º módulo oficial (ADR-0010).
-// Schema v2 (Supabase compartido, ADR-0003): menus + menu_sections + menu_section_recipes.
+// Schema v3_* (ADR-0015): v3_menus + v3_menu_sections + v3_menu_section_recipes.
 
 export const MENU_TYPES = ['buffet', 'seated', 'cocktail', 'tasting', 'daily'] as const
 export type MenuType = (typeof MENU_TYPES)[number]

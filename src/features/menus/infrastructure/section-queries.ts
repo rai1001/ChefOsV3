@@ -11,7 +11,7 @@ export async function fetchMenuSections(
   menuId: string
 ): Promise<MenuSection[]> {
   const { data, error } = await supabase
-    .from('menu_sections')
+    .from('v3_menu_sections')
     .select('*')
     .eq('menu_id', menuId)
     .eq('hotel_id', hotelId)
@@ -32,7 +32,7 @@ export async function addMenuSection(
   input: CreateMenuSectionInput
 ): Promise<MenuSection> {
   const { data, error } = await supabase
-    .from('menu_sections')
+    .from('v3_menu_sections')
     .insert({
       hotel_id: hotelId,
       menu_id: input.menu_id,
@@ -52,7 +52,7 @@ export async function updateMenuSection(
   patch: { name?: string; sort_order?: number }
 ): Promise<MenuSection> {
   const { data, error } = await supabase
-    .from('menu_sections')
+    .from('v3_menu_sections')
     .update(patch)
     .eq('id', sectionId)
     .eq('hotel_id', hotelId)
@@ -68,7 +68,7 @@ export async function removeMenuSection(
   sectionId: string
 ): Promise<void> {
   const { error } = await supabase
-    .from('menu_sections')
+    .from('v3_menu_sections')
     .delete()
     .eq('id', sectionId)
     .eq('hotel_id', hotelId)
@@ -83,7 +83,7 @@ export async function fetchSectionRecipes(
   sectionId: string
 ): Promise<MenuSectionRecipe[]> {
   const { data, error } = await supabase
-    .from('menu_section_recipes')
+    .from('v3_menu_section_recipes')
     .select('*')
     .eq('section_id', sectionId)
     .eq('hotel_id', hotelId)
@@ -106,7 +106,7 @@ export async function addRecipeToSection(
   input: AddRecipeToSectionInput
 ): Promise<MenuSectionRecipe> {
   const { data, error } = await supabase
-    .from('menu_section_recipes')
+    .from('v3_menu_section_recipes')
     .insert({
       hotel_id: hotelId,
       section_id: input.section_id,
@@ -134,7 +134,7 @@ export async function removeRecipeFromSection(
   sectionRecipeId: string
 ): Promise<void> {
   const { error } = await supabase
-    .from('menu_section_recipes')
+    .from('v3_menu_section_recipes')
     .delete()
     .eq('id', sectionRecipeId)
     .eq('hotel_id', hotelId)

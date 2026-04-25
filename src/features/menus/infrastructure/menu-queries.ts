@@ -17,7 +17,7 @@ export async function fetchMenus(
 ): Promise<PaginatedResult<Menu>> {
   const { from, to, pageSize } = pageRange(pagination)
   let query = supabase
-    .from('menus')
+    .from('v3_menus')
     .select('*')
     .eq('hotel_id', hotelId)
     .order('updated_at', { ascending: false })
@@ -36,7 +36,7 @@ export async function fetchMenu(
   menuId: string
 ): Promise<Menu> {
   const { data, error } = await supabase
-    .from('menus')
+    .from('v3_menus')
     .select('*')
     .eq('id', menuId)
     .eq('hotel_id', hotelId)
@@ -62,7 +62,7 @@ export async function createMenu(
   input: CreateMenuInput
 ): Promise<Menu> {
   const { data, error } = await supabase
-    .from('menus')
+    .from('v3_menus')
     .insert({
       hotel_id: hotelId,
       name: input.name,
@@ -91,7 +91,7 @@ export async function updateMenu(
   input: UpdateMenuInput
 ): Promise<Menu> {
   const { data, error } = await supabase
-    .from('menus')
+    .from('v3_menus')
     .update(input)
     .eq('id', menuId)
     .eq('hotel_id', hotelId)
@@ -108,7 +108,7 @@ export async function deleteMenu(
 ): Promise<void> {
   // Soft delete: is_active=false. Preserva referencias históricas (eventos que usaron el menú).
   const { error } = await supabase
-    .from('menus')
+    .from('v3_menus')
     .update({ is_active: false })
     .eq('id', menuId)
     .eq('hotel_id', hotelId)

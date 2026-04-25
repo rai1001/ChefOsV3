@@ -44,7 +44,7 @@ export async function importRecipesBulk(
   hotelId: string,
   payload: ImportRecipesRpcPayload
 ): Promise<ImportResult> {
-  const { data, error } = await supabase.rpc('import_recipes_bulk', {
+  const { data, error } = await supabase.rpc('v3_import_recipes_bulk', {
     p_hotel_id: hotelId,
     p_payload: payload,
   })
@@ -61,7 +61,7 @@ export async function fetchImportRuns(
 ): Promise<PaginatedResult<ImportRun>> {
   const { from, to, pageSize } = pageRange(pagination)
   const { data, error } = await supabase
-    .from('import_runs')
+    .from('v3_import_runs')
     .select('*')
     .eq('hotel_id', hotelId)
     .order('started_at', { ascending: false })
@@ -76,7 +76,7 @@ export async function fetchImportRun(
   runId: string
 ): Promise<ImportRun> {
   const { data, error } = await supabase
-    .from('import_runs')
+    .from('v3_import_runs')
     .select('*')
     .eq('id', runId)
     .eq('hotel_id', hotelId)
