@@ -7,7 +7,7 @@ import { TEST_USER_EMAIL, TEST_USER_PASSWORD } from '../fixtures/test-user'
  *
  * Verifica que un usuario autenticado NO puede leer ni mutar datos cuyo `hotel_id`
  * no pertenece a su membership activo. La defensa primaria es RLS en Supabase
- * (políticas `using (exists (select 1 from memberships ...))`). Estos tests son la
+ * (políticas `using (exists (select 1 from v3_memberships ...))`). Estos tests son la
  * red de seguridad en CI ante regresiones de policy.
  *
  * Escenarios:
@@ -43,7 +43,7 @@ test.describe('tenant-isolation', () => {
     test('events de otro hotel → array vacío', async () => {
       const client = await authenticatedSupabaseClient()
       const { data, error } = await client
-        .from('events')
+        .from('v3_events')
         .select('*')
         .eq('hotel_id', FAKE_HOTEL_ID)
 
@@ -55,7 +55,7 @@ test.describe('tenant-isolation', () => {
     test('clients de otro hotel → array vacío', async () => {
       const client = await authenticatedSupabaseClient()
       const { data, error } = await client
-        .from('clients')
+        .from('v3_clients')
         .select('*')
         .eq('hotel_id', FAKE_HOTEL_ID)
 
@@ -66,7 +66,7 @@ test.describe('tenant-isolation', () => {
     test('recipes de otro hotel → array vacío', async () => {
       const client = await authenticatedSupabaseClient()
       const { data, error } = await client
-        .from('recipes')
+        .from('v3_recipes')
         .select('*')
         .eq('hotel_id', FAKE_HOTEL_ID)
 
@@ -77,7 +77,7 @@ test.describe('tenant-isolation', () => {
     test('menus de otro hotel → array vacío', async () => {
       const client = await authenticatedSupabaseClient()
       const { data, error } = await client
-        .from('menus')
+        .from('v3_menus')
         .select('*')
         .eq('hotel_id', FAKE_HOTEL_ID)
 
@@ -88,7 +88,7 @@ test.describe('tenant-isolation', () => {
     test('invites de otro hotel → array vacío', async () => {
       const client = await authenticatedSupabaseClient()
       const { data, error } = await client
-        .from('invites')
+        .from('v3_invites')
         .select('*')
         .eq('hotel_id', FAKE_HOTEL_ID)
 
@@ -100,7 +100,7 @@ test.describe('tenant-isolation', () => {
   test.describe('INSERT cross-hotel falla por RLS', () => {
     test('insertar client con hotel_id ajeno → rechazado', async () => {
       const client = await authenticatedSupabaseClient()
-      const { error } = await client.from('clients').insert({
+      const { error } = await client.from('v3_clients').insert({
         hotel_id: FAKE_HOTEL_ID,
         name: 'Cross-tenant attempt',
         is_active: true,
@@ -114,7 +114,7 @@ test.describe('tenant-isolation', () => {
 
     test('insertar evento con hotel_id ajeno → rechazado', async () => {
       const client = await authenticatedSupabaseClient()
-      const { error } = await client.from('events').insert({
+      const { error } = await client.from('v3_events').insert({
         hotel_id: FAKE_HOTEL_ID,
         name: 'Cross-tenant event',
         event_date: '2099-01-01',
