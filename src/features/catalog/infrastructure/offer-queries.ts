@@ -10,7 +10,7 @@ export async function fetchOffersBySupplier(
   supplierId: string
 ): Promise<SupplierOffer[]> {
   const { data, error } = await supabase
-    .from('supplier_offers')
+    .from('v3_supplier_offers')
     .select('*')
     .eq('hotel_id', hotelId)
     .eq('supplier_id', supplierId)
@@ -26,7 +26,7 @@ export async function fetchOffersByProduct(
   productId: string
 ): Promise<SupplierOffer[]> {
   const { data, error } = await supabase
-    .from('supplier_offers')
+    .from('v3_supplier_offers')
     .select('*')
     .eq('hotel_id', hotelId)
     .eq('product_id', productId)
@@ -41,7 +41,7 @@ export async function createOffer(
   input: OfferInput
 ): Promise<SupplierOffer> {
   const { data, error } = await supabase
-    .from('supplier_offers')
+    .from('v3_supplier_offers')
     .insert({
       hotel_id: input.hotel_id,
       supplier_id: input.supplier_id,
@@ -77,7 +77,7 @@ export async function updateOffer(
   }
 
   const { data, error } = await supabase
-    .from('supplier_offers')
+    .from('v3_supplier_offers')
     .update(patch)
     .eq('id', id)
     .eq('hotel_id', hotel_id)
@@ -94,7 +94,7 @@ export async function deleteOffer(
   offerId: string
 ): Promise<void> {
   const { error } = await supabase
-    .from('supplier_offers')
+    .from('v3_supplier_offers')
     .delete()
     .eq('id', offerId)
     .eq('hotel_id', hotelId)
@@ -102,7 +102,7 @@ export async function deleteOffer(
 }
 
 /**
- * RPC mark_offer_preferred — desmarca otras ofertas del mismo producto y marca ésta.
+ * RPC v3_mark_offer_preferred — desmarca otras ofertas del mismo producto y marca ésta.
  * Atómico en el server.
  */
 export async function markOfferPreferred(
@@ -110,7 +110,7 @@ export async function markOfferPreferred(
   hotelId: string,
   offerId: string
 ): Promise<void> {
-  const { error } = await supabase.rpc('mark_offer_preferred', {
+  const { error } = await supabase.rpc('v3_mark_offer_preferred', {
     p_hotel_id: hotelId,
     p_offer_id: offerId,
   })

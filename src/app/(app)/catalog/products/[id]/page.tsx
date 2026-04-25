@@ -20,7 +20,7 @@ export default async function ProductDetailPage({
 
   const supabase = await createServerClient()
   const { data, error } = await supabase
-    .from('products')
+    .from('v3_products')
     .select('*')
     .eq('id', id)
     .eq('hotel_id', activeHotel.hotel_id)

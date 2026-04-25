@@ -17,7 +17,7 @@ export async function fetchSuppliers(
 ): Promise<PaginatedResult<Supplier>> {
   const { from, to, pageSize } = pageRange(pagination)
   let query = supabase
-    .from('suppliers')
+    .from('v3_suppliers')
     .select('*')
     .eq('hotel_id', filter.hotelId)
     .order('name', { ascending: true })
@@ -37,7 +37,7 @@ export async function fetchSupplier(
   supplierId: string
 ): Promise<Supplier> {
   const { data, error } = await supabase
-    .from('suppliers')
+    .from('v3_suppliers')
     .select('*')
     .eq('id', supplierId)
     .eq('hotel_id', hotelId)
@@ -52,7 +52,7 @@ export async function createSupplier(
   input: SupplierInput
 ): Promise<Supplier> {
   const { data, error } = await supabase
-    .from('suppliers')
+    .from('v3_suppliers')
     .insert({
       hotel_id: input.hotel_id,
       name: input.name.trim(),
@@ -90,7 +90,7 @@ export async function updateSupplier(
   }
 
   const { data, error } = await supabase
-    .from('suppliers')
+    .from('v3_suppliers')
     .update(patch)
     .eq('id', id)
     .eq('hotel_id', hotel_id)
@@ -107,7 +107,7 @@ export async function archiveSupplier(
   supplierId: string
 ): Promise<void> {
   const { error } = await supabase
-    .from('suppliers')
+    .from('v3_suppliers')
     .update({ is_active: false })
     .eq('id', supplierId)
     .eq('hotel_id', hotelId)
@@ -120,7 +120,7 @@ export async function restoreSupplier(
   supplierId: string
 ): Promise<void> {
   const { error } = await supabase
-    .from('suppliers')
+    .from('v3_suppliers')
     .update({ is_active: true })
     .eq('id', supplierId)
     .eq('hotel_id', hotelId)

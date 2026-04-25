@@ -1,21 +1,17 @@
-// Dominio catalog — sprint-04a (ADR-0014 revisado 2026-04-23).
-// Capa v3 sobre schema v2 existente (ADR-0003 Supabase compartido).
-// v2 ya tiene: products, product_aliases, units_of_measure, suppliers,
-// supplier_offers, supplier_configs, supplier_incidents, price_history,
-// product_supplier_refs. v3 las consume sin paralelizar.
+// Dominio catalog — sprint-04a/04b (ADR-0014) sobre namespace v3_* (ADR-0015).
+// Los tipos TS mantienen nombres limpios; el prefijo vive en infrastructure.
 
-// ─── Enums v2 (USER-DEFINED en DB, valores literales aquí) ────────────────────
+// ─── Enums DB (USER-DEFINED, prefijo v3_ en infrastructure) ───────────────────
 
-// products.storage_type (v2 enum verificado 2026-04-23)
+// v3_products.storage_type
 export const PRODUCT_STORAGE_TYPES = ['ambient', 'refrigerated', 'frozen'] as const
 export type ProductStorageType = (typeof PRODUCT_STORAGE_TYPES)[number]
 
-// units_of_measure.unit_type (v2 enum verificado 2026-04-23)
+// v3_units_of_measure.unit_type
 export const UNIT_TYPES = ['weight', 'volume', 'count', 'length'] as const
 export type UnitType = (typeof UNIT_TYPES)[number]
 
-// product_aliases.source_type — enum v2, nombre de type pendiente verificar.
-// Valores probables por análisis v2: manual, ocr, excel. Ajustar tras query.
+// v3_product_aliases.source_type.
 export const ALIAS_SOURCE_TYPES = ['manual', 'ocr', 'excel', 'import'] as const
 export type AliasSourceType = (typeof ALIAS_SOURCE_TYPES)[number]
 
@@ -23,7 +19,7 @@ export type AliasSourceType = (typeof ALIAS_SOURCE_TYPES)[number]
 export const PRODUCT_MATCH_KINDS = ['alias', 'name'] as const
 export type ProductMatchKind = (typeof PRODUCT_MATCH_KINDS)[number]
 
-// ─── Entidades (mirror schema v2) ─────────────────────────────────────────────
+// ─── Entidades (mirror schema v3_) ────────────────────────────────────────────
 
 export interface Product {
   id: string

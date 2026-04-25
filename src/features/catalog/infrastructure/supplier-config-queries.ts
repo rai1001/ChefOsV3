@@ -9,7 +9,7 @@ export async function fetchSupplierConfig(
   supplierId: string
 ): Promise<SupplierConfig | null> {
   const { data, error } = await supabase
-    .from('supplier_configs')
+    .from('v3_supplier_configs')
     .select('*')
     .eq('hotel_id', hotelId)
     .eq('supplier_id', supplierId)
@@ -23,7 +23,7 @@ export async function upsertSupplierConfig(
   input: SupplierConfigInput
 ): Promise<SupplierConfig> {
   const { data, error } = await supabase
-    .from('supplier_configs')
+    .from('v3_supplier_configs')
     .upsert(
       {
         hotel_id: input.hotel_id,

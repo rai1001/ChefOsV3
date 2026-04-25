@@ -3,7 +3,7 @@ import { mapSupabaseError } from '@/lib/errors/map-supabase-error'
 import type { CatalogPrice } from '../domain/types'
 
 /**
- * RPC get_catalog_prices — devuelve precios vigentes por product_id con
+ * RPC v3_get_catalog_prices — devuelve precios vigentes por product_id con
  * precedencia offer_preferred > offer_cheapest.
  */
 export async function fetchCatalogPrices(
@@ -12,7 +12,7 @@ export async function fetchCatalogPrices(
   productIds: string[]
 ): Promise<CatalogPrice[]> {
   if (productIds.length === 0) return []
-  const { data, error } = await supabase.rpc('get_catalog_prices', {
+  const { data, error } = await supabase.rpc('v3_get_catalog_prices', {
     p_hotel_id: hotelId,
     p_product_ids: productIds,
   })

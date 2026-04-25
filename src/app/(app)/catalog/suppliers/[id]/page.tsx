@@ -21,7 +21,7 @@ export default async function SupplierDetailPage({
 
   const supabase = await createServerClient()
   const { data, error } = await supabase
-    .from('suppliers')
+    .from('v3_suppliers')
     .select('*')
     .eq('id', id)
     .eq('hotel_id', activeHotel.hotel_id)

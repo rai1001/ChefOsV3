@@ -1,8 +1,8 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { mapSupabaseError } from '@/lib/errors/map-supabase-error'
 
-// V2 tiene product_categories? Pendiente de verificar con query a DB en runtime.
-// Si no existe, este archivo se desactiva. Contrato mínimo para TS:
+// v3_product_categories existe como tabla mínima por ADR-0015.
+// El fallback 42P01 solo cubre bases locales parcialmente migradas.
 
 export interface ProductCategoryRow {
   id: string
@@ -16,12 +16,12 @@ export async function fetchCategories(
   hotelId: string
 ): Promise<ProductCategoryRow[]> {
   const { data, error } = await supabase
-    .from('product_categories')
+    .from('v3_product_categories')
     .select('*')
     .eq('hotel_id', hotelId)
     .order('name', { ascending: true })
 
-  // Si la tabla no existe en v2, Supabase devuelve error code 42P01.
+  // Si la tabla no existe en una DB local incompleta, Supabase devuelve error code 42P01.
   // Tolerante: retorna [] para no romper UI hasta confirmar schema.
   if (error) {
     if ((error as { code?: string }).code === '42P01') return []

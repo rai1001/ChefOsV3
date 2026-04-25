@@ -25,7 +25,7 @@ export async function fetchProducts(
 ): Promise<PaginatedResult<Product>> {
   const { from, to, pageSize } = pageRange(pagination)
   let query = supabase
-    .from('products')
+    .from('v3_products')
     .select('*')
     .eq('hotel_id', filter.hotelId)
     .order('name', { ascending: true })
@@ -52,7 +52,7 @@ export async function fetchProduct(
   productId: string
 ): Promise<Product> {
   const { data, error } = await supabase
-    .from('products')
+    .from('v3_products')
     .select('*')
     .eq('id', productId)
     .eq('hotel_id', hotelId)
@@ -69,7 +69,7 @@ export async function createProduct(
   input: ProductInput
 ): Promise<Product> {
   const { data, error } = await supabase
-    .from('products')
+    .from('v3_products')
     .insert({
       hotel_id: input.hotel_id,
       category_id: input.category_id ?? null,
@@ -107,7 +107,7 @@ export async function updateProduct(
   }
 
   const { data, error } = await supabase
-    .from('products')
+    .from('v3_products')
     .update(patch)
     .eq('id', id)
     .eq('hotel_id', hotel_id)
@@ -124,7 +124,7 @@ export async function archiveProduct(
   productId: string
 ): Promise<void> {
   const { error } = await supabase
-    .from('products')
+    .from('v3_products')
     .update({ is_active: false })
     .eq('id', productId)
     .eq('hotel_id', hotelId)
@@ -137,7 +137,7 @@ export async function restoreProduct(
   productId: string
 ): Promise<void> {
   const { error } = await supabase
-    .from('products')
+    .from('v3_products')
     .update({ is_active: true })
     .eq('id', productId)
     .eq('hotel_id', hotelId)

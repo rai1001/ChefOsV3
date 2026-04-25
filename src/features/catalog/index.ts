@@ -2,8 +2,8 @@
  * Contrato público del módulo `catalog` — sprint-04a (ADR-0014).
  *
  * Owner v3: productos, categorías, unidades (per-hotel), alias, mapping de
- * ingredientes de recipes → products+units. Capa de dominio sobre tablas v2
- * existentes (ADR-0003 Supabase compartido).
+ * ingredientes de recipes → products+units. Capa de dominio sobre tablas v3_*
+ * namespaced (ADR-0015) dentro del Supabase compartido (ADR-0003).
  *
  * NO exporta infraestructura (*-queries.ts). Solo tipos, schemas, helpers
  * domain y hooks application.

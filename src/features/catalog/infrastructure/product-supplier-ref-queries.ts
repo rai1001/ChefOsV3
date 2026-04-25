@@ -8,7 +8,7 @@ export async function fetchProductSupplierRefs(
   productId: string
 ): Promise<ProductSupplierRef[]> {
   const { data, error } = await supabase
-    .from('product_supplier_refs')
+    .from('v3_product_supplier_refs')
     .select('*')
     .eq('hotel_id', hotelId)
     .eq('product_id', productId)
@@ -22,7 +22,7 @@ export async function fetchRefsBySupplier(
   supplierId: string
 ): Promise<ProductSupplierRef[]> {
   const { data, error } = await supabase
-    .from('product_supplier_refs')
+    .from('v3_product_supplier_refs')
     .select('*')
     .eq('hotel_id', hotelId)
     .eq('supplier_id', supplierId)
