@@ -43,7 +43,7 @@ export async function createInvite(
   supabase: SupabaseClient,
   input: CreateInviteInput
 ): Promise<CreateInviteResult> {
-  const { data, error } = await supabase.rpc('create_invite', {
+  const { data, error } = await supabase.rpc('v3_create_invite', {
     p_hotel_id: input.hotel_id,
     p_email: input.email,
     p_role: input.role,
@@ -56,7 +56,7 @@ export async function acceptInviteRpc(
   supabase: SupabaseClient,
   token: string
 ): Promise<AcceptInviteResult> {
-  const { data, error } = await supabase.rpc('accept_invite', { p_token: token })
+  const { data, error } = await supabase.rpc('v3_accept_invite', { p_token: token })
   if (error) throw mapInviteError(error)
   return data as AcceptInviteResult
 }
@@ -65,7 +65,7 @@ export async function revokeInvite(
   supabase: SupabaseClient,
   inviteId: string
 ): Promise<void> {
-  const { error } = await supabase.rpc('revoke_invite', { p_invite_id: inviteId })
+  const { error } = await supabase.rpc('v3_revoke_invite', { p_invite_id: inviteId })
   if (error) throw mapInviteError(error)
 }
 
@@ -86,7 +86,7 @@ export async function previewInvite(
   supabase: SupabaseClient,
   token: string
 ): Promise<InvitePreview> {
-  const { data, error } = await supabase.rpc('preview_invite', { p_token: token })
+  const { data, error } = await supabase.rpc('v3_preview_invite', { p_token: token })
   if (error) throw mapInviteError(error)
   return data as InvitePreview
 }
@@ -101,7 +101,7 @@ export async function fetchInvites(
 ): Promise<PaginatedResult<Invite>> {
   const { from, to, pageSize } = pageRange(pagination)
   let query = supabase
-    .from('invites')
+    .from('v3_invites')
     .select('*')
     .eq('hotel_id', hotelId)
     .order('created_at', { ascending: false })

@@ -8,7 +8,7 @@ export async function fetchRecipeIngredients(
   recipeId: string
 ): Promise<RecipeIngredient[]> {
   const { data, error } = await supabase
-    .from('recipe_ingredients')
+    .from('v3_recipe_ingredients')
     .select('*')
     .eq('recipe_id', recipeId)
     .eq('hotel_id', hotelId)
@@ -35,7 +35,7 @@ export async function addRecipeIngredient(
   input: AddRecipeIngredientInput
 ): Promise<RecipeIngredient> {
   const { data, error } = await supabase
-    .from('recipe_ingredients')
+    .from('v3_recipe_ingredients')
     .insert({
       hotel_id: hotelId,
       recipe_id: input.recipe_id,
@@ -63,7 +63,7 @@ export async function updateRecipeIngredient(
   input: UpdateRecipeIngredientInput
 ): Promise<RecipeIngredient> {
   const { data, error } = await supabase
-    .from('recipe_ingredients')
+    .from('v3_recipe_ingredients')
     .update(input)
     .eq('id', ingredientId)
     .eq('hotel_id', hotelId)
@@ -79,7 +79,7 @@ export async function removeRecipeIngredient(
   ingredientId: string
 ): Promise<void> {
   const { error } = await supabase
-    .from('recipe_ingredients')
+    .from('v3_recipe_ingredients')
     .delete()
     .eq('id', ingredientId)
     .eq('hotel_id', hotelId)

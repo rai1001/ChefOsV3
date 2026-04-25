@@ -15,7 +15,7 @@ import {
 const UUID_LOOSE = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/
 const uuidString = () => z.string().regex(UUID_LOOSE, 'Invalid UUID')
 
-// ─── Unidades de medida (v2 per-hotel) ────────────────────────────────────────
+// ─── Unidades de medida (v3 per-hotel) ────────────────────────────────────────
 
 export const unitOfMeasureSchema = z.object({
   id: uuidString(),
@@ -31,8 +31,8 @@ export const unitOfMeasureSchema = z.object({
 
 // ─── Productos ────────────────────────────────────────────────────────────────
 
-// allergens en v2 es jsonb. Aceptamos array de strings para uso normal,
-// pero tolerante a JSON libre (algunas filas v2 pueden venir como objeto).
+// allergens es jsonb. Aceptamos array de strings para uso normal,
+// pero tolerante a JSON libre (algunas filas heredadas pueden venir como objeto).
 export const allergensSchema = z
   .union([z.array(z.string()), z.record(z.string(), z.unknown())])
   .default([])
@@ -118,5 +118,62 @@ export const productsFilterSchema = z.object({
   hotelId: uuidString(),
   search: z.string().trim().max(200).optional(),
   categoryId: uuidString().nullable().optional(),
+  activeOnly: z.boolean().default(true),
+})
+
+// ─── Sprint-04b: Suppliers + Offers ───────────────────────────────────────────
+
+export const supplierInputSchema = z.object({
+  hotel_id: uuidString(),
+  name: z.string().trim().min(1, 'Nombre requerido').max(200),
+  contact_name: z.string().max(200).nullable().optional(),
+  email: z.string().email('Email inválido').max(255).nullable().optional().or(z.literal('')),
+  phone: z.string().max(64).nullable().optional(),
+  address: z.string().max(500).nullable().optional(),
+  tax_id: z.string().max(64).nullable().optional(),
+  payment_terms: z.string().max(200).nullable().optional(),
+  delivery_days: z.array(z.string()).default([]),
+  min_order_amount: z.number().nonnegative().nullable().optional(),
+  rating: z.number().min(0).max(5).default(0),
+  notes: z.string().max(2000).nullable().optional(),
+  is_active: z.boolean().default(true),
+})
+
+export type SupplierInput = z.infer<typeof supplierInputSchema>
+
+export const supplierConfigInputSchema = z.object({
+  hotel_id: uuidString(),
+  supplier_id: uuidString(),
+  delivery_days: z.array(z.string()).default([]),
+  cutoff_time: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/, 'HH:MM').nullable().optional(),
+  lead_time_hours: z.number().int().positive().nullable().optional(),
+  min_order_amount: z.number().nonnegative().nullable().optional(),
+  min_order_units: z.number().nonnegative().nullable().optional(),
+  reception_window_start: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/, 'HH:MM').nullable().optional(),
+  reception_window_end: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/, 'HH:MM').nullable().optional(),
+  allows_urgent_delivery: z.boolean().default(false),
+})
+
+export type SupplierConfigInput = z.infer<typeof supplierConfigInputSchema>
+
+export const offerInputSchema = z.object({
+  hotel_id: uuidString(),
+  supplier_id: uuidString(),
+  product_id: uuidString(),
+  unit_id: uuidString().nullable().optional(),
+  unit_price: z.number().positive('Precio debe ser > 0'),
+  min_quantity: z.number().positive().nullable().optional(),
+  valid_from: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'YYYY-MM-DD').nullable().optional(),
+  valid_to: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'YYYY-MM-DD').nullable().optional(),
+  is_preferred: z.boolean().default(false),
+  sku_supplier: z.string().max(64).nullable().optional(),
+  notes: z.string().max(2000).nullable().optional(),
+})
+
+export type OfferInput = z.infer<typeof offerInputSchema>
+
+export const suppliersFilterSchema = z.object({
+  hotelId: uuidString(),
+  search: z.string().trim().max(200).optional(),
   activeOnly: z.boolean().default(true),
 })

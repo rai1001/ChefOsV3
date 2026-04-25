@@ -94,3 +94,29 @@ export class CategoryNotFoundError extends Error {
     this.name = 'CategoryNotFoundError'
   }
 }
+
+// Sprint-04b
+
+export class SupplierNotFoundError extends Error {
+  readonly code = 'SUPPLIER_NOT_FOUND' as const
+  constructor(public readonly supplierId: string, message?: string) {
+    super(message ?? `Proveedor no encontrado: ${supplierId}`)
+    this.name = 'SupplierNotFoundError'
+  }
+}
+
+export class OfferNotFoundError extends Error {
+  readonly code = 'OFFER_NOT_FOUND' as const
+  constructor(public readonly offerId: string, message?: string) {
+    super(message ?? `Oferta no encontrada: ${offerId}`)
+    this.name = 'OfferNotFoundError'
+  }
+}
+
+export class OfferInvalidDateRangeError extends Error {
+  readonly code = 'OFFER_INVALID_DATE_RANGE' as const
+  constructor(message = 'La fecha de inicio no puede ser posterior a la fecha de fin') {
+    super(message)
+    this.name = 'OfferInvalidDateRangeError'
+  }
+}

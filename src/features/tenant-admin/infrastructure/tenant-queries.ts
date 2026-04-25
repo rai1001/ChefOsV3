@@ -12,7 +12,7 @@ export async function createTenantWithHotel(
   supabase: SupabaseClient,
   input: TenantWithHotelInput
 ): Promise<CreateTenantWithHotelResult> {
-  const { data, error } = await supabase.rpc('create_tenant_with_hotel', {
+  const { data, error } = await supabase.rpc('v3_create_tenant_with_hotel', {
     p_tenant_name: input.tenant_name,
     p_hotel_name: input.hotel_name,
     p_hotel_slug: input.hotel_slug,
@@ -28,7 +28,7 @@ export async function fetchTenantHotels(
   tenantId: string
 ): Promise<Hotel[]> {
   const { data, error } = await supabase
-    .from('hotels')
+    .from('v3_hotels')
     .select('*')
     .eq('tenant_id', tenantId)
     .order('created_at', { ascending: true })
@@ -40,8 +40,8 @@ export async function createHotel(
   supabase: SupabaseClient,
   input: CreateHotelInput
 ): Promise<string> {
-  // Reutiliza RPC create_hotel de v2 si existe; si no, fallback a insert directo.
-  const { data, error } = await supabase.rpc('create_hotel', {
+  // Reutiliza RPC v3_create_hotel si existe; si no, fallback a insert directo.
+  const { data, error } = await supabase.rpc('v3_create_hotel', {
     p_tenant_id: input.tenant_id,
     p_hotel_name: input.name,
     p_hotel_slug: input.slug,
@@ -63,7 +63,7 @@ async function insertHotelFallback(
   input: CreateHotelInput
 ): Promise<string> {
   const { data, error } = await supabase
-    .from('hotels')
+    .from('v3_hotels')
     .insert({
       tenant_id: input.tenant_id,
       name: input.name,

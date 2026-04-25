@@ -11,7 +11,7 @@ export async function fetchAliasesForProduct(
   productId: string
 ): Promise<ProductAlias[]> {
   const { data, error } = await supabase
-    .from('product_aliases')
+    .from('v3_product_aliases')
     .select('*')
     .eq('hotel_id', hotelId)
     .eq('product_id', productId)
@@ -27,7 +27,7 @@ export async function addAlias(
   input: AliasInput
 ): Promise<ProductAlias> {
   const { data, error } = await supabase
-    .from('product_aliases')
+    .from('v3_product_aliases')
     .insert({
       hotel_id: input.hotel_id,
       product_id: input.product_id,
@@ -47,14 +47,14 @@ export async function removeAlias(
   aliasId: string
 ): Promise<void> {
   const { error } = await supabase
-    .from('product_aliases')
+    .from('v3_product_aliases')
     .delete()
     .eq('id', aliasId)
     .eq('hotel_id', hotelId)
   if (error) throw mapSupabaseError(error, { resource: 'product_alias' })
 }
 
-// ─── RPC match_product_by_alias (pg_trgm) ─────────────────────────────────────
+// ─── RPC v3_match_product_by_alias (pg_trgm) ──────────────────────────────────
 
 export async function matchProductByAlias(
   supabase: SupabaseClient,
@@ -62,7 +62,7 @@ export async function matchProductByAlias(
   query: string,
   limit: number = 10
 ): Promise<ProductMatch[]> {
-  const { data, error } = await supabase.rpc('match_product_by_alias', {
+  const { data, error } = await supabase.rpc('v3_match_product_by_alias', {
     p_hotel_id: hotelId,
     p_query: query,
     p_limit: limit,

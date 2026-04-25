@@ -27,7 +27,7 @@ export async function fetchRecipes(
 ): Promise<PaginatedResult<Recipe>> {
   const { from, to, pageSize } = pageRange(pagination)
   let query = supabase
-    .from('recipes')
+    .from('v3_recipes')
     .select('*')
     .eq('hotel_id', hotelId)
     .order('updated_at', { ascending: false })
@@ -53,7 +53,7 @@ export async function fetchRecipe(
   recipeId: string
 ): Promise<Recipe> {
   const { data, error } = await supabase
-    .from('recipes')
+    .from('v3_recipes')
     .select('*')
     .eq('id', recipeId)
     .eq('hotel_id', hotelId)
@@ -91,7 +91,7 @@ export async function createRecipe(
   input: CreateRecipeInput
 ): Promise<Recipe> {
   const { data, error } = await supabase
-    .from('recipes')
+    .from('v3_recipes')
     .insert({
       hotel_id: hotelId,
       name: input.name,
@@ -145,7 +145,7 @@ export async function updateRecipe(
   input: UpdateRecipeInput
 ): Promise<Recipe> {
   const { data, error } = await supabase
-    .from('recipes')
+    .from('v3_recipes')
     .update(input)
     .eq('id', recipeId)
     .eq('hotel_id', hotelId)
@@ -155,14 +155,14 @@ export async function updateRecipe(
   return data as Recipe
 }
 
-// ─── Workflow RPCs (v2) ───────────────────────────────────────────────────────
+// ─── Workflow RPCs (v3_) ─────────────────────────────────────────────────────
 
 export async function submitRecipeForReview(
   supabase: SupabaseClient,
   hotelId: string,
   recipeId: string
 ): Promise<void> {
-  const { error } = await supabase.rpc('submit_recipe_for_review', {
+  const { error } = await supabase.rpc('v3_submit_recipe_for_review', {
     p_hotel_id: hotelId,
     p_recipe_id: recipeId,
   })
@@ -174,7 +174,7 @@ export async function approveRecipe(
   hotelId: string,
   recipeId: string
 ): Promise<void> {
-  const { error } = await supabase.rpc('approve_recipe', {
+  const { error } = await supabase.rpc('v3_approve_recipe', {
     p_hotel_id: hotelId,
     p_recipe_id: recipeId,
   })
@@ -186,7 +186,7 @@ export async function deprecateRecipe(
   hotelId: string,
   recipeId: string
 ): Promise<void> {
-  const { error } = await supabase.rpc('deprecate_recipe', {
+  const { error } = await supabase.rpc('v3_deprecate_recipe', {
     p_hotel_id: hotelId,
     p_recipe_id: recipeId,
   })
@@ -211,9 +211,9 @@ export async function transitionRecipeTo(
     case 'deprecated':
       return deprecateRecipe(supabase, hotelId, recipeId)
     case 'draft': {
-      // Vuelta atrás desde review_pending: update directo (v2 no expone RPC).
+      // Vuelta atrás desde review_pending: update directo; no hay RPC específica.
       const { error } = await supabase
-        .from('recipes')
+        .from('v3_recipes')
         .update({ status: 'draft' })
         .eq('id', recipeId)
         .eq('hotel_id', hotelId)
@@ -222,7 +222,7 @@ export async function transitionRecipeTo(
     }
     case 'archived': {
       const { error } = await supabase
-        .from('recipes')
+        .from('v3_recipes')
         .update({ status: 'archived' })
         .eq('id', recipeId)
         .eq('hotel_id', hotelId)
@@ -241,7 +241,7 @@ export async function calculateRecipeCost(
   hotelId: string,
   recipeId: string
 ): Promise<RecipeCostResult> {
-  const { data, error } = await supabase.rpc('calculate_recipe_cost', {
+  const { data, error } = await supabase.rpc('v3_calculate_recipe_cost', {
     p_hotel_id: hotelId,
     p_recipe_id: recipeId,
   })
@@ -254,7 +254,7 @@ export async function duplicateRecipe(
   hotelId: string,
   recipeId: string
 ): Promise<string> {
-  const { data, error } = await supabase.rpc('duplicate_recipe', {
+  const { data, error } = await supabase.rpc('v3_duplicate_recipe', {
     p_hotel_id: hotelId,
     p_recipe_id: recipeId,
   })
@@ -268,7 +268,7 @@ export async function scaleRecipe(
   recipeId: string,
   newServings: number
 ): Promise<unknown> {
-  const { data, error } = await supabase.rpc('scale_recipe', {
+  const { data, error } = await supabase.rpc('v3_scale_recipe', {
     p_hotel_id: hotelId,
     p_recipe_id: recipeId,
     p_new_servings: newServings,
@@ -282,7 +282,7 @@ export async function getRecipeTechSheet(
   hotelId: string,
   recipeId: string
 ): Promise<RecipeTechSheet> {
-  const { data, error } = await supabase.rpc('get_recipe_tech_sheet', {
+  const { data, error } = await supabase.rpc('v3_get_recipe_tech_sheet', {
     p_hotel_id: hotelId,
     p_recipe_id: recipeId,
   })

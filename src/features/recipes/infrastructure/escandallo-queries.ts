@@ -7,7 +7,7 @@ export async function getEscandalloLive(
   hotelId: string,
   recipeId: string
 ): Promise<EscandalloLive> {
-  const { data, error } = await supabase.rpc('get_escandallo_live', {
+  const { data, error } = await supabase.rpc('v3_get_escandallo_live', {
     p_hotel_id: hotelId,
     p_recipe_id: recipeId,
   })
@@ -20,7 +20,7 @@ export async function syncEscandalloPrices(
   hotelId: string,
   recipeId: string
 ): Promise<EscandalloSyncResult> {
-  const { data, error } = await supabase.rpc('sync_escandallo_prices', {
+  const { data, error } = await supabase.rpc('v3_sync_escandallo_prices', {
     p_hotel_id: hotelId,
     p_recipe_id: recipeId,
   })

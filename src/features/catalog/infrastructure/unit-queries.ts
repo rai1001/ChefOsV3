@@ -9,7 +9,7 @@ export async function fetchUnits(
   hotelId: string
 ): Promise<UnitOfMeasure[]> {
   const { data, error } = await supabase
-    .from('units_of_measure')
+    .from('v3_units_of_measure')
     .select('*')
     .eq('hotel_id', hotelId)
     .order('unit_type', { ascending: true })
@@ -41,7 +41,7 @@ export async function fetchUnit(
   unitId: string
 ): Promise<UnitOfMeasure | null> {
   const { data, error } = await supabase
-    .from('units_of_measure')
+    .from('v3_units_of_measure')
     .select('*')
     .eq('id', unitId)
     .eq('hotel_id', hotelId)

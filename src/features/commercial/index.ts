@@ -1,7 +1,8 @@
 /**
  * Contrato público del módulo `commercial` — safe para Client y Server Components.
  *
- * Ajustado a la realidad de v2 por ADR-0008 (state machine 8 estados + event_spaces).
+ * Ajustado a la realidad heredada por ADR-0008 (state machine 8 estados + event_spaces)
+ * y servido desde namespace v3_* por ADR-0015.
  *
  * **Regla de oro**: nada fuera de este módulo debe importar desde
  * `./domain`, `./application` o `./infrastructure` directamente.

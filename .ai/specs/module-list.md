@@ -53,6 +53,8 @@ Este documento es normativo.
 
 > **Nota ADR-0013:** `import` se añadió en sprint-03c como módulo transversal de migración de datos desde Excel/CSV. Owner del log `import_runs` y de las RPCs `import_X_bulk(p_hotel_id, p_payload jsonb)`. Consume contratos públicos de los módulos destino (recipes, catalog futuro, etc.) sin tocar internals. Ver `specs/decisions-log.md § ADR-0013`.
 
+> **Nota ADR-0015 (2026-04-24):** todos los objetos de DB que crea v3 llevan prefijo `v3_` (tablas, enums, RPCs, triggers, índices). Archivos de migración: `NNNNN_v3_<descripcion>.sql`. Tablas antes listadas sin prefijo se renombran en el rewrite iniciado en branch `feature/v3-namespace-rewrite`. Ver `specs/decisions-log.md § ADR-0015` y `specs/coding-standards.md § Naming de objetos de base de datos`.
+
 ---
 
 ## Estructura mínima por módulo

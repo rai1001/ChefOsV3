@@ -1,5 +1,5 @@
 // Dominio commercial — tipos puros sin lógica.
-// Basado en schema real de v2 (ADR-0008). No modificar sin ADR nuevo.
+// Basado en schema v3_* que preserva el state machine real de ADR-0008.
 
 export const EVENT_STATUSES = [
   'draft',

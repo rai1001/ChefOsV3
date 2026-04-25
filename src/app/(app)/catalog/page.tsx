@@ -18,12 +18,12 @@ export default async function CatalogPage() {
           </p>
           <h1>Catálogo · {activeHotel.hotel_name}</h1>
           <p className="mt-2 text-[color:var(--color-text-muted)]">
-            Productos, unidades y alias del hotel. Los proveedores y ofertas llegan en sprint-04b.
+            Productos, proveedores, ofertas y unidades del hotel.
           </p>
         </header>
 
         <nav
-          className="grid gap-3 md:grid-cols-3 rounded border p-4"
+          className="grid gap-3 md:grid-cols-2 rounded border p-4"
           style={{
             borderColor: 'var(--color-border)',
             background: 'var(--color-bg-card)',
@@ -37,6 +37,16 @@ export default async function CatalogPage() {
             <p className="kpi-label">Productos</p>
             <p className="text-sm text-[color:var(--color-text-muted)]">
               Maestro de productos, alérgenos, stock.
+            </p>
+          </Link>
+          <Link
+            href="/catalog/suppliers"
+            className="rounded border p-4 transition-colors hover:bg-[color:var(--color-bg-hover)]"
+            style={{ borderColor: 'var(--color-border)' }}
+          >
+            <p className="kpi-label">Proveedores</p>
+            <p className="text-sm text-[color:var(--color-text-muted)]">
+              Proveedores, ofertas, precios, config operativa.
             </p>
           </Link>
           <Link

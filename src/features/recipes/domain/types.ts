@@ -1,4 +1,4 @@
-// Dominio recipes — basado en v2 schema (ADR-0003 Supabase compartido).
+// Dominio recipes — basado en namespace v3_* (ADR-0015) en Supabase compartido.
 // Menús se han separado a módulo `menus` por ADR-0010.
 
 export const RECIPE_STATUSES = [
@@ -153,7 +153,7 @@ export interface RecipesFilter {
   search?: string
 }
 
-// ─── Tech sheet export (RPC get_recipe_tech_sheet) ────────────────────────────
+// ─── Tech sheet export (RPC v3_get_recipe_tech_sheet) ─────────────────────────
 
 export interface RecipeTechSheet {
   recipe: Recipe

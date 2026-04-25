@@ -3,14 +3,14 @@ import { mapSupabaseError } from '@/lib/errors/map-supabase-error'
 import type { MappingResult } from '../domain/types'
 import type { MappingPayload } from '../domain/schemas'
 
-// ─── RPC resolve_ingredient_mapping_bulk ──────────────────────────────────────
+// ─── RPC v3_resolve_ingredient_mapping_bulk ───────────────────────────────────
 
 export async function resolveMappingBulk(
   supabase: SupabaseClient,
   hotelId: string,
   payload: MappingPayload
 ): Promise<MappingResult> {
-  const { data, error } = await supabase.rpc('resolve_ingredient_mapping_bulk', {
+  const { data, error } = await supabase.rpc('v3_resolve_ingredient_mapping_bulk', {
     p_hotel_id: hotelId,
     p_mapping: payload,
   })
@@ -24,8 +24,8 @@ export async function resolveMappingBulk(
 
 // ─── Listado de ingredientes sin mapear (fuente para /recipes/mapping) ────────
 //
-// Lee recipe_ingredients directamente (tablas v2) filtrando product_id IS NULL
-// o unit_id IS NULL. Join con recipes para obtener el nombre de la receta.
+// Lee v3_recipe_ingredients directamente filtrando product_id IS NULL
+// o unit_id IS NULL. Join con v3_recipes para obtener el nombre de la receta.
 
 export interface UnmappedIngredientRow {
   recipe_id: string
@@ -45,7 +45,7 @@ export async function fetchUnmappedIngredients(
   limit: number = 200
 ): Promise<UnmappedIngredientRow[]> {
   const { data, error } = await supabase
-    .from('recipe_ingredients')
+    .from('v3_recipe_ingredients')
     .select(
       `
         id,
@@ -55,7 +55,7 @@ export async function fetchUnmappedIngredients(
         unit_cost,
         product_id,
         unit_id,
-        recipe:recipes!inner(id, name)
+        recipe:v3_recipes!inner(id, name)
       `
     )
     .eq('hotel_id', hotelId)
