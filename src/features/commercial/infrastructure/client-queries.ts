@@ -17,7 +17,7 @@ export async function fetchClients(
 ): Promise<PaginatedResult<Client>> {
   const { from, to, pageSize } = pageRange(pagination)
   let query = supabase
-    .from('clients')
+    .from('v3_clients')
     .select('*')
     .eq('hotel_id', hotelId)
     .order('name', { ascending: true })
@@ -36,7 +36,7 @@ export async function fetchClient(
   clientId: string
 ): Promise<Client> {
   const { data, error } = await supabase
-    .from('clients')
+    .from('v3_clients')
     .select('*')
     .eq('id', clientId)
     .eq('hotel_id', hotelId)
@@ -64,7 +64,7 @@ export async function createClient(
   input: CreateClientInput
 ): Promise<Client> {
   const { data, error } = await supabase
-    .from('clients')
+    .from('v3_clients')
     .insert({
       hotel_id: hotelId,
       name: input.name,
@@ -95,7 +95,7 @@ export async function updateClient(
   input: UpdateClientInput
 ): Promise<Client> {
   const { data, error } = await supabase
-    .from('clients')
+    .from('v3_clients')
     .update(input)
     .eq('id', clientId)
     .eq('hotel_id', hotelId)

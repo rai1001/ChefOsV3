@@ -28,7 +28,7 @@ export async function fetchEvents(
 ): Promise<PaginatedResult<Event>> {
   const { from, to, pageSize } = pageRange(pagination)
   let query = supabase
-    .from('events')
+    .from('v3_events')
     .select('*')
     .eq('hotel_id', hotelId)
     .order('event_date', { ascending: true })
@@ -58,7 +58,7 @@ export async function fetchEvent(
   eventId: string
 ): Promise<Event> {
   const { data, error } = await supabase
-    .from('events')
+    .from('v3_events')
     .select('*')
     .eq('id', eventId)
     .eq('hotel_id', hotelId)
@@ -75,7 +75,7 @@ export async function fetchEventSpaces(
   eventId: string
 ): Promise<EventSpace[]> {
   const { data, error } = await supabase
-    .from('event_spaces')
+    .from('v3_event_spaces')
     .select('*')
     .eq('event_id', eventId)
     .eq('hotel_id', hotelId)
@@ -91,7 +91,7 @@ export async function fetchEventMenus(
   eventId: string
 ): Promise<EventMenu[]> {
   const { data, error } = await supabase
-    .from('event_menus')
+    .from('v3_event_menus')
     .select('*')
     .eq('event_id', eventId)
     .eq('hotel_id', hotelId)
@@ -109,7 +109,7 @@ export async function fetchEventsCalendar(
   fromDate: string,
   toDate: string
 ): Promise<CalendarEvent[]> {
-  const { data, error } = await supabase.rpc('get_events_calendar', {
+  const { data, error } = await supabase.rpc('v3_get_events_calendar', {
     p_hotel_id: hotelId,
     p_from: fromDate,
     p_to: toDate,
@@ -138,7 +138,7 @@ export async function createEvent(
   hotelId: string,
   input: CreateEventInput
 ): Promise<string> {
-  const { data, error } = await supabase.rpc('create_event', {
+  const { data, error } = await supabase.rpc('v3_create_event', {
     p_hotel_id: hotelId,
     p_name: input.name,
     p_event_type: input.event_type,
@@ -175,7 +175,7 @@ export async function updateEvent(
   input: UpdateEventInput,
   changeReason?: string
 ): Promise<void> {
-  const { error } = await supabase.rpc('update_event', {
+  const { error } = await supabase.rpc('v3_update_event', {
     p_hotel_id: hotelId,
     p_event_id: eventId,
     p_data: input,
@@ -191,7 +191,7 @@ export async function transitionEvent(
   newStatus: EventStatus,
   reason?: string
 ): Promise<void> {
-  const { error } = await supabase.rpc('transition_event', {
+  const { error } = await supabase.rpc('v3_transition_event', {
     p_hotel_id: hotelId,
     p_event_id: eventId,
     p_new_status: newStatus,

@@ -8,7 +8,7 @@ export async function fetchEventBeo(
   hotelId: string,
   eventId: string
 ): Promise<BeoData> {
-  const { data, error } = await supabase.rpc('get_event_beo', {
+  const { data, error } = await supabase.rpc('v3_get_event_beo', {
     p_hotel_id: hotelId,
     p_event_id: eventId,
   })
@@ -22,7 +22,7 @@ export async function calculateEventCostEstimate(
   hotelId: string,
   eventId: string
 ): Promise<number> {
-  const { data, error } = await supabase.rpc('calculate_event_cost_estimate', {
+  const { data, error } = await supabase.rpc('v3_calculate_event_cost_estimate', {
     p_hotel_id: hotelId,
     p_event_id: eventId,
   })
@@ -35,7 +35,7 @@ export async function generateEventOperationalImpact(
   hotelId: string,
   eventId: string
 ): Promise<number> {
-  const { data, error } = await supabase.rpc('generate_event_operational_impact', {
+  const { data, error } = await supabase.rpc('v3_generate_event_operational_impact', {
     p_hotel_id: hotelId,
     p_event_id: eventId,
   })
