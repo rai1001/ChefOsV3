@@ -40,9 +40,5 @@ export function nextSectionSortOrder(
  * Expone la misma lógica que recipes.mergeAllergens pero localizada al dominio menus.
  */
 export function aggregateAllergens(recipes: ReadonlyArray<{ allergens: string[] }>): string[] {
-  const set = new Set<string>()
-  for (const r of recipes) {
-    for (const a of r.allergens) set.add(a)
-  }
-  return Array.from(set).sort()
+  return Array.from(new Set(recipes.flatMap((r) => r.allergens))).sort()
 }
