@@ -1218,56 +1218,6 @@ export type Database = {
           },
         ]
       }
-      import_runs: {
-        Row: {
-          created_by: string
-          errors: Json
-          failed_rows: number
-          finished_at: string | null
-          hotel_id: string
-          id: string
-          kind: Database["public"]["Enums"]["import_kind"]
-          ok_rows: number
-          started_at: string
-          status: Database["public"]["Enums"]["import_status"]
-          total_rows: number
-        }
-        Insert: {
-          created_by: string
-          errors?: Json
-          failed_rows?: number
-          finished_at?: string | null
-          hotel_id: string
-          id?: string
-          kind: Database["public"]["Enums"]["import_kind"]
-          ok_rows?: number
-          started_at?: string
-          status?: Database["public"]["Enums"]["import_status"]
-          total_rows?: number
-        }
-        Update: {
-          created_by?: string
-          errors?: Json
-          failed_rows?: number
-          finished_at?: string | null
-          hotel_id?: string
-          id?: string
-          kind?: Database["public"]["Enums"]["import_kind"]
-          ok_rows?: number
-          started_at?: string
-          status?: Database["public"]["Enums"]["import_status"]
-          total_rows?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "import_runs_hotel_id_fkey"
-            columns: ["hotel_id"]
-            isOneToOne: false
-            referencedRelation: "hotels"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       integration_sync_logs: {
         Row: {
           completed_at: string | null
@@ -1337,66 +1287,6 @@ export type Database = {
             columns: ["pos_integration_id"]
             isOneToOne: false
             referencedRelation: "pos_integrations"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      invites: {
-        Row: {
-          accepted_at: string | null
-          accepted_by: string | null
-          created_at: string
-          created_by: string
-          email: string
-          expires_at: string
-          hotel_id: string
-          id: string
-          revoked_at: string | null
-          role: Database["public"]["Enums"]["app_role"]
-          tenant_id: string
-          token_hash: string
-        }
-        Insert: {
-          accepted_at?: string | null
-          accepted_by?: string | null
-          created_at?: string
-          created_by: string
-          email: string
-          expires_at?: string
-          hotel_id: string
-          id?: string
-          revoked_at?: string | null
-          role: Database["public"]["Enums"]["app_role"]
-          tenant_id: string
-          token_hash: string
-        }
-        Update: {
-          accepted_at?: string | null
-          accepted_by?: string | null
-          created_at?: string
-          created_by?: string
-          email?: string
-          expires_at?: string
-          hotel_id?: string
-          id?: string
-          revoked_at?: string | null
-          role?: Database["public"]["Enums"]["app_role"]
-          tenant_id?: string
-          token_hash?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "invites_hotel_id_fkey"
-            columns: ["hotel_id"]
-            isOneToOne: false
-            referencedRelation: "hotels"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "invites_tenant_id_fkey"
-            columns: ["tenant_id"]
-            isOneToOne: false
-            referencedRelation: "tenants"
             referencedColumns: ["id"]
           },
         ]
@@ -4520,6 +4410,1792 @@ export type Database = {
           },
         ]
       }
+      v3_audit_logs: {
+        Row: {
+          action: string
+          created_at: string
+          entity_id: string
+          entity_type: string
+          hotel_id: string
+          id: string
+          new_values: Json | null
+          old_values: Json | null
+          user_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          entity_id: string
+          entity_type: string
+          hotel_id: string
+          id?: string
+          new_values?: Json | null
+          old_values?: Json | null
+          user_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          entity_id?: string
+          entity_type?: string
+          hotel_id?: string
+          id?: string
+          new_values?: Json | null
+          old_values?: Json | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "v3_audit_logs_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "v3_hotels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v3_clients: {
+        Row: {
+          company: string | null
+          contact_person: string | null
+          created_at: string
+          email: string | null
+          hotel_id: string
+          id: string
+          is_active: boolean
+          lifetime_value: number
+          name: string
+          notes: string | null
+          phone: string | null
+          tax_id: string | null
+          updated_at: string
+          vip_level: Database["public"]["Enums"]["v3_vip_level"]
+        }
+        Insert: {
+          company?: string | null
+          contact_person?: string | null
+          created_at?: string
+          email?: string | null
+          hotel_id: string
+          id?: string
+          is_active?: boolean
+          lifetime_value?: number
+          name: string
+          notes?: string | null
+          phone?: string | null
+          tax_id?: string | null
+          updated_at?: string
+          vip_level?: Database["public"]["Enums"]["v3_vip_level"]
+        }
+        Update: {
+          company?: string | null
+          contact_person?: string | null
+          created_at?: string
+          email?: string | null
+          hotel_id?: string
+          id?: string
+          is_active?: boolean
+          lifetime_value?: number
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          tax_id?: string | null
+          updated_at?: string
+          vip_level?: Database["public"]["Enums"]["v3_vip_level"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "v3_clients_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "v3_hotels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v3_domain_events: {
+        Row: {
+          aggregate_id: string
+          aggregate_type: string
+          created_at: string
+          event_type: string
+          hotel_id: string
+          id: string
+          payload: Json
+          processed_at: string | null
+          version: number
+        }
+        Insert: {
+          aggregate_id: string
+          aggregate_type: string
+          created_at?: string
+          event_type: string
+          hotel_id: string
+          id?: string
+          payload?: Json
+          processed_at?: string | null
+          version?: number
+        }
+        Update: {
+          aggregate_id?: string
+          aggregate_type?: string
+          created_at?: string
+          event_type?: string
+          hotel_id?: string
+          id?: string
+          payload?: Json
+          processed_at?: string | null
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "v3_domain_events_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "v3_hotels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v3_event_menus: {
+        Row: {
+          created_at: string
+          event_id: string
+          hotel_id: string
+          id: string
+          menu_id: string | null
+          menu_name: string
+          servings_override: number | null
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          hotel_id: string
+          id?: string
+          menu_id?: string | null
+          menu_name: string
+          servings_override?: number | null
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          hotel_id?: string
+          id?: string
+          menu_id?: string | null
+          menu_name?: string
+          servings_override?: number | null
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "v3_event_menus_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "v3_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_event_menus_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "v3_hotels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v3_event_operational_impact: {
+        Row: {
+          department: Database["public"]["Enums"]["v3_department"]
+          event_id: string
+          generated_at: string
+          hotel_id: string
+          id: string
+          product_id: string | null
+          product_name: string
+          quantity_needed: number
+          unit: string | null
+        }
+        Insert: {
+          department?: Database["public"]["Enums"]["v3_department"]
+          event_id: string
+          generated_at?: string
+          hotel_id: string
+          id?: string
+          product_id?: string | null
+          product_name: string
+          quantity_needed?: number
+          unit?: string | null
+        }
+        Update: {
+          department?: Database["public"]["Enums"]["v3_department"]
+          event_id?: string
+          generated_at?: string
+          hotel_id?: string
+          id?: string
+          product_id?: string | null
+          product_name?: string
+          quantity_needed?: number
+          unit?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "v3_event_operational_impact_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "v3_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_event_operational_impact_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "v3_hotels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_event_operational_impact_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "v3_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v3_event_spaces: {
+        Row: {
+          capacity: number | null
+          created_at: string
+          event_id: string
+          hotel_id: string
+          id: string
+          notes: string | null
+          setup_style: string | null
+          setup_type: string | null
+          space_name: string
+        }
+        Insert: {
+          capacity?: number | null
+          created_at?: string
+          event_id: string
+          hotel_id: string
+          id?: string
+          notes?: string | null
+          setup_style?: string | null
+          setup_type?: string | null
+          space_name: string
+        }
+        Update: {
+          capacity?: number | null
+          created_at?: string
+          event_id?: string
+          hotel_id?: string
+          id?: string
+          notes?: string | null
+          setup_style?: string | null
+          setup_type?: string | null
+          space_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "v3_event_spaces_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "v3_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_event_spaces_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "v3_hotels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v3_event_versions: {
+        Row: {
+          change_reason: string | null
+          changed_by: string
+          created_at: string
+          data: Json
+          event_id: string
+          hotel_id: string
+          id: string
+          version_number: number
+        }
+        Insert: {
+          change_reason?: string | null
+          changed_by: string
+          created_at?: string
+          data: Json
+          event_id: string
+          hotel_id: string
+          id?: string
+          version_number: number
+        }
+        Update: {
+          change_reason?: string | null
+          changed_by?: string
+          created_at?: string
+          data?: Json
+          event_id?: string
+          hotel_id?: string
+          id?: string
+          version_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "v3_event_versions_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "v3_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_event_versions_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "v3_hotels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v3_events: {
+        Row: {
+          actual_cost: number | null
+          beo_number: string | null
+          cancel_reason: string | null
+          client_id: string | null
+          created_at: string
+          created_by: string
+          end_time: string | null
+          event_date: string
+          event_type: Database["public"]["Enums"]["v3_event_type"]
+          guest_count: number
+          hotel_id: string
+          id: string
+          name: string
+          notes: string | null
+          service_type: Database["public"]["Enums"]["v3_service_type"]
+          setup_time: string | null
+          start_time: string | null
+          status: Database["public"]["Enums"]["v3_event_status"]
+          teardown_time: string | null
+          theoretical_cost: number | null
+          updated_at: string
+          venue: string | null
+        }
+        Insert: {
+          actual_cost?: number | null
+          beo_number?: string | null
+          cancel_reason?: string | null
+          client_id?: string | null
+          created_at?: string
+          created_by: string
+          end_time?: string | null
+          event_date: string
+          event_type: Database["public"]["Enums"]["v3_event_type"]
+          guest_count?: number
+          hotel_id: string
+          id?: string
+          name: string
+          notes?: string | null
+          service_type?: Database["public"]["Enums"]["v3_service_type"]
+          setup_time?: string | null
+          start_time?: string | null
+          status?: Database["public"]["Enums"]["v3_event_status"]
+          teardown_time?: string | null
+          theoretical_cost?: number | null
+          updated_at?: string
+          venue?: string | null
+        }
+        Update: {
+          actual_cost?: number | null
+          beo_number?: string | null
+          cancel_reason?: string | null
+          client_id?: string | null
+          created_at?: string
+          created_by?: string
+          end_time?: string | null
+          event_date?: string
+          event_type?: Database["public"]["Enums"]["v3_event_type"]
+          guest_count?: number
+          hotel_id?: string
+          id?: string
+          name?: string
+          notes?: string | null
+          service_type?: Database["public"]["Enums"]["v3_service_type"]
+          setup_time?: string | null
+          start_time?: string | null
+          status?: Database["public"]["Enums"]["v3_event_status"]
+          teardown_time?: string | null
+          theoretical_cost?: number | null
+          updated_at?: string
+          venue?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "v3_events_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "v3_clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_events_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "v3_hotels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v3_hotels: {
+        Row: {
+          created_at: string
+          currency: string
+          id: string
+          is_active: boolean
+          name: string
+          slug: string
+          tenant_id: string
+          timezone: string
+        }
+        Insert: {
+          created_at?: string
+          currency?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          slug: string
+          tenant_id: string
+          timezone?: string
+        }
+        Update: {
+          created_at?: string
+          currency?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          slug?: string
+          tenant_id?: string
+          timezone?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "v3_hotels_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "v3_tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v3_import_runs: {
+        Row: {
+          created_by: string
+          errors: Json
+          failed_rows: number
+          finished_at: string | null
+          hotel_id: string
+          id: string
+          kind: Database["public"]["Enums"]["v3_import_kind"]
+          ok_rows: number
+          started_at: string
+          status: Database["public"]["Enums"]["v3_import_status"]
+          total_rows: number
+        }
+        Insert: {
+          created_by: string
+          errors?: Json
+          failed_rows?: number
+          finished_at?: string | null
+          hotel_id: string
+          id?: string
+          kind: Database["public"]["Enums"]["v3_import_kind"]
+          ok_rows?: number
+          started_at?: string
+          status?: Database["public"]["Enums"]["v3_import_status"]
+          total_rows?: number
+        }
+        Update: {
+          created_by?: string
+          errors?: Json
+          failed_rows?: number
+          finished_at?: string | null
+          hotel_id?: string
+          id?: string
+          kind?: Database["public"]["Enums"]["v3_import_kind"]
+          ok_rows?: number
+          started_at?: string
+          status?: Database["public"]["Enums"]["v3_import_status"]
+          total_rows?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "v3_import_runs_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "v3_hotels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v3_invites: {
+        Row: {
+          accepted_at: string | null
+          accepted_by: string | null
+          created_at: string
+          created_by: string
+          email: string
+          expires_at: string
+          hotel_id: string
+          id: string
+          revoked_at: string | null
+          role: Database["public"]["Enums"]["v3_app_role"]
+          tenant_id: string
+          token_hash: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          accepted_by?: string | null
+          created_at?: string
+          created_by: string
+          email: string
+          expires_at?: string
+          hotel_id: string
+          id?: string
+          revoked_at?: string | null
+          role: Database["public"]["Enums"]["v3_app_role"]
+          tenant_id: string
+          token_hash: string
+        }
+        Update: {
+          accepted_at?: string | null
+          accepted_by?: string | null
+          created_at?: string
+          created_by?: string
+          email?: string
+          expires_at?: string
+          hotel_id?: string
+          id?: string
+          revoked_at?: string | null
+          role?: Database["public"]["Enums"]["v3_app_role"]
+          tenant_id?: string
+          token_hash?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "v3_invites_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "v3_hotels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_invites_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "v3_tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v3_memberships: {
+        Row: {
+          created_at: string
+          hotel_id: string
+          id: string
+          is_active: boolean
+          is_default: boolean
+          role: Database["public"]["Enums"]["v3_app_role"]
+          tenant_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          hotel_id: string
+          id?: string
+          is_active?: boolean
+          is_default?: boolean
+          role: Database["public"]["Enums"]["v3_app_role"]
+          tenant_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          hotel_id?: string
+          id?: string
+          is_active?: boolean
+          is_default?: boolean
+          role?: Database["public"]["Enums"]["v3_app_role"]
+          tenant_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "v3_memberships_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "v3_hotels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_memberships_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "v3_tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v3_menu_section_recipes: {
+        Row: {
+          created_at: string
+          hotel_id: string
+          id: string
+          price: number | null
+          recipe_id: string
+          section_id: string
+          servings_override: number | null
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          hotel_id: string
+          id?: string
+          price?: number | null
+          recipe_id: string
+          section_id: string
+          servings_override?: number | null
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          hotel_id?: string
+          id?: string
+          price?: number | null
+          recipe_id?: string
+          section_id?: string
+          servings_override?: number | null
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "v3_menu_section_recipes_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "v3_hotels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_menu_section_recipes_recipe_id_fkey"
+            columns: ["recipe_id"]
+            isOneToOne: false
+            referencedRelation: "v3_recipes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_menu_section_recipes_section_id_fkey"
+            columns: ["section_id"]
+            isOneToOne: false
+            referencedRelation: "v3_menu_sections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v3_menu_sections: {
+        Row: {
+          course_type: string | null
+          created_at: string
+          hotel_id: string
+          id: string
+          menu_id: string
+          name: string
+          sort_order: number
+        }
+        Insert: {
+          course_type?: string | null
+          created_at?: string
+          hotel_id: string
+          id?: string
+          menu_id: string
+          name: string
+          sort_order?: number
+        }
+        Update: {
+          course_type?: string | null
+          created_at?: string
+          hotel_id?: string
+          id?: string
+          menu_id?: string
+          name?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "v3_menu_sections_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "v3_hotels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_menu_sections_menu_id_fkey"
+            columns: ["menu_id"]
+            isOneToOne: false
+            referencedRelation: "v3_menus"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v3_menus: {
+        Row: {
+          created_at: string
+          created_by: string
+          description: string | null
+          hotel_id: string
+          id: string
+          is_active: boolean
+          is_template: boolean
+          menu_type: Database["public"]["Enums"]["v3_menu_type"]
+          name: string
+          notes: string | null
+          target_food_cost_pct: number | null
+          total_cost: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          hotel_id: string
+          id?: string
+          is_active?: boolean
+          is_template?: boolean
+          menu_type?: Database["public"]["Enums"]["v3_menu_type"]
+          name: string
+          notes?: string | null
+          target_food_cost_pct?: number | null
+          total_cost?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          hotel_id?: string
+          id?: string
+          is_active?: boolean
+          is_template?: boolean
+          menu_type?: Database["public"]["Enums"]["v3_menu_type"]
+          name?: string
+          notes?: string | null
+          target_food_cost_pct?: number | null
+          total_cost?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "v3_menus_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "v3_hotels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v3_price_history: {
+        Row: {
+          created_at: string
+          hotel_id: string
+          id: string
+          new_price: number
+          offer_id: string | null
+          old_price: number | null
+          product_id: string
+          recorded_at: string
+          supplier_id: string
+          variation_pct: number | null
+        }
+        Insert: {
+          created_at?: string
+          hotel_id: string
+          id?: string
+          new_price: number
+          offer_id?: string | null
+          old_price?: number | null
+          product_id: string
+          recorded_at?: string
+          supplier_id: string
+          variation_pct?: number | null
+        }
+        Update: {
+          created_at?: string
+          hotel_id?: string
+          id?: string
+          new_price?: number
+          offer_id?: string | null
+          old_price?: number | null
+          product_id?: string
+          recorded_at?: string
+          supplier_id?: string
+          variation_pct?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "v3_price_history_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "v3_hotels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_price_history_offer_id_fkey"
+            columns: ["offer_id"]
+            isOneToOne: false
+            referencedRelation: "v3_supplier_offers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_price_history_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "v3_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_price_history_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "v3_suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v3_product_aliases: {
+        Row: {
+          alias_name: string
+          confidence_score: number
+          created_at: string
+          hotel_id: string
+          id: string
+          product_id: string
+          source_type: Database["public"]["Enums"]["v3_alias_source"]
+        }
+        Insert: {
+          alias_name: string
+          confidence_score?: number
+          created_at?: string
+          hotel_id: string
+          id?: string
+          product_id: string
+          source_type?: Database["public"]["Enums"]["v3_alias_source"]
+        }
+        Update: {
+          alias_name?: string
+          confidence_score?: number
+          created_at?: string
+          hotel_id?: string
+          id?: string
+          product_id?: string
+          source_type?: Database["public"]["Enums"]["v3_alias_source"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "v3_product_aliases_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "v3_hotels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_product_aliases_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "v3_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v3_product_categories: {
+        Row: {
+          created_at: string
+          hotel_id: string
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          hotel_id: string
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          hotel_id?: string
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "v3_product_categories_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "v3_hotels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v3_product_supplier_refs: {
+        Row: {
+          conversion_factor: number
+          created_at: string
+          hotel_id: string
+          id: string
+          notes: string | null
+          product_id: string
+          purchase_unit_id: string | null
+          supplier_code: string
+          supplier_id: string
+          supplier_name: string | null
+          updated_at: string
+        }
+        Insert: {
+          conversion_factor?: number
+          created_at?: string
+          hotel_id: string
+          id?: string
+          notes?: string | null
+          product_id: string
+          purchase_unit_id?: string | null
+          supplier_code: string
+          supplier_id: string
+          supplier_name?: string | null
+          updated_at?: string
+        }
+        Update: {
+          conversion_factor?: number
+          created_at?: string
+          hotel_id?: string
+          id?: string
+          notes?: string | null
+          product_id?: string
+          purchase_unit_id?: string | null
+          supplier_code?: string
+          supplier_id?: string
+          supplier_name?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "v3_product_supplier_refs_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "v3_hotels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_product_supplier_refs_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "v3_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_product_supplier_refs_purchase_unit_id_fkey"
+            columns: ["purchase_unit_id"]
+            isOneToOne: false
+            referencedRelation: "v3_units_of_measure"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_product_supplier_refs_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "v3_suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v3_products: {
+        Row: {
+          allergens: Json
+          category_id: string | null
+          created_at: string
+          default_unit_id: string | null
+          description: string | null
+          hotel_id: string
+          id: string
+          is_active: boolean
+          max_stock: number | null
+          min_stock: number | null
+          name: string
+          reorder_point: number | null
+          shelf_life_days: number | null
+          sku: string | null
+          storage_type: Database["public"]["Enums"]["v3_storage_type"]
+          updated_at: string
+        }
+        Insert: {
+          allergens?: Json
+          category_id?: string | null
+          created_at?: string
+          default_unit_id?: string | null
+          description?: string | null
+          hotel_id: string
+          id?: string
+          is_active?: boolean
+          max_stock?: number | null
+          min_stock?: number | null
+          name: string
+          reorder_point?: number | null
+          shelf_life_days?: number | null
+          sku?: string | null
+          storage_type?: Database["public"]["Enums"]["v3_storage_type"]
+          updated_at?: string
+        }
+        Update: {
+          allergens?: Json
+          category_id?: string | null
+          created_at?: string
+          default_unit_id?: string | null
+          description?: string | null
+          hotel_id?: string
+          id?: string
+          is_active?: boolean
+          max_stock?: number | null
+          min_stock?: number | null
+          name?: string
+          reorder_point?: number | null
+          shelf_life_days?: number | null
+          sku?: string | null
+          storage_type?: Database["public"]["Enums"]["v3_storage_type"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "v3_products_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "v3_product_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_products_default_unit_id_fkey"
+            columns: ["default_unit_id"]
+            isOneToOne: false
+            referencedRelation: "v3_units_of_measure"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_products_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "v3_hotels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v3_profiles: {
+        Row: {
+          avatar_url: string | null
+          full_name: string | null
+          id: string
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          full_name?: string | null
+          id: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      v3_recipe_ingredients: {
+        Row: {
+          created_at: string
+          hotel_id: string
+          id: string
+          ingredient_name: string
+          preparation_notes: string | null
+          product_id: string | null
+          quantity_gross: number
+          quantity_net: number | null
+          recipe_id: string
+          sort_order: number
+          unit_cost: number
+          unit_id: string | null
+          waste_pct: number
+        }
+        Insert: {
+          created_at?: string
+          hotel_id: string
+          id?: string
+          ingredient_name: string
+          preparation_notes?: string | null
+          product_id?: string | null
+          quantity_gross: number
+          quantity_net?: number | null
+          recipe_id: string
+          sort_order?: number
+          unit_cost?: number
+          unit_id?: string | null
+          waste_pct?: number
+        }
+        Update: {
+          created_at?: string
+          hotel_id?: string
+          id?: string
+          ingredient_name?: string
+          preparation_notes?: string | null
+          product_id?: string | null
+          quantity_gross?: number
+          quantity_net?: number | null
+          recipe_id?: string
+          sort_order?: number
+          unit_cost?: number
+          unit_id?: string | null
+          waste_pct?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "v3_recipe_ingredients_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "v3_hotels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_recipe_ingredients_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "v3_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_recipe_ingredients_recipe_id_fkey"
+            columns: ["recipe_id"]
+            isOneToOne: false
+            referencedRelation: "v3_recipes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_recipe_ingredients_unit_id_fkey"
+            columns: ["unit_id"]
+            isOneToOne: false
+            referencedRelation: "v3_units_of_measure"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v3_recipe_steps: {
+        Row: {
+          created_at: string
+          duration_min: number | null
+          equipment: string | null
+          hotel_id: string
+          id: string
+          instruction: string
+          notes: string | null
+          recipe_id: string
+          step_number: number
+          temperature: string | null
+        }
+        Insert: {
+          created_at?: string
+          duration_min?: number | null
+          equipment?: string | null
+          hotel_id: string
+          id?: string
+          instruction: string
+          notes?: string | null
+          recipe_id: string
+          step_number: number
+          temperature?: string | null
+        }
+        Update: {
+          created_at?: string
+          duration_min?: number | null
+          equipment?: string | null
+          hotel_id?: string
+          id?: string
+          instruction?: string
+          notes?: string | null
+          recipe_id?: string
+          step_number?: number
+          temperature?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "v3_recipe_steps_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "v3_hotels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_recipe_steps_recipe_id_fkey"
+            columns: ["recipe_id"]
+            isOneToOne: false
+            referencedRelation: "v3_recipes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v3_recipe_sub_recipes: {
+        Row: {
+          created_at: string
+          id: string
+          quantity: number
+          recipe_id: string
+          sub_recipe_id: string
+          unit_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          quantity?: number
+          recipe_id: string
+          sub_recipe_id: string
+          unit_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          quantity?: number
+          recipe_id?: string
+          sub_recipe_id?: string
+          unit_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "v3_recipe_sub_recipes_recipe_id_fkey"
+            columns: ["recipe_id"]
+            isOneToOne: false
+            referencedRelation: "v3_recipes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_recipe_sub_recipes_sub_recipe_id_fkey"
+            columns: ["sub_recipe_id"]
+            isOneToOne: false
+            referencedRelation: "v3_recipes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_recipe_sub_recipes_unit_id_fkey"
+            columns: ["unit_id"]
+            isOneToOne: false
+            referencedRelation: "v3_units_of_measure"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v3_recipe_versions: {
+        Row: {
+          change_reason: string | null
+          changed_by: string
+          created_at: string
+          data: Json
+          hotel_id: string
+          id: string
+          recipe_id: string
+          version_number: number
+        }
+        Insert: {
+          change_reason?: string | null
+          changed_by?: string
+          created_at?: string
+          data: Json
+          hotel_id: string
+          id?: string
+          recipe_id: string
+          version_number: number
+        }
+        Update: {
+          change_reason?: string | null
+          changed_by?: string
+          created_at?: string
+          data?: Json
+          hotel_id?: string
+          id?: string
+          recipe_id?: string
+          version_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "v3_recipe_versions_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "v3_hotels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_recipe_versions_recipe_id_fkey"
+            columns: ["recipe_id"]
+            isOneToOne: false
+            referencedRelation: "v3_recipes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v3_recipes: {
+        Row: {
+          allergens: Json
+          approved_at: string | null
+          approved_by: string | null
+          category: Database["public"]["Enums"]["v3_recipe_category"]
+          cook_time_min: number | null
+          cost_per_serving: number
+          created_at: string
+          created_by: string
+          description: string | null
+          dietary_tags: Json
+          difficulty: Database["public"]["Enums"]["v3_recipe_difficulty"]
+          food_cost_pct: number
+          hotel_id: string
+          id: string
+          image_url: string | null
+          name: string
+          notes: string | null
+          prep_time_min: number | null
+          rest_time_min: number | null
+          servings: number
+          status: Database["public"]["Enums"]["v3_recipe_status"]
+          subcategory: string | null
+          target_price: number | null
+          total_cost: number
+          unit_cost: number | null
+          updated_at: string
+          yield_pct: number | null
+          yield_qty: number | null
+          yield_unit_id: string | null
+        }
+        Insert: {
+          allergens?: Json
+          approved_at?: string | null
+          approved_by?: string | null
+          category: Database["public"]["Enums"]["v3_recipe_category"]
+          cook_time_min?: number | null
+          cost_per_serving?: number
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          dietary_tags?: Json
+          difficulty?: Database["public"]["Enums"]["v3_recipe_difficulty"]
+          food_cost_pct?: number
+          hotel_id: string
+          id?: string
+          image_url?: string | null
+          name: string
+          notes?: string | null
+          prep_time_min?: number | null
+          rest_time_min?: number | null
+          servings?: number
+          status?: Database["public"]["Enums"]["v3_recipe_status"]
+          subcategory?: string | null
+          target_price?: number | null
+          total_cost?: number
+          unit_cost?: number | null
+          updated_at?: string
+          yield_pct?: number | null
+          yield_qty?: number | null
+          yield_unit_id?: string | null
+        }
+        Update: {
+          allergens?: Json
+          approved_at?: string | null
+          approved_by?: string | null
+          category?: Database["public"]["Enums"]["v3_recipe_category"]
+          cook_time_min?: number | null
+          cost_per_serving?: number
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          dietary_tags?: Json
+          difficulty?: Database["public"]["Enums"]["v3_recipe_difficulty"]
+          food_cost_pct?: number
+          hotel_id?: string
+          id?: string
+          image_url?: string | null
+          name?: string
+          notes?: string | null
+          prep_time_min?: number | null
+          rest_time_min?: number | null
+          servings?: number
+          status?: Database["public"]["Enums"]["v3_recipe_status"]
+          subcategory?: string | null
+          target_price?: number | null
+          total_cost?: number
+          unit_cost?: number | null
+          updated_at?: string
+          yield_pct?: number | null
+          yield_qty?: number | null
+          yield_unit_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "v3_recipes_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "v3_hotels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_recipes_yield_unit_id_fkey"
+            columns: ["yield_unit_id"]
+            isOneToOne: false
+            referencedRelation: "v3_units_of_measure"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v3_supplier_configs: {
+        Row: {
+          allows_urgent_delivery: boolean
+          created_at: string
+          cutoff_time: string | null
+          delivery_days: Json
+          hotel_id: string
+          id: string
+          lead_time_hours: number | null
+          min_order_amount: number | null
+          min_order_units: number | null
+          reception_window_end: string | null
+          reception_window_start: string | null
+          supplier_id: string
+          updated_at: string
+        }
+        Insert: {
+          allows_urgent_delivery?: boolean
+          created_at?: string
+          cutoff_time?: string | null
+          delivery_days?: Json
+          hotel_id: string
+          id?: string
+          lead_time_hours?: number | null
+          min_order_amount?: number | null
+          min_order_units?: number | null
+          reception_window_end?: string | null
+          reception_window_start?: string | null
+          supplier_id: string
+          updated_at?: string
+        }
+        Update: {
+          allows_urgent_delivery?: boolean
+          created_at?: string
+          cutoff_time?: string | null
+          delivery_days?: Json
+          hotel_id?: string
+          id?: string
+          lead_time_hours?: number | null
+          min_order_amount?: number | null
+          min_order_units?: number | null
+          reception_window_end?: string | null
+          reception_window_start?: string | null
+          supplier_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "v3_supplier_configs_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "v3_hotels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_supplier_configs_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "v3_suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v3_supplier_incidents: {
+        Row: {
+          created_at: string
+          description: string | null
+          hotel_id: string
+          id: string
+          incident_type: Database["public"]["Enums"]["v3_incident_type"]
+          occurred_at: string
+          purchase_order_id: string | null
+          recorded_by: string | null
+          severity: Database["public"]["Enums"]["v3_incident_severity"]
+          supplier_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          hotel_id: string
+          id?: string
+          incident_type: Database["public"]["Enums"]["v3_incident_type"]
+          occurred_at?: string
+          purchase_order_id?: string | null
+          recorded_by?: string | null
+          severity?: Database["public"]["Enums"]["v3_incident_severity"]
+          supplier_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          hotel_id?: string
+          id?: string
+          incident_type?: Database["public"]["Enums"]["v3_incident_type"]
+          occurred_at?: string
+          purchase_order_id?: string | null
+          recorded_by?: string | null
+          severity?: Database["public"]["Enums"]["v3_incident_severity"]
+          supplier_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "v3_supplier_incidents_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "v3_hotels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_supplier_incidents_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "v3_suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v3_supplier_offers: {
+        Row: {
+          created_at: string
+          hotel_id: string
+          id: string
+          is_preferred: boolean
+          min_quantity: number | null
+          notes: string | null
+          product_id: string
+          sku_supplier: string | null
+          supplier_id: string
+          unit_id: string | null
+          unit_price: number
+          updated_at: string
+          valid_from: string | null
+          valid_to: string | null
+        }
+        Insert: {
+          created_at?: string
+          hotel_id: string
+          id?: string
+          is_preferred?: boolean
+          min_quantity?: number | null
+          notes?: string | null
+          product_id: string
+          sku_supplier?: string | null
+          supplier_id: string
+          unit_id?: string | null
+          unit_price: number
+          updated_at?: string
+          valid_from?: string | null
+          valid_to?: string | null
+        }
+        Update: {
+          created_at?: string
+          hotel_id?: string
+          id?: string
+          is_preferred?: boolean
+          min_quantity?: number | null
+          notes?: string | null
+          product_id?: string
+          sku_supplier?: string | null
+          supplier_id?: string
+          unit_id?: string | null
+          unit_price?: number
+          updated_at?: string
+          valid_from?: string | null
+          valid_to?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "v3_supplier_offers_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "v3_hotels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_supplier_offers_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "v3_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_supplier_offers_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "v3_suppliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_supplier_offers_unit_id_fkey"
+            columns: ["unit_id"]
+            isOneToOne: false
+            referencedRelation: "v3_units_of_measure"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v3_suppliers: {
+        Row: {
+          address: string | null
+          contact_name: string | null
+          created_at: string
+          delivery_days: Json
+          email: string | null
+          hotel_id: string
+          id: string
+          is_active: boolean
+          min_order_amount: number | null
+          name: string
+          notes: string | null
+          payment_terms: string | null
+          phone: string | null
+          rating: number
+          tax_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          contact_name?: string | null
+          created_at?: string
+          delivery_days?: Json
+          email?: string | null
+          hotel_id: string
+          id?: string
+          is_active?: boolean
+          min_order_amount?: number | null
+          name: string
+          notes?: string | null
+          payment_terms?: string | null
+          phone?: string | null
+          rating?: number
+          tax_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          contact_name?: string | null
+          created_at?: string
+          delivery_days?: Json
+          email?: string | null
+          hotel_id?: string
+          id?: string
+          is_active?: boolean
+          min_order_amount?: number | null
+          name?: string
+          notes?: string | null
+          payment_terms?: string | null
+          phone?: string | null
+          rating?: number
+          tax_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "v3_suppliers_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "v3_hotels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v3_tenants: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      v3_units_of_measure: {
+        Row: {
+          abbreviation: string
+          base_unit_id: string | null
+          conversion_factor: number
+          created_at: string
+          hotel_id: string
+          id: string
+          is_default: boolean
+          name: string
+          unit_type: Database["public"]["Enums"]["v3_unit_type"]
+        }
+        Insert: {
+          abbreviation: string
+          base_unit_id?: string | null
+          conversion_factor?: number
+          created_at?: string
+          hotel_id: string
+          id?: string
+          is_default?: boolean
+          name: string
+          unit_type: Database["public"]["Enums"]["v3_unit_type"]
+        }
+        Update: {
+          abbreviation?: string
+          base_unit_id?: string | null
+          conversion_factor?: number
+          created_at?: string
+          hotel_id?: string
+          id?: string
+          is_default?: boolean
+          name?: string
+          unit_type?: Database["public"]["Enums"]["v3_unit_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "v3_units_of_measure_base_unit_id_fkey"
+            columns: ["base_unit_id"]
+            isOneToOne: false
+            referencedRelation: "v3_units_of_measure"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_units_of_measure_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "v3_hotels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       waste_records: {
         Row: {
           created_at: string
@@ -4764,7 +6440,6 @@ export type Database = {
         }
         Returns: number
       }
-      accept_invite: { Args: { p_token: string }; Returns: Json }
       add_kitchen_order_item: {
         Args: {
           p_hotel_id: string
@@ -4924,14 +6599,6 @@ export type Database = {
           p_timezone?: string
         }
         Returns: string
-      }
-      create_invite: {
-        Args: {
-          p_email: string
-          p_hotel_id: string
-          p_role: Database["public"]["Enums"]["app_role"]
-        }
-        Returns: Json
       }
       create_kitchen_order: {
         Args: {
@@ -5209,7 +6876,6 @@ export type Database = {
           value_measured: string
         }[]
       }
-      get_catalog_prices: { Args: { p_hotel_id: string }; Returns: Json }
       get_cost_variance_report: {
         Args: {
           p_from?: string
@@ -5487,10 +7153,6 @@ export type Database = {
         Args: { p_hotel_id: string; p_products: Json }
         Returns: number
       }
-      import_recipes_bulk: {
-        Args: { p_hotel_id: string; p_payload: Json }
-        Returns: Json
-      }
       invite_member: {
         Args: {
           p_hotel_id: string
@@ -5536,10 +7198,6 @@ export type Database = {
         }
         Returns: undefined
       }
-      match_product_by_alias: {
-        Args: { p_hotel_id: string; p_limit?: number; p_query: string }
-        Returns: Json
-      }
       match_product_by_supplier_code: {
         Args: {
           p_hotel_id: string
@@ -5548,7 +7206,6 @@ export type Database = {
         }
         Returns: Json
       }
-      preview_invite: { Args: { p_token: string }; Returns: Json }
       print_label: { Args: { p_label_id: string }; Returns: undefined }
       process_ocr_receipt: {
         Args: {
@@ -5607,10 +7264,6 @@ export type Database = {
         Args: { p_event_id: string; p_hotel_id: string }
         Returns: Json
       }
-      resolve_ingredient_mapping_bulk: {
-        Args: { p_hotel_id: string; p_mapping: Json }
-        Returns: Json
-      }
       review_stock_count: {
         Args: {
           p_apply_adjustments?: boolean
@@ -5619,7 +7272,6 @@ export type Database = {
         }
         Returns: Json
       }
-      revoke_invite: { Args: { p_invite_id: string }; Returns: undefined }
       run_all_automejora_agents: { Args: { p_hotel_id: string }; Returns: Json }
       run_compliance_reminder_agent: {
         Args: { p_hotel_id: string }
@@ -5903,6 +7555,203 @@ export type Database = {
         }
         Returns: undefined
       }
+      v3__calculate_recipe_cost_recursive: {
+        Args: {
+          p_depth: number
+          p_hotel_id: string
+          p_recipe_id: string
+          p_visited_ids: string[]
+        }
+        Returns: Json
+      }
+      v3_accept_invite: { Args: { p_token: string }; Returns: Json }
+      v3_approve_recipe: {
+        Args: { p_hotel_id: string; p_recipe_id: string }
+        Returns: undefined
+      }
+      v3_calculate_event_cost_estimate: {
+        Args: { p_event_id: string; p_hotel_id: string }
+        Returns: number
+      }
+      v3_calculate_recipe_cost: {
+        Args: { p_hotel_id: string; p_recipe_id: string }
+        Returns: Json
+      }
+      v3_category_to_department: {
+        Args: { p_cat: Database["public"]["Enums"]["v3_recipe_category"] }
+        Returns: Database["public"]["Enums"]["v3_department"]
+      }
+      v3_check_membership:
+        | {
+            Args: { p_hotel_id: string }
+            Returns: Database["public"]["Enums"]["v3_app_role"]
+          }
+        | {
+            Args: {
+              p_hotel_id: string
+              p_required_roles?: Database["public"]["Enums"]["v3_app_role"][]
+              p_user_id: string
+            }
+            Returns: Database["public"]["Enums"]["v3_app_role"]
+          }
+      v3_create_event: {
+        Args: {
+          p_client_id?: string
+          p_end_time?: string
+          p_event_date: string
+          p_event_type: Database["public"]["Enums"]["v3_event_type"]
+          p_guest_count: number
+          p_hotel_id: string
+          p_name: string
+          p_notes?: string
+          p_service_type: Database["public"]["Enums"]["v3_service_type"]
+          p_start_time?: string
+          p_venue?: string
+        }
+        Returns: string
+      }
+      v3_create_hotel: {
+        Args: {
+          p_currency?: string
+          p_name: string
+          p_slug: string
+          p_tenant_id: string
+          p_timezone?: string
+        }
+        Returns: string
+      }
+      v3_create_invite: {
+        Args: {
+          p_email: string
+          p_hotel_id: string
+          p_role: Database["public"]["Enums"]["v3_app_role"]
+        }
+        Returns: Json
+      }
+      v3_create_tenant_with_hotel: {
+        Args: {
+          p_currency?: string
+          p_hotel_name: string
+          p_hotel_slug: string
+          p_tenant_name: string
+          p_timezone?: string
+        }
+        Returns: Json
+      }
+      v3_deprecate_recipe: {
+        Args: { p_hotel_id: string; p_recipe_id: string }
+        Returns: undefined
+      }
+      v3_duplicate_recipe: {
+        Args: { p_hotel_id: string; p_recipe_id: string }
+        Returns: string
+      }
+      v3_emit_event: {
+        Args: {
+          p_aggregate_id: string
+          p_aggregate_type: string
+          p_dedup_window_seconds?: number
+          p_event_type: string
+          p_hotel_id: string
+          p_payload?: Json
+        }
+        Returns: string
+      }
+      v3_generate_event_operational_impact: {
+        Args: { p_event_id: string; p_hotel_id: string }
+        Returns: number
+      }
+      v3_get_active_hotel: { Args: never; Returns: Json }
+      v3_get_catalog_prices: {
+        Args: { p_hotel_id: string; p_product_ids: string[] }
+        Returns: Json
+      }
+      v3_get_escandallo_live: {
+        Args: { p_hotel_id: string; p_recipe_id: string }
+        Returns: Json
+      }
+      v3_get_event_beo: {
+        Args: { p_event_id: string; p_hotel_id: string }
+        Returns: Json
+      }
+      v3_get_events_calendar: {
+        Args: { p_from: string; p_hotel_id: string; p_to: string }
+        Returns: Json
+      }
+      v3_get_member_role: {
+        Args: { p_hotel_id: string }
+        Returns: Database["public"]["Enums"]["v3_app_role"]
+      }
+      v3_get_recipe_tech_sheet: {
+        Args: { p_hotel_id: string; p_recipe_id: string }
+        Returns: Json
+      }
+      v3_get_team_members: { Args: { p_hotel_id: string }; Returns: Json }
+      v3_get_user_hotels: { Args: never; Returns: Json }
+      v3_import_recipes_bulk: {
+        Args: { p_hotel_id: string; p_payload: Json }
+        Returns: Json
+      }
+      v3_is_member_of: { Args: { p_hotel_id: string }; Returns: boolean }
+      v3_mark_offer_preferred: {
+        Args: { p_hotel_id: string; p_offer_id: string }
+        Returns: undefined
+      }
+      v3_match_product_by_alias: {
+        Args: { p_hotel_id: string; p_limit?: number; p_query: string }
+        Returns: Json
+      }
+      v3_preview_invite: { Args: { p_token: string }; Returns: Json }
+      v3_resolve_ingredient_mapping_bulk: {
+        Args: { p_hotel_id: string; p_mapping: Json }
+        Returns: Json
+      }
+      v3_revoke_invite: { Args: { p_invite_id: string }; Returns: undefined }
+      v3_scale_recipe: {
+        Args: {
+          p_hotel_id: string
+          p_new_servings: number
+          p_recipe_id: string
+        }
+        Returns: Json
+      }
+      v3_submit_recipe_for_review: {
+        Args: { p_hotel_id: string; p_recipe_id: string }
+        Returns: undefined
+      }
+      v3_switch_active_hotel: {
+        Args: { p_hotel_id: string }
+        Returns: undefined
+      }
+      v3_sync_escandallo_prices: {
+        Args: { p_hotel_id: string; p_recipe_id: string }
+        Returns: Json
+      }
+      v3_transition_event: {
+        Args: {
+          p_event_id: string
+          p_hotel_id: string
+          p_new_status: Database["public"]["Enums"]["v3_event_status"]
+          p_reason?: string
+        }
+        Returns: undefined
+      }
+      v3_update_event: {
+        Args: {
+          p_change_reason?: string
+          p_data: Json
+          p_event_id: string
+          p_hotel_id: string
+        }
+        Returns: undefined
+      }
+      v3_validate_event_transition: {
+        Args: {
+          p_from: Database["public"]["Enums"]["v3_event_status"]
+          p_to: Database["public"]["Enums"]["v3_event_status"]
+        }
+        Returns: boolean
+      }
       validate_event_transition: {
         Args: {
           p_from: Database["public"]["Enums"]["event_status"]
@@ -6013,8 +7862,6 @@ export type Database = {
         | "preserved"
         | "chilled"
         | "other"
-      import_kind: "recipes"
-      import_status: "pending" | "running" | "completed" | "partial" | "failed"
       incident_severity: "info" | "warning" | "critical"
       incident_type:
         | "delay"
@@ -6158,6 +8005,97 @@ export type Database = {
         | "regenerado"
       unit_type: "weight" | "volume" | "count" | "length"
       urgency_level: "normal" | "urgent" | "critical"
+      v3_alias_source: "manual" | "ocr" | "voice"
+      v3_app_role:
+        | "superadmin"
+        | "direction"
+        | "admin"
+        | "head_chef"
+        | "sous_chef"
+        | "cook"
+        | "commercial"
+        | "procurement"
+        | "warehouse"
+        | "room"
+        | "reception"
+        | "operations"
+        | "maintenance"
+      v3_department:
+        | "cocina_caliente"
+        | "cocina_fria"
+        | "pasteleria"
+        | "panaderia"
+        | "charcuteria"
+        | "pescaderia"
+        | "garde_manger"
+        | "servicio"
+        | "economato"
+        | "general"
+      v3_event_status:
+        | "draft"
+        | "pending_confirmation"
+        | "confirmed"
+        | "in_preparation"
+        | "in_operation"
+        | "completed"
+        | "cancelled"
+        | "archived"
+      v3_event_type:
+        | "banquet"
+        | "buffet"
+        | "coffee_break"
+        | "cocktail"
+        | "room_service"
+        | "catering"
+        | "restaurant"
+      v3_expiry_treatment:
+        | "fresh"
+        | "cooked"
+        | "frozen"
+        | "preserved"
+        | "chilled"
+        | "other"
+      v3_import_kind: "recipes"
+      v3_import_status:
+        | "pending"
+        | "running"
+        | "completed"
+        | "partial"
+        | "failed"
+      v3_incident_severity: "info" | "warning" | "critical"
+      v3_incident_type:
+        | "delay"
+        | "quality"
+        | "quantity"
+        | "wrong_product"
+        | "no_delivery"
+        | "other"
+      v3_menu_type: "buffet" | "seated" | "cocktail" | "tasting" | "daily"
+      v3_recipe_category:
+        | "cold_starters"
+        | "hot_starters"
+        | "soups_creams"
+        | "fish"
+        | "meat"
+        | "sides"
+        | "desserts"
+        | "bakery"
+        | "sauces_stocks"
+        | "mise_en_place"
+        | "buffet"
+        | "room_service"
+        | "cocktail_pieces"
+      v3_recipe_difficulty: "easy" | "medium" | "hard" | "expert"
+      v3_recipe_status:
+        | "draft"
+        | "review_pending"
+        | "approved"
+        | "deprecated"
+        | "archived"
+      v3_service_type: "buffet" | "seated" | "cocktail" | "mixed"
+      v3_storage_type: "ambient" | "refrigerated" | "frozen"
+      v3_unit_type: "weight" | "volume" | "count" | "length"
+      v3_vip_level: "standard" | "silver" | "gold" | "platinum"
       vip_level: "standard" | "silver" | "gold" | "platinum"
       waste_type:
         | "expired"
@@ -6389,8 +8327,6 @@ export const Constants = {
         "chilled",
         "other",
       ],
-      import_kind: ["recipes"],
-      import_status: ["pending", "running", "completed", "partial", "failed"],
       incident_severity: ["info", "warning", "critical"],
       incident_type: [
         "delay",
@@ -6549,6 +8485,106 @@ export const Constants = {
       ],
       unit_type: ["weight", "volume", "count", "length"],
       urgency_level: ["normal", "urgent", "critical"],
+      v3_alias_source: ["manual", "ocr", "voice"],
+      v3_app_role: [
+        "superadmin",
+        "direction",
+        "admin",
+        "head_chef",
+        "sous_chef",
+        "cook",
+        "commercial",
+        "procurement",
+        "warehouse",
+        "room",
+        "reception",
+        "operations",
+        "maintenance",
+      ],
+      v3_department: [
+        "cocina_caliente",
+        "cocina_fria",
+        "pasteleria",
+        "panaderia",
+        "charcuteria",
+        "pescaderia",
+        "garde_manger",
+        "servicio",
+        "economato",
+        "general",
+      ],
+      v3_event_status: [
+        "draft",
+        "pending_confirmation",
+        "confirmed",
+        "in_preparation",
+        "in_operation",
+        "completed",
+        "cancelled",
+        "archived",
+      ],
+      v3_event_type: [
+        "banquet",
+        "buffet",
+        "coffee_break",
+        "cocktail",
+        "room_service",
+        "catering",
+        "restaurant",
+      ],
+      v3_expiry_treatment: [
+        "fresh",
+        "cooked",
+        "frozen",
+        "preserved",
+        "chilled",
+        "other",
+      ],
+      v3_import_kind: ["recipes"],
+      v3_import_status: [
+        "pending",
+        "running",
+        "completed",
+        "partial",
+        "failed",
+      ],
+      v3_incident_severity: ["info", "warning", "critical"],
+      v3_incident_type: [
+        "delay",
+        "quality",
+        "quantity",
+        "wrong_product",
+        "no_delivery",
+        "other",
+      ],
+      v3_menu_type: ["buffet", "seated", "cocktail", "tasting", "daily"],
+      v3_recipe_category: [
+        "cold_starters",
+        "hot_starters",
+        "soups_creams",
+        "fish",
+        "meat",
+        "sides",
+        "desserts",
+        "bakery",
+        "sauces_stocks",
+        "mise_en_place",
+        "buffet",
+        "room_service",
+        "cocktail_pieces",
+      ],
+      v3_recipe_difficulty: ["easy", "medium", "hard", "expert"],
+      v3_recipe_status: [
+        "draft",
+        "review_pending",
+        "approved",
+        "deprecated",
+        "archived",
+      ],
+      v3_service_type: ["buffet", "seated", "cocktail", "mixed"],
+      v3_storage_type: ["ambient", "refrigerated", "frozen"],
+      v3_unit_type: ["weight", "volume", "count", "length"],
+      v3_vip_level: ["standard", "silver", "gold", "platinum"],
       vip_level: ["standard", "silver", "gold", "platinum"],
       waste_type: [
         "expired",
