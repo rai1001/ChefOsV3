@@ -7,7 +7,7 @@ export async function fetchSubRecipes(
   recipeId: string
 ): Promise<RecipeSubRecipe[]> {
   const { data, error } = await supabase
-    .from('recipe_sub_recipes')
+    .from('v3_recipe_sub_recipes')
     .select('*')
     .eq('recipe_id', recipeId)
     .order('created_at', { ascending: true })
@@ -27,7 +27,7 @@ export async function addSubRecipe(
   input: AddSubRecipeInput
 ): Promise<RecipeSubRecipe> {
   const { data, error } = await supabase
-    .from('recipe_sub_recipes')
+    .from('v3_recipe_sub_recipes')
     .insert({
       recipe_id: input.recipe_id,
       sub_recipe_id: input.sub_recipe_id,
@@ -44,6 +44,6 @@ export async function removeSubRecipe(
   supabase: SupabaseClient,
   subRecipeLinkId: string
 ): Promise<void> {
-  const { error } = await supabase.from('recipe_sub_recipes').delete().eq('id', subRecipeLinkId)
+  const { error } = await supabase.from('v3_recipe_sub_recipes').delete().eq('id', subRecipeLinkId)
   if (error) throw mapSupabaseError(error, { resource: 'recipe_sub_recipe' })
 }
