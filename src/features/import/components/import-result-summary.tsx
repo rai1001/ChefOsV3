@@ -118,6 +118,13 @@ function downloadErrorsCsv(result: ImportResult) {
   const csv = header + rows.join('\n')
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' })
   const url = URL.createObjectURL(blob)
+
+  // Security: Ensure the URL is a blob to prevent potential XSS if generation logic changes
+  if (!url.startsWith('blob:')) {
+    URL.revokeObjectURL(url)
+    return
+  }
+
   const link = document.createElement('a')
   link.href = url
   link.download = `import-errores-${result.run_id}.csv`
