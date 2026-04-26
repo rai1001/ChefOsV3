@@ -20,6 +20,20 @@ Existe para definir y estabilizar la primera base operativa del módulo `procure
   - `sprint-01-identity`
 - Multi-tenant, permisos y límites de módulo: obligatorios
 
+### Ejecución acordada 2026-04-26
+
+Para mantener PRs revisables, `sprint-05-procurement` se ejecuta partido:
+
+- **05a - PR/PO base**: Purchase Requests, Purchase Orders, consolidación por proveedor, state machines, RLS, RPCs v3 y UI mínima. Sin Goods Receipts ni OCR.
+- **05b - Goods Receipts + inventario**: recepción completa/parcial, lotes/impacto inventory, cierre de deuda `v3_get_escandallo_live` contra tablas v2.
+- **05c - OCR albaranes**: carga de foto, deduplicación, review queue y matching asistido.
+
+Decisiones de alcance:
+
+- La autogeneración de PR desde `event.confirmed` entra en 05a como trigger idempotente sobre `v3_domain_events`.
+- No se migra data v2 de procurement en 05a: se parte de cero sobre tablas `v3_*`.
+- La implementación DB toma como referencia el modelo operativo validado en WALL-E; la capa TS/UX queda en ChefOS v3.
+
 ---
 
 ## Propósito del módulo `procurement`
@@ -386,13 +400,21 @@ GR.quality_status: `accepted | partial | rejected` (solo `accepted` crea lotes s
 
 ### Contratos públicos (`src/features/procurement/index.ts`)
 
-Types: `PurchaseRequest`, `PurchaseRequestLine`, `PurchaseOrder`, `PurchaseOrderLine`, `GoodsReceipt`, `GoodsReceiptLine`, `PriceChangeLog`, `PR_STATUSES`, `PO_STATUSES`, `GR_QUALITY_STATUSES`, `PR_STATUS_VARIANT`, `PO_STATUS_VARIANT`, `URGENCY_VARIANT`.
+#### 05a implementado
+
+Types: `PurchaseRequest`, `PurchaseRequestLine`, `PurchaseOrder`, `PurchaseOrderLine`, `PriceChangeLog`, `PR_STATUSES`, `PR_ORIGINS`, `PO_STATUSES`, `PROCUREMENT_DEPARTMENTS`, `PR_STATUS_LABELS`, `PO_STATUS_LABELS`, `PR_STATUS_VARIANT`, `PO_STATUS_VARIANT`.
 
 Hooks:
 - `usePurchaseRequests(filters?)`, `usePurchaseRequest(id)`
 - `usePurchaseOrders(filters?)`, `usePurchaseOrder(id)`
-- `useGoodsReceipts(poId?)`, `useGoodsReceipt(id)`
 - `useCreatePR()`, `useTransitionPR()`, `useConsolidatePRs()`
+- `useTransitionPO()`
+- `useGenerateEventPRs()`
+
+#### Diferido a 05b/05c
+
+- `GoodsReceipt`, `GoodsReceiptLine`, `GR_QUALITY_STATUSES`
+- `useGoodsReceipts(poId?)`, `useGoodsReceipt(id)`
 - `useCreatePO()`, `useSendPO()`, `useReceivePO()`
 - `useUploadDeliveryNote()` — cliente calcula SHA-256 + upload + enqueue OCR job
 - `useOCRReviewQueue()` — lista líneas pending_review + product_unknown
@@ -409,9 +431,17 @@ Hooks:
 
 ### RPCs consumidas
 
-- `create_purchase_request`, `transition_purchase_request`
-- `generate_purchase_order(p_pr_ids[])` — consolida PRs en PO, `SELECT FOR UPDATE` (00045)
-- `transition_purchase_order`, `send_purchase_order` (genera PDF via Edge Function)
+#### 05a implementado
+
+- `v3_create_purchase_request`
+- `v3_transition_purchase_request`
+- `v3_generate_purchase_order(p_pr_ids[])` — consolida PRs en PO con locks por PR aprobada
+- `v3_transition_purchase_order`
+- `v3_generate_purchase_requests_for_event`
+
+#### Diferido a 05b/05c
+
+- `send_purchase_order` (genera PDF via Edge Function)
 - `receive_goods(p_po_id, p_lines[])` — 00051 (scope fix)
 - `process_ocr_receipt(p_receipt_id, p_ocr_data, p_image_hash)` — idempotencia 00044
 - `match_product_by_alias(p_hotel_id, p_query)` — consume de catalog
