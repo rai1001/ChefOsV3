@@ -2,6 +2,34 @@
 
 Todos los cambios notables del proyecto se documentan aquí. Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.1.0/). Versionado: [SemVer](https://semver.org/lang/es/).
 
+## [0.5.1] - 2026-04-26
+
+### Sprint-05b — Procurement Goods Receipts + cierre deuda escandallo
+
+### Added
+
+- Migraciones `00064` y `00065`: `v3_goods_receipts`, `v3_goods_receipt_lines`, enum `v3_gr_quality_status` y RPC `v3_receive_goods` con locks, control de cantidades pendientes, eventos de dominio y `v3_price_change_log`.
+- UI de recepción: detalle de PO, formulario `/procurement/purchase-orders/[id]/receive`, listado `/procurement/goods-receipts` y detalle de recepción.
+- Capa TS GR en `src/features/procurement`: tipos, schemas, invariants, queries, RPC wrapper y hooks TanStack Query.
+- E2E `e2e/tests/procurement-receive-flow.spec.ts` para parcial, completar, sobre-recepción, rechazo y cross-tenant.
+
+### Fixed
+
+- Migración `00066`: `v3_get_escandallo_live` y `v3_sync_escandallo_prices` dejan de leer tablas v2 de compras y pasan a `v3_goods_receipts`/`v3_purchase_orders`.
+- Migración `00067`: restaurada FK `v3_supplier_incidents.purchase_order_id` contra `v3_purchase_orders(hotel_id, id)`.
+- `procurement/domain/errors.ts` alineado con las subclases `AppError` introducidas por PR #62.
+
+### Verification
+
+- `npm test -- --run` — 364 tests verdes.
+- `npm run typecheck` — verde.
+- `npm run lint` — verde.
+- Playwright específico creado; en esta sesión quedó `skipped` hasta aplicar las migraciones GR en Supabase remoto.
+
+### Pendiente
+
+- OCR Edge Function, upload/deduplicación de albaranes y cascada automática cross-recipe → sprint-05c.
+
 ## [0.5.0] - 2026-04-22
 
 ### Sprint-03c — Módulo `import` (17º oficial) + import Excel de recetas
