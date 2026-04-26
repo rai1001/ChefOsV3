@@ -107,6 +107,25 @@ export default async function DashboardPage() {
               </Button>
             </div>
           </div>
+
+          <div
+            className="rounded-lg border p-6"
+            style={{
+              borderColor: 'var(--color-border)',
+              background: 'var(--color-bg-card)',
+            }}
+          >
+            <p className="kpi-label mb-2">sprint-06 · inventory</p>
+            <h2>Inventario</h2>
+            <p className="mt-2 text-[color:var(--color-text-secondary)]">
+              Lotes FIFO, stock disponible, movimientos y acciones manuales.
+            </p>
+            <div className="mt-4 flex gap-2 flex-wrap">
+              <Button asChild size="sm">
+                <Link href="/inventory">Abrir</Link>
+              </Button>
+            </div>
+          </div>
         </section>
       </div>
     </main>
