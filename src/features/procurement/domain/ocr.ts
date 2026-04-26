@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { GR_QUALITY_STATUSES } from './types'
+import type { PurchaseOrderStatus } from './types'
 
 const UUID_LOOSE =
   /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/
@@ -117,6 +118,57 @@ export type OcrReviewedLine = z.infer<typeof ocrReviewedLineSchema>
 export type OcrReviewedPayload = z.infer<typeof ocrReviewedPayloadSchema>
 export type OcrJob = z.infer<typeof ocrJobSchema>
 export type CreateOcrJobInput = z.infer<typeof createOcrJobInputSchema>
+
+export interface OcrJobsFilter {
+  hotelId: string
+  status?: OcrJobStatus | OcrJobStatus[]
+  supplierId?: string
+  fromDate?: string
+  toDate?: string
+}
+
+export interface OcrJobListItem extends OcrJob {
+  supplier_name: string | null
+  purchase_order_status: PurchaseOrderStatus | null
+}
+
+export type OcrJobDetail = OcrJobListItem
+
+export interface TriggerOcrExtractInput {
+  hotel_id: string
+  job_id: string
+}
+
+export interface TriggerOcrExtractResult {
+  jobId: string
+  status: 'extracted'
+}
+
+export interface ReviewOcrJobInput {
+  hotel_id: string
+  job_id: string
+  reviewed_payload: OcrReviewedPayload
+}
+
+export interface ApplyOcrJobInput {
+  hotel_id: string
+  job_id: string
+}
+
+export interface ApplyOcrJobResult {
+  goods_receipt_id: string
+  lines_count: number
+  new_po_status: PurchaseOrderStatus
+  price_changes_logged: number
+  synced_recipes: number
+  idempotent: boolean
+}
+
+export interface RejectOcrJobInput {
+  hotel_id: string
+  job_id: string
+  reason: string
+}
 
 export interface OcrReceiveGoodsLine {
   purchase_order_line_id: string

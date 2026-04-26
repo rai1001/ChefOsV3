@@ -29,6 +29,27 @@ export type {
   ReceiveGoodsResult,
 } from './domain/types'
 
+export type {
+  ApplyOcrJobInput,
+  ApplyOcrJobResult,
+  CreateOcrJobInput,
+  OcrExtractedHeader,
+  OcrExtractedLine,
+  OcrExtractedPayload,
+  OcrJob,
+  OcrJobDetail,
+  OcrJobListItem,
+  OcrJobStatus,
+  OcrJobsFilter,
+  OcrMimeType,
+  OcrReviewedLine,
+  OcrReviewedPayload,
+  RejectOcrJobInput,
+  ReviewOcrJobInput,
+  TriggerOcrExtractInput,
+  TriggerOcrExtractResult,
+} from './domain/ocr'
+
 export {
   GR_QUALITY_STATUSES,
   GR_QUALITY_VARIANT,
@@ -37,6 +58,20 @@ export {
   PR_STATUSES,
   PROCUREMENT_DEPARTMENTS,
 } from './domain/types'
+
+export {
+  OCR_JOB_STATUSES,
+  OCR_MIME_TYPES,
+  buildOcrStoragePath,
+  createOcrJobInputSchema,
+  mapReviewedPayloadToReceiveGoodsLines,
+  ocrExtractedHeaderSchema,
+  ocrExtractedLineSchema,
+  ocrExtractedPayloadSchema,
+  ocrJobSchema,
+  ocrReviewedLineSchema,
+  ocrReviewedPayloadSchema,
+} from './domain/ocr'
 
 export {
   GR_QUALITY_LABELS,
@@ -63,6 +98,10 @@ export type { StatusVariant } from './domain/invariants'
 export {
   GoodsReceiptNotFoundError,
   InvalidProcurementTransitionError,
+  OcrJobAlreadyAppliedError,
+  OcrJobInvalidStateError,
+  OcrJobNotFoundError,
+  OcrRateLimitError,
   PurchaseOrderNotFoundError,
   PurchaseRequestNotFoundError,
 } from './domain/errors'
@@ -80,3 +119,12 @@ export { useGenerateEventPRs } from './application/use-generate-event-prs'
 export { useGoodsReceipts } from './application/use-goods-receipts'
 export { useGoodsReceipt } from './application/use-goods-receipt'
 export { useReceiveGoods } from './application/use-receive-goods'
+export { useCreateOcrJob } from './application/use-create-ocr-job'
+export { useTriggerOcrExtract } from './application/use-trigger-ocr-extract'
+export { useReviewOcrJob } from './application/use-review-ocr-job'
+export { useApplyOcrJob } from './application/use-apply-ocr-job'
+export { useRejectOcrJob } from './application/use-reject-ocr-job'
+export { useOcrJobList } from './application/use-ocr-job-list'
+export { useOcrJobDetail } from './application/use-ocr-job-detail'
+export { useUploadOcrDocument } from './application/use-upload-ocr-document'
+export { useOcrDocumentUrl } from './application/use-ocr-document-url'

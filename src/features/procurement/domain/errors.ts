@@ -1,4 +1,4 @@
-import { ConflictError, NotFoundError } from '@/lib/errors'
+import { ConflictError, NotFoundError, RateLimitedError } from '@/lib/errors'
 
 export class PurchaseRequestNotFoundError extends NotFoundError {
   override readonly code = 'PURCHASE_REQUEST_NOT_FOUND' as const
@@ -46,5 +46,55 @@ export class InvalidProcurementTransitionError extends ConflictError {
   ) {
     super(message ?? `Invalid procurement transition: ${from} -> ${to}`)
     this.name = 'InvalidProcurementTransitionError'
+  }
+}
+
+export class OcrJobNotFoundError extends NotFoundError {
+  override readonly code = 'OCR_JOB_NOT_FOUND' as const
+
+  constructor(
+    public readonly jobId: string,
+    message?: string
+  ) {
+    super('OcrJob', message ?? `OCR job not found: ${jobId}`)
+    this.name = 'OcrJobNotFoundError'
+  }
+}
+
+export class OcrJobInvalidStateError extends ConflictError {
+  override readonly code = 'OCR_JOB_INVALID_STATE' as const
+
+  constructor(
+    public readonly currentStatus: string,
+    public readonly expectedStatus: string,
+    message?: string
+  ) {
+    super(
+      message ??
+        `OCR job invalid state: expected ${expectedStatus}, got ${currentStatus}`
+    )
+    this.name = 'OcrJobInvalidStateError'
+  }
+}
+
+export class OcrJobAlreadyAppliedError extends ConflictError {
+  override readonly code = 'OCR_JOB_ALREADY_APPLIED' as const
+
+  constructor(
+    public readonly jobId: string,
+    public readonly goodsReceiptId: string,
+    message?: string
+  ) {
+    super(message ?? `OCR job already applied: ${jobId}`)
+    this.name = 'OcrJobAlreadyAppliedError'
+  }
+}
+
+export class OcrRateLimitError extends RateLimitedError {
+  override readonly code = 'OCR_RATE_LIMITED' as const
+
+  constructor(retryAfterSeconds?: number, message?: string) {
+    super(message ?? 'Demasiadas extracciones OCR para este hotel', retryAfterSeconds)
+    this.name = 'OcrRateLimitError'
   }
 }
