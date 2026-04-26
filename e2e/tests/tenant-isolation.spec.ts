@@ -13,13 +13,19 @@ import { TEST_USER_EMAIL, TEST_USER_PASSWORD } from '../fixtures/test-user'
  * Escenarios:
  * 1. Select con hotel_id desconocido → array vacío (RLS filtra por SELECT).
  * 2. Insert con hotel_id desconocido → error RLS / WITH CHECK violation.
- * 3. Lo mismo aplica a clients, recipes, menus, invites.
+ * 3. Lo mismo aplica a clients, recipes, menus, invites y procurement.
  */
 
 const FAKE_HOTEL_ID = '00000000-0000-0000-0000-deadbeef0000'
 
 const skipIfNoSupabase =
   !process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+function skipIfProcurementMigrationMissing(error: { code?: string } | null) {
+  if (error?.code === 'PGRST205') {
+    test.skip(true, 'Requires migration 00063_v3_procurement_pr_po applied to Supabase')
+  }
+}
 
 test.describe('tenant-isolation', () => {
   test.skip(skipIfNoSupabase, 'Requires Supabase env vars')
@@ -95,6 +101,30 @@ test.describe('tenant-isolation', () => {
       expect(error).toBeNull()
       expect(data).toEqual([])
     })
+
+    test('purchase requests de otro hotel → array vacío', async () => {
+      const client = await authenticatedSupabaseClient()
+      const { data, error } = await client
+        .from('v3_purchase_requests')
+        .select('*')
+        .eq('hotel_id', FAKE_HOTEL_ID)
+
+      skipIfProcurementMigrationMissing(error)
+      expect(error).toBeNull()
+      expect(data).toEqual([])
+    })
+
+    test('purchase orders de otro hotel → array vacío', async () => {
+      const client = await authenticatedSupabaseClient()
+      const { data, error } = await client
+        .from('v3_purchase_orders')
+        .select('*')
+        .eq('hotel_id', FAKE_HOTEL_ID)
+
+      skipIfProcurementMigrationMissing(error)
+      expect(error).toBeNull()
+      expect(data).toEqual([])
+    })
   })
 
   test.describe('INSERT cross-hotel falla por RLS', () => {
@@ -124,6 +154,21 @@ test.describe('tenant-isolation', () => {
         status: 'draft',
       })
 
+      expect(error).not.toBeNull()
+    })
+
+    test('insertar purchase request con hotel_id ajeno → rechazado', async () => {
+      const client = await authenticatedSupabaseClient()
+      const { data: user } = await client.auth.getUser()
+      const { error } = await client.from('v3_purchase_requests').insert({
+        hotel_id: FAKE_HOTEL_ID,
+        origin: 'manual',
+        status: 'draft',
+        needed_date: '2099-01-01',
+        requested_by: user.user?.id ?? '00000000-0000-0000-0000-000000000000',
+      })
+
+      skipIfProcurementMigrationMissing(error)
       expect(error).not.toBeNull()
     })
   })

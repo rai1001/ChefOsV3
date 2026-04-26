@@ -881,6 +881,54 @@ Si dentro de 30 días tras aplicar ADR-0015 el rewrite no se cerró y está gene
 
 ---
 
+### ADR-0016 — Sprint 05 procurement partido en 05a/05b/05c
+
+**Fecha**: 2026-04-26
+**Estado**: aceptada
+**Módulo / área afectada**: `procurement`, `catalog`, `inventory`, `supabase/migrations`, domain events
+
+#### Contexto
+
+El documento paraguas `sprint-05-procurement.md` recoge el flujo completo `necesidad → pedido → recepción → conciliación`, incluyendo Goods Receipts, inventario y OCR de albaranes. Implementarlo en un único PR mezcla DB, UI, inventario, OCR, rate limits, edge functions y cascada de precios.
+
+Además, tras ADR-0015 todo el módulo debe nacer sobre objetos `v3_*`, sin mutar tablas v2 compartidas.
+
+#### Decisión
+
+Partir `sprint-05-procurement` en tres entregas:
+
+- **05a - PR/PO base**: `v3_purchase_requests`, `v3_purchase_request_lines`, `v3_purchase_orders`, `v3_purchase_order_lines`, `v3_price_change_log`, state machines PR/PO, RLS, RPCs v3, consolidación por proveedor y UI mínima.
+- **05b - Goods Receipts + inventario**: recepción completa/parcial, actualización de lotes, enlace real con `inventory`, cierre de deuda de queries que aún apuntan a tablas v2 de compras.
+- **05c - OCR albaranes**: upload de foto, hash/deduplicación, OCR, matching, cola de revisión y rate limits.
+
+Decisiones específicas:
+
+- `event.confirmed` genera PRs automáticamente en 05a mediante trigger idempotente sobre `v3_domain_events`.
+- `event.cancelled` cancela PRs asociadas que sigan en estado no consolidado.
+- No se migra data v2 de procurement en 05a; el módulo arranca con datos nuevos sobre `v3_*`.
+- La lógica DB toma como referencia el modelo validado en WALL-E; la capa TS/UX se implementa en ChefOS v3.
+
+#### Razón
+
+- PR/PO desbloquea el contrato base de procurement sin esperar a inventory/OCR.
+- GR necesita ownership compartido con `inventory`; meterlo en 05a subiría el riesgo y violaría el alcance pequeño del sprint.
+- OCR depende de flujo de recepción estable, storage/rate limits y datos reales de alias/proveedor; encaja mejor como 05c.
+- Autogenerar PR desde eventos confirmados evita que commercial conozca internals de procurement: la integración vive en eventos de dominio.
+
+#### Consecuencias
+
+- Los contratos públicos de 05a no exportan Goods Receipts ni OCR.
+- Las RPCs públicas de 05a llevan prefijo `v3_`.
+- La UI inicial se limita a `/procurement`, `/procurement/purchase-requests` y `/procurement/purchase-orders`.
+- Los tests de 05a cubren invariantes de dominio, schemas, rutas protegidas y aislamiento cross-tenant PR/PO.
+- El criterio de done OCR del doc paraguas se mueve a 05c; no bloquea el cierre de 05a.
+
+#### Revisable
+
+Revisar al iniciar 05b si la consolidación por proveedor necesita enriquecer PR lines con reglas de supplier_config antes de crear Goods Receipts.
+
+---
+
 ## Mantenimiento
 
 Cada ADR debe poder leerse en <5 minutos. Si una decisión requiere más, dividirla en varias ADRs.
