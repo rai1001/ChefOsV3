@@ -929,6 +929,49 @@ Revisar al iniciar 05b si la consolidación por proveedor necesita enriquecer PR
 
 ---
 
+### ADR-0017 — Pipeline OCR procurement con revisión humana
+
+**Fecha**: 2026-04-26
+**Estado**: aceptada
+**Módulo / área afectada**: `procurement`, Supabase Storage, Edge Functions, OCR, escandallo
+
+#### Contexto
+
+Tras 05b ya existe el flujo `PR → PO → GR` en `v3_*`, con `v3_receive_goods`, `v3_price_change_log` y `v3_sync_escandallo_prices` repuntadas a tablas v3. Falta convertir facturas/albaranes en recepciones sin saltarse la revisión humana ni duplicar documentos.
+
+#### Decisión
+
+Implementar OCR procurement como pipeline separado:
+
+- Storage privado `v3-procurement-uploads`, path `<hotel_id>/<sha256>.<ext>`.
+- Jobs en `v3_procurement_ocr_jobs`, idempotentes por `(hotel_id, sha256)`.
+- Edge Function `v3-procurement-ocr-extract` autenticada por JWT, con verificación `v3_is_member_of(hotel_id)`.
+- OCR con Claude Vision modelo `claude-sonnet-4-6`, salida JSON estricta y prompt de sistema cacheado con `cache_control`.
+- Rate limit por Upstash Redis: 10 solicitudes por hotel y hora. Si faltan variables Upstash en Edge Function, se registra warning y no se bloquea el sprint.
+- Cola de revisión humana: `pending → extracted → reviewed → applied|rejected|failed`.
+- Aplicación mediante `v3_apply_ocr_job`, que llama a `v3_receive_goods` y después sincroniza escandallos dependientes con `v3_sync_escandallo_prices`.
+
+#### Razón
+
+- SHA-256 evita duplicados antes de gastar OCR.
+- La revisión humana mantiene control operativo sobre cantidades, precios y match contra líneas de PO.
+- La Edge Function aísla `ANTHROPIC_API_KEY` y `SUPABASE_SERVICE_ROLE_KEY` del cliente.
+- La cascada reutiliza la RPC existente de escandallo en vez de duplicar lógica.
+
+#### Consecuencias
+
+- El cliente nunca escribe directamente `v3_procurement_ocr_jobs`; usa RPCs.
+- Los jobs aplicados son idempotentes: re-aplicar devuelve el GR existente.
+- `v3_apply_ocr_job` queda restringida a roles con permiso de sincronizar escandallos.
+- El OCR real requiere secrets desplegados en Supabase Functions: `ANTHROPIC_API_KEY` y, para rate limit activo, `UPSTASH_REDIS_REST_URL`/`UPSTASH_REDIS_REST_TOKEN`.
+
+#### Revisable
+
+- Si el coste OCR sube, añadir modo barato con Claude Haiku solo mediante decisión explícita.
+- Si el número de recetas afectadas por una factura crece demasiado, mover cascada a cola asíncrona.
+
+---
+
 ## Mantenimiento
 
 Cada ADR debe poder leerse en <5 minutos. Si una decisión requiere más, dividirla en varias ADRs.

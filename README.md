@@ -2,7 +2,7 @@
 
 Control operativo de cocina multi-servicio. Reescritura DDD del dominio validado en v2.
 
-> Estado 2026-04-26: procurement parcial con PR/PO/GR en v3. OCR de albaranes y cascada automática de precios quedan para sprint-05c.
+> Estado 2026-04-26: procurement parcial con PR/PO/GR/OCR en v3. Inventory y stock quedan para sprint-06.
 
 ## Capability matrix (2026-04-26)
 
@@ -15,7 +15,7 @@ Control operativo de cocina multi-servicio. Reescritura DDD del dominio validado
 | menus         | producción   | sprint-03b  | composición comercial, sections, recipes nested |
 | import        | producción   | sprint-03c  | bulk import Excel: recetas + ingredientes (mapping productos NULL pendiente) |
 | catalog       | pendiente    | sprint-04   | productos, conversiones unidad — desbloquea mapping post-import |
-| procurement   | parcial      | sprint-05   | PR/PO/GR ✓; OCR albaranes pendiente 05c |
+| procurement   | parcial      | sprint-05   | PR/PO/GR/OCR ✓; inventory pendiente sprint-06 |
 | inventory     | pendiente    | sprint-06   | stock, mermas, movimientos |
 | production    | pendiente    | sprint-07   | producción diaria, batches |
 | reporting     | pendiente    | sprint-08   | KPIs, márgenes |
@@ -74,6 +74,22 @@ npm run dev
 | `npm run test:e2e` | Playwright E2E (dev server vía webServer) |
 | `npm run format` | Prettier write |
 | `npm run format:check` | Prettier check |
+
+## Procurement OCR
+
+Edge Function local:
+
+```bash
+supabase functions serve v3-procurement-ocr-extract --env-file .env.local
+```
+
+Secrets necesarios en Supabase Functions para extracción real:
+
+- `ANTHROPIC_API_KEY`
+- `UPSTASH_REDIS_REST_URL`
+- `UPSTASH_REDIS_REST_TOKEN`
+
+Si faltan las variables Upstash, la función registra warning y omite rate limit; si falta `ANTHROPIC_API_KEY`, el job queda `failed`.
 
 ## Arquitectura
 

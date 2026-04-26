@@ -2,6 +2,28 @@
 
 Todos los cambios notables del proyecto se documentan aquí. Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.1.0/). Versionado: [SemVer](https://semver.org/lang/es/).
 
+## [0.5.2] - 2026-04-26
+
+### Sprint-05c — Procurement OCR pipeline
+
+### Added
+
+- Migraciones `00068`-`00070`: bucket `v3-procurement-uploads`, tabla `v3_procurement_ocr_jobs`, enum `v3_ocr_job_status` y RPCs OCR create/extract/fail/review/apply/reject.
+- Edge Function `v3-procurement-ocr-extract` con JWT, membership, Claude Vision, JSON estricto y rate limit Upstash 10/hotel/hora.
+- Capa TS OCR en `src/features/procurement`: schemas, errores, queries/RPC wrappers, storage helper y hooks TanStack Query.
+- UI OCR: upload, cola de revisión y detalle editable con preview PDF/imagen.
+- Tests unit de OCR y spec Playwright `e2e/tests/procurement-ocr-flow.spec.ts` gated por `OCR_E2E_LIVE=1`.
+
+### Changed
+
+- Procurement queda en estado PR/PO/GR/OCR parcial con revisión humana; inventory sigue para sprint-06.
+- README documenta ejecución local de la Edge Function.
+
+### Pending Ops
+
+- Aplicar migraciones `00068`-`00070` via WALL-E/MCP y regenerar `src/types/database.ts`.
+- Desplegar Edge Function y configurar `ANTHROPIC_API_KEY` + Upstash env vars.
+
 ## [0.5.1] - 2026-04-26
 
 ### Sprint-05b — Procurement Goods Receipts + cierre deuda escandallo
