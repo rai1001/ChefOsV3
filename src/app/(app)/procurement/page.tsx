@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ShoppingCart, ClipboardList } from 'lucide-react'
+import { ClipboardCheck, ClipboardList, ShoppingCart } from 'lucide-react'
 import { getActiveHotelOrNull } from '@/features/identity/server'
 
 export const dynamic = 'force-dynamic'
@@ -19,12 +19,12 @@ export default async function ProcurementPage() {
           </p>
           <h1>Compras · {activeHotel.hotel_name}</h1>
           <p className="mt-2 text-[color:var(--color-text-muted)]">
-            Solicitudes, consolidacion por proveedor y pedidos base.
+            Solicitudes, consolidacion por proveedor, pedidos y recepciones.
           </p>
         </header>
 
         <nav
-          className="grid gap-3 md:grid-cols-2 rounded border p-4"
+          className="grid gap-3 rounded border p-4 md:grid-cols-3"
           style={{
             borderColor: 'var(--color-border)',
             background: 'var(--color-bg-card)',
@@ -50,6 +50,17 @@ export default async function ProcurementPage() {
             <p className="kpi-label">Pedidos</p>
             <p className="text-sm text-[color:var(--color-text-muted)]">
               POs agrupadas por proveedor desde solicitudes aprobadas.
+            </p>
+          </Link>
+          <Link
+            href="/procurement/goods-receipts"
+            className="rounded border p-4 transition-colors hover:bg-[color:var(--color-bg-hover)]"
+            style={{ borderColor: 'var(--color-border)' }}
+          >
+            <ClipboardCheck className="mb-3 h-5 w-5" aria-hidden="true" />
+            <p className="kpi-label">Recepciones</p>
+            <p className="text-sm text-[color:var(--color-text-muted)]">
+              Entradas manuales contra pedidos enviados.
             </p>
           </Link>
         </nav>

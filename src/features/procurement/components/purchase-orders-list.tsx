@@ -1,7 +1,8 @@
 'use client'
 
+import Link from 'next/link'
 import { useState } from 'react'
-import { Send } from 'lucide-react'
+import { ClipboardCheck, Eye, Send } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { usePurchaseOrders } from '../application/use-purchase-orders'
 import { useTransitionPO } from '../application/use-transition-po'
@@ -78,7 +79,14 @@ export function PurchaseOrdersList({ hotelId }: { hotelId: string }) {
                   className="border-t transition-colors hover:bg-[color:var(--color-bg-hover)]"
                   style={{ borderColor: 'var(--color-border)' }}
                 >
-                  <td className="px-3 py-2 font-data">{order.order_date}</td>
+                  <td className="px-3 py-2 font-data">
+                    <Link
+                      href={`/procurement/purchase-orders/${order.id}`}
+                      className="hover:underline"
+                    >
+                      {order.order_date}
+                    </Link>
+                  </td>
                   <td className="px-3 py-2 font-code text-xs">{order.supplier_id}</td>
                   <td className="px-3 py-2">
                     <POStatusBadge status={order.status} />
@@ -97,8 +105,20 @@ export function PurchaseOrdersList({ hotelId }: { hotelId: string }) {
                         <Send className="h-4 w-4" aria-hidden="true" />
                         Enviar
                       </Button>
+                    ) : order.status === 'sent' || order.status === 'received_partial' ? (
+                      <Button asChild size="sm">
+                        <Link href={`/procurement/purchase-orders/${order.id}/receive`}>
+                          <ClipboardCheck className="h-4 w-4" aria-hidden="true" />
+                          Recibir
+                        </Link>
+                      </Button>
                     ) : (
-                      <span className="text-[color:var(--color-text-muted)]">-</span>
+                      <Button asChild size="sm" variant="secondary">
+                        <Link href={`/procurement/purchase-orders/${order.id}`}>
+                          <Eye className="h-4 w-4" aria-hidden="true" />
+                          Ver
+                        </Link>
+                      </Button>
                     )}
                   </td>
                 </tr>

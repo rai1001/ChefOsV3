@@ -1,4 +1,5 @@
 import type {
+  GoodsReceiptQualityStatus,
   PurchaseOrderLine,
   PurchaseOrderStatus,
   PurchaseRequestStatus,
@@ -36,6 +37,12 @@ export const PO_STATUS_VARIANT: Record<PurchaseOrderStatus, StatusVariant> = {
   received_complete: 'success',
   closed: 'success',
   cancelled: 'urgent',
+}
+
+export const GR_QUALITY_LABELS: Record<GoodsReceiptQualityStatus, string> = {
+  accepted: 'Aceptada',
+  partial: 'Parcial',
+  rejected: 'Rechazada',
 }
 
 export const VALID_PR_TRANSITIONS: Record<
@@ -96,6 +103,23 @@ export function getPendingQuantity(
   line: Pick<PurchaseOrderLine, 'quantity_ordered' | 'quantity_received'>
 ): number {
   return Math.max(0, line.quantity_ordered - line.quantity_received)
+}
+
+export function validateGRLine(line: {
+  quality_status: GoodsReceiptQualityStatus
+  rejection_reason?: string | null
+}): boolean {
+  return line.quality_status !== 'rejected' || !!line.rejection_reason?.trim()
+}
+
+export function calculatePOStatusAfterReceipt(
+  lines: ReadonlyArray<Pick<PurchaseOrderLine, 'quantity_ordered' | 'quantity_received'>>
+): Extract<PurchaseOrderStatus, 'received_partial' | 'received_complete'> {
+  const isComplete =
+    lines.length > 0 &&
+    lines.every((line) => line.quantity_received >= line.quantity_ordered)
+
+  return isComplete ? 'received_complete' : 'received_partial'
 }
 
 export function groupPurchaseOrderLinesBySupplier<

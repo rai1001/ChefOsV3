@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import {
-  createPurchaseRequestInputSchema,
   consolidatePurchaseRequestsInputSchema,
+  createPurchaseRequestInputSchema,
+  receiveGoodsSchema,
   transitionPurchaseOrderInputSchema,
   transitionPurchaseRequestInputSchema,
 } from './schemas'
@@ -12,6 +13,7 @@ const productId = '44444444-4444-4444-4444-444444444444'
 const unitId = '55555555-5555-5555-5555-555555555555'
 const requestId = '66666666-6666-6666-6666-666666666666'
 const orderId = '77777777-7777-7777-7777-777777777777'
+const orderLineId = '88888888-8888-8888-8888-888888888888'
 
 describe('createPurchaseRequestInputSchema', () => {
   it('acepta una PR manual con una línea válida', () => {
@@ -96,5 +98,52 @@ describe('consolidatePurchaseRequestsInputSchema', () => {
     })
 
     expect(parsed.request_ids).toHaveLength(2)
+  })
+})
+
+describe('receiveGoodsSchema', () => {
+  it('acepta una recepción manual con línea accepted', () => {
+    const parsed = receiveGoodsSchema.parse({
+      hotel_id: hotelId,
+      purchase_order_id: orderId,
+      lines: [
+        {
+          purchase_order_line_id: orderLineId,
+          quantity_received: 1.5,
+          unit_price: 12.25,
+          quality_status: 'accepted',
+        },
+      ],
+    })
+
+    expect(parsed.lines).toHaveLength(1)
+    expect(parsed.lines[0]?.quality_status).toBe('accepted')
+  })
+
+  it('exige al menos una línea', () => {
+    const result = receiveGoodsSchema.safeParse({
+      hotel_id: hotelId,
+      purchase_order_id: orderId,
+      lines: [],
+    })
+
+    expect(result.success).toBe(false)
+  })
+
+  it('exige rejection_reason cuando quality_status es rejected', () => {
+    const result = receiveGoodsSchema.safeParse({
+      hotel_id: hotelId,
+      purchase_order_id: orderId,
+      lines: [
+        {
+          purchase_order_line_id: orderLineId,
+          quantity_received: 0,
+          unit_price: 12.25,
+          quality_status: 'rejected',
+        },
+      ],
+    })
+
+    expect(result.success).toBe(false)
   })
 })

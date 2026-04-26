@@ -17,6 +17,15 @@ export const PO_STATUSES = [
 ] as const
 export type PurchaseOrderStatus = (typeof PO_STATUSES)[number]
 
+export const GR_QUALITY_STATUSES = ['accepted', 'partial', 'rejected'] as const
+export type GoodsReceiptQualityStatus = (typeof GR_QUALITY_STATUSES)[number]
+
+export const GR_QUALITY_VARIANT = {
+  accepted: 'neutral',
+  partial: 'neutral',
+  rejected: 'warning',
+} as const satisfies Record<GoodsReceiptQualityStatus, 'neutral' | 'warning'>
+
 export const PROCUREMENT_DEPARTMENTS = [
   'cocina_caliente',
   'cocina_fria',
@@ -108,6 +117,56 @@ export interface PriceChangeLog {
   created_at: string
 }
 
+export interface GoodsReceipt {
+  id: string
+  hotel_id: string
+  purchase_order_id: string
+  supplier_id: string
+  received_at: string
+  received_by: string
+  delivery_note_image_hash: string | null
+  delivery_note_image_path: string | null
+  notes: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface GoodsReceiptLine {
+  id: string
+  hotel_id: string
+  goods_receipt_id: string
+  purchase_order_line_id: string
+  product_id: string
+  quantity_received: number
+  unit_id: string | null
+  unit_price: number
+  quality_status: GoodsReceiptQualityStatus
+  rejection_reason: string | null
+  lot_number: string | null
+  expiry_date: string | null
+  notes: string | null
+  created_at: string
+}
+
+export interface GoodsReceiptListItem extends GoodsReceipt {
+  line_count: number
+  quality_summary: GoodsReceiptQualityStatus
+  supplier_name: string | null
+  purchase_order_status: PurchaseOrderStatus | null
+}
+
+export interface GoodsReceiptLineDetail extends GoodsReceiptLine {
+  product_name: string | null
+  product_sku: string | null
+  unit_name: string | null
+}
+
+export interface GoodsReceiptDetail extends GoodsReceipt {
+  supplier_name: string | null
+  purchase_order_status: PurchaseOrderStatus | null
+  lines: GoodsReceiptLineDetail[]
+}
+
 export interface PurchaseRequestsFilter {
   hotelId: string
   status?: PurchaseRequestStatus | PurchaseRequestStatus[]
@@ -123,6 +182,21 @@ export interface PurchaseOrdersFilter {
   supplierId?: string
   fromDate?: string
   toDate?: string
+}
+
+export interface GoodsReceiptsFilter {
+  hotelId: string
+  purchaseOrderId?: string
+  supplierId?: string
+  fromDate?: string
+  toDate?: string
+}
+
+export interface ReceiveGoodsResult {
+  goods_receipt_id: string
+  lines_count: number
+  new_po_status: PurchaseOrderStatus
+  price_changes_logged: number
 }
 
 export interface GeneratePurchaseOrderResult {
