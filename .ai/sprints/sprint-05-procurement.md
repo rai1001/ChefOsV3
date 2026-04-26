@@ -524,3 +524,36 @@ E2E: PR → aprobar → consolidar en PO → enviar → recibir foto albarán �
 - Upload storage + SHA-256 cliente.
 - Cola de revisión OCR.
 - Cascada automática de precios a recetas/escandallos al detectar cambios.
+
+---
+
+## Cierre 05c — 2026-04-26
+
+### Entregado
+
+- **Storage OCR**: migración `00068_v3_procurement_ocr_storage.sql` crea bucket privado `v3-procurement-uploads` con policies por membership y path `<hotel_id>/<sha256>.<ext>`.
+- **Jobs OCR**: migración `00069_v3_procurement_ocr_jobs.sql` crea enum `v3_ocr_job_status`, tabla `v3_procurement_ocr_jobs`, índices, RLS y trigger `updated_at`.
+- **RPCs OCR**: migración `00070_v3_procurement_ocr_rpcs.sql` añade create/extracted/failed/review/apply/reject. `v3_apply_ocr_job` llama `v3_receive_goods`, guarda `applied_goods_receipt_id` y ejecuta `v3_sync_escandallo_prices` para recetas afectadas. Migración `00071_v3_procurement_ocr_service_role_guard.sql` corrige las RPCs internas service-role tras smoke real.
+- **Edge Function**: `supabase/functions/v3-procurement-ocr-extract` valida JWT, membership, rate limit Upstash 10/hotel/hora, descarga Storage, llama Claude Vision `claude-sonnet-4-6` y persiste payload extraído.
+- **Capa TS**: schemas OCR, errores de dominio, wrappers RPC/query/storage y hooks TanStack Query.
+- **UI**: `/procurement/ocr/upload`, `/procurement/ocr/jobs`, `/procurement/ocr/jobs/[id]` con preview PDF/imagen, revisión editable, aplicar y rechazar.
+- **Tests**: unit de schemas/helpers/hooks y spec Playwright `procurement-ocr-flow.spec.ts` gated por `OCR_E2E_LIVE=1`.
+
+### Decisiones
+
+- El OCR no crea GR directamente: siempre pasa por estado `reviewed` y acción humana "Aplicar".
+- La deduplicación se hace por `sha256` y `(hotel_id, sha256)`.
+- Si faltan variables Upstash en Edge Function, se registra warning y se permite continuar; si falta `ANTHROPIC_API_KEY`, la extracción falla.
+- `v3_apply_ocr_job` queda limitada a roles que pueden sincronizar escandallos.
+
+### Verificación local
+
+- `npm test -- --run`: verde, 380 tests tras UI.
+- `npm run typecheck`: verde.
+- `npm run lint`: verde.
+
+### Pendiente operativo
+
+- WALL-E debe aplicar `00071` en `dbtrgnyfmzqsrcoadcrs`, revisar advisors y regenerar `src/types/database.ts` si cambia.
+- Desplegar Edge Function con `supabase functions deploy v3-procurement-ocr-extract`.
+- Configurar secrets `ANTHROPIC_API_KEY`, `UPSTASH_REDIS_REST_URL` y `UPSTASH_REDIS_REST_TOKEN` en Supabase Functions.
