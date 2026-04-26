@@ -1,6 +1,7 @@
 import { ConflictError, NotFoundError } from '@/lib/errors'
 import { describe, expect, it } from 'vitest'
 import {
+  GoodsReceiptNotFoundError,
   InvalidProcurementTransitionError,
   PurchaseOrderNotFoundError,
   PurchaseRequestNotFoundError,
@@ -21,6 +22,14 @@ describe('procurement domain errors', () => {
     expect(error).toBeInstanceOf(NotFoundError)
     expect(error.code).toBe('PURCHASE_ORDER_NOT_FOUND')
     expect(error.orderId).toBe('po-1')
+  })
+
+  it('GoodsReceiptNotFoundError extiende NotFoundError y conserva receiptId', () => {
+    const error = new GoodsReceiptNotFoundError('gr-1')
+
+    expect(error).toBeInstanceOf(NotFoundError)
+    expect(error.code).toBe('GOODS_RECEIPT_NOT_FOUND')
+    expect(error.receiptId).toBe('gr-1')
   })
 
   it('InvalidProcurementTransitionError extiende ConflictError y conserva from/to', () => {

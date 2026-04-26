@@ -8,6 +8,13 @@
 export type {
   GenerateEventPurchaseRequestsResult,
   GeneratePurchaseOrderResult,
+  GoodsReceipt,
+  GoodsReceiptDetail,
+  GoodsReceiptLine,
+  GoodsReceiptLineDetail,
+  GoodsReceiptListItem,
+  GoodsReceiptQualityStatus,
+  GoodsReceiptsFilter,
   PriceChangeLog,
   ProcurementDepartment,
   PurchaseOrder,
@@ -19,9 +26,12 @@ export type {
   PurchaseRequestOrigin,
   PurchaseRequestStatus,
   PurchaseRequestsFilter,
+  ReceiveGoodsResult,
 } from './domain/types'
 
 export {
+  GR_QUALITY_STATUSES,
+  GR_QUALITY_VARIANT,
   PO_STATUSES,
   PR_ORIGINS,
   PR_STATUSES,
@@ -29,6 +39,7 @@ export {
 } from './domain/types'
 
 export {
+  GR_QUALITY_LABELS,
   PO_STATUS_LABELS,
   PO_STATUS_VARIANT,
   PR_STATUS_LABELS,
@@ -39,15 +50,18 @@ export {
   VALID_PR_TRANSITIONS,
   canTransitionPO,
   canTransitionPR,
+  calculatePOStatusAfterReceipt,
   getPendingQuantity,
   groupPurchaseOrderLinesBySupplier,
   isTerminalPOStatus,
   isTerminalPRStatus,
+  validateGRLine,
 } from './domain/invariants'
 
 export type { StatusVariant } from './domain/invariants'
 
 export {
+  GoodsReceiptNotFoundError,
   InvalidProcurementTransitionError,
   PurchaseOrderNotFoundError,
   PurchaseRequestNotFoundError,
@@ -62,3 +76,6 @@ export { usePurchaseOrder } from './application/use-purchase-order'
 export { useConsolidatePRs } from './application/use-consolidate-prs'
 export { useTransitionPO } from './application/use-transition-po'
 export { useGenerateEventPRs } from './application/use-generate-event-prs'
+export { useGoodsReceipts } from './application/use-goods-receipts'
+export { useGoodsReceipt } from './application/use-goods-receipt'
+export { useReceiveGoods } from './application/use-receive-goods'

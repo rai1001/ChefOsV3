@@ -24,6 +24,18 @@ export class PurchaseOrderNotFoundError extends NotFoundError {
   }
 }
 
+export class GoodsReceiptNotFoundError extends NotFoundError {
+  override readonly code = 'GOODS_RECEIPT_NOT_FOUND' as const
+
+  constructor(
+    public readonly receiptId: string,
+    message?: string
+  ) {
+    super('GoodsReceipt', message ?? `Goods receipt not found: ${receiptId}`)
+    this.name = 'GoodsReceiptNotFoundError'
+  }
+}
+
 export class InvalidProcurementTransitionError extends ConflictError {
   override readonly code = 'INVALID_PROCUREMENT_TRANSITION' as const
 

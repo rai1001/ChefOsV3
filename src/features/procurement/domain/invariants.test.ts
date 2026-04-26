@@ -2,14 +2,16 @@ import { describe, expect, it } from 'vitest'
 import {
   PR_STATUS_LABELS,
   PO_STATUS_LABELS,
+  calculatePOStatusAfterReceipt,
   canTransitionPO,
   canTransitionPR,
   getPendingQuantity,
   groupPurchaseOrderLinesBySupplier,
   isTerminalPOStatus,
   isTerminalPRStatus,
+  validateGRLine,
 } from './invariants'
-import { PO_STATUSES, PR_STATUSES } from './types'
+import { GR_QUALITY_STATUSES, PO_STATUSES, PR_STATUSES } from './types'
 
 describe('canTransitionPR', () => {
   it('permite draft -> approved', () => {
@@ -63,6 +65,49 @@ describe('getPendingQuantity', () => {
   })
 })
 
+describe('validateGRLine', () => {
+  it('acepta líneas accepted y partial sin motivo de rechazo', () => {
+    expect(validateGRLine({ quality_status: 'accepted' })).toBe(true)
+    expect(validateGRLine({ quality_status: 'partial' })).toBe(true)
+  })
+
+  it('exige rejection_reason cuando quality_status es rejected', () => {
+    expect(validateGRLine({ quality_status: 'rejected' })).toBe(false)
+    expect(validateGRLine({ quality_status: 'rejected', rejection_reason: 'Roto' })).toBe(
+      true
+    )
+  })
+})
+
+describe('calculatePOStatusAfterReceipt', () => {
+  it('marca partial si ninguna línea útil quedó recibida', () => {
+    expect(
+      calculatePOStatusAfterReceipt([
+        { quantity_ordered: 5, quantity_received: 0 },
+        { quantity_ordered: 3, quantity_received: 0 },
+      ])
+    ).toBe('received_partial')
+  })
+
+  it('marca partial si queda cantidad pendiente', () => {
+    expect(
+      calculatePOStatusAfterReceipt([
+        { quantity_ordered: 5, quantity_received: 5 },
+        { quantity_ordered: 3, quantity_received: 1.5 },
+      ])
+    ).toBe('received_partial')
+  })
+
+  it('marca complete si todas las líneas están recibidas', () => {
+    expect(
+      calculatePOStatusAfterReceipt([
+        { quantity_ordered: 5, quantity_received: 5 },
+        { quantity_ordered: 3, quantity_received: 3 },
+      ])
+    ).toBe('received_complete')
+  })
+})
+
 describe('groupPurchaseOrderLinesBySupplier', () => {
   it('agrupa líneas por proveedor', () => {
     const grouped = groupPurchaseOrderLinesBySupplier([
@@ -86,6 +131,12 @@ describe('labels', () => {
   it('cubre todos los estados PO', () => {
     PO_STATUSES.forEach((status) => {
       expect(PO_STATUS_LABELS[status]).toBeDefined()
+    })
+  })
+
+  it('cubre todos los estados de calidad GR', () => {
+    GR_QUALITY_STATUSES.forEach((status) => {
+      expect(validateGRLine({ quality_status: status })).toBe(status !== 'rejected')
     })
   })
 })

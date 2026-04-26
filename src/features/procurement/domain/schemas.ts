@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import {
+  GR_QUALITY_STATUSES,
   PO_STATUSES,
   PR_ORIGINS,
   PR_STATUSES,
@@ -69,6 +70,37 @@ export const transitionPurchaseOrderInputSchema = z.object({
 export type TransitionPurchaseOrderInput = z.infer<
   typeof transitionPurchaseOrderInputSchema
 >
+
+export const receiveGoodsLineSchema = z
+  .object({
+    purchase_order_line_id: uuidString(),
+    quantity_received: z.number().min(0, 'Cantidad recibida debe ser >= 0'),
+    unit_price: z.number().min(0, 'Precio unitario debe ser >= 0'),
+    quality_status: z.enum(GR_QUALITY_STATUSES).default('accepted'),
+    rejection_reason: z.string().max(1000).nullable().optional(),
+    lot_number: z.string().max(255).nullable().optional(),
+    expiry_date: dateString().nullable().optional(),
+    notes: z.string().max(1000).nullable().optional(),
+  })
+  .refine(
+    (value) =>
+      value.quality_status !== 'rejected' || !!value.rejection_reason?.trim(),
+    {
+      message: 'rejection_reason requerido si quality_status es rejected',
+      path: ['rejection_reason'],
+    }
+  )
+
+export const receiveGoodsSchema = z.object({
+  hotel_id: uuidString(),
+  purchase_order_id: uuidString(),
+  received_at: z.string().min(1).nullable().optional(),
+  notes: z.string().max(2000).nullable().optional(),
+  lines: z.array(receiveGoodsLineSchema).min(1),
+})
+
+export type ReceiveGoodsLineInput = z.infer<typeof receiveGoodsLineSchema>
+export type ReceiveGoodsInput = z.infer<typeof receiveGoodsSchema>
 
 export const purchaseRequestsFilterSchema = z.object({
   hotelId: uuidString(),
