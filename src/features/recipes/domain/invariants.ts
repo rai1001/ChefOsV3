@@ -139,9 +139,5 @@ export function scaleFactor(recipe: Pick<Recipe, 'servings'>, targetServings: nu
  * Útil para computar alérgenos de una sección de menú.
  */
 export function mergeAllergens(recipes: ReadonlyArray<Pick<Recipe, 'allergens'>>): string[] {
-  const set = new Set<string>()
-  for (const r of recipes) {
-    for (const a of r.allergens) set.add(a)
-  }
-  return Array.from(set).sort()
+  return Array.from(new Set(recipes.flatMap((r) => r.allergens))).sort()
 }
