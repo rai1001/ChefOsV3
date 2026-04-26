@@ -49,6 +49,9 @@ function normalizeHeader(raw: unknown): string {
     .replace(/\s+/g, '_')
 }
 
+// Cache para normalizar el aliasMap solo una vez
+const aliasCache = new WeakMap<Record<string, string[]>, [string, string[]][]>()
+
 function buildColumnMap(
   rawHeaders: unknown[],
   aliasMap: Record<string, string[]>
@@ -62,9 +65,18 @@ function buildColumnMap(
     }
   })
 
-  for (const [canonical, aliases] of Object.entries(aliasMap)) {
-    for (const candidate of [canonical, ...aliases]) {
-      const idx = headerIndex.get(normalizeHeader(candidate))
+  let cachedAliases = aliasCache.get(aliasMap)
+  if (!cachedAliases) {
+    cachedAliases = Object.entries(aliasMap).map(([canonical, aliases]) => [
+      canonical,
+      [canonical, ...aliases].map(normalizeHeader)
+    ])
+    aliasCache.set(aliasMap, cachedAliases)
+  }
+
+  for (const [canonical, candidates] of cachedAliases) {
+    for (const candidate of candidates) {
+      const idx = headerIndex.get(candidate)
       if (idx !== undefined) {
         result[canonical] = idx
         break
