@@ -7,7 +7,7 @@
 --   menu_section_recipes, products, product_aliases, units_of_measure, suppliers,
 --   supplier_configs, supplier_offers, supplier_incidents, product_supplier_refs,
 --   price_history, import_runs, audit_logs, domain_events.
--- NO prefijar: auth.users (Supabase global), public.goods_* y public.purchase_* (v2 deuda TODO sprint-05).
+-- NO prefijar: auth.users (Supabase global).
 
 -- ═══════════════════════════════════════════════════════════════════════════════
 -- SECCIÓN 1 — helpers RLS v3_
@@ -1575,9 +1575,6 @@ $$;
 
 -- ═══════════════════════════════════════════════════════════════════════════════
 -- SECCIÓN 11 — RPCs recipes (9 copiados de v2)
--- TODO sprint-05: v3_get_escandallo_live y v3_sync_escandallo_prices consultan
--- public.goods_receipts / purchase_orders (v2). Cuando sprint-05 cree
--- v3_goods_receipts, actualizar estas 2 RPCs para apuntar a v3_.
 -- ═══════════════════════════════════════════════════════════════════════════════
 
 create or replace function public.v3_submit_recipe_for_review(p_hotel_id uuid, p_recipe_id uuid)
@@ -1974,7 +1971,7 @@ begin
 end;
 $$;
 
--- TODO sprint-05: estas 2 RPCs consultan public.goods_receipts/purchase_orders (v2).
+-- TODO sprint-05: estas 2 RPCs consultan public.v3_goods_receipts/purchase_orders (v2).
 -- Cuando sprint-05 cree v3_goods_receipts, actualizar a public.v3_*.
 create or replace function public.v3_get_escandallo_live(p_hotel_id uuid, p_recipe_id uuid)
 returns jsonb
@@ -2000,9 +1997,9 @@ begin
       from public.v3_recipe_ingredients ri_c
       left join lateral (
         select grl.unit_cost
-        from public.goods_receipt_lines grl
-        join public.goods_receipts   gr  on gr.id  = grl.receipt_id
-        join public.purchase_order_lines pol on pol.id = grl.order_line_id
+        from public.v3_goods_receipt_lines grl
+        join public.v3_goods_receipts   gr  on gr.id  = grl.receipt_id
+        join public.v3_purchase_order_lines pol on pol.id = grl.order_line_id
         where pol.product_id = ri_c.product_id
           and gr.hotel_id    = p_hotel_id
           and grl.quality_status = 'accepted'
@@ -2040,11 +2037,11 @@ begin
       left join lateral (
         select grl.unit_cost, gr.received_at, gr.receipt_number,
                gr.delivery_note_number, s.name as supplier_name
-        from public.goods_receipt_lines  grl
-        join public.goods_receipts        gr  on gr.id  = grl.receipt_id
-        join public.purchase_order_lines  pol on pol.id = grl.order_line_id
-        join public.purchase_orders       po  on po.id  = pol.order_id
-        join public.suppliers             s   on s.id   = po.supplier_id
+        from public.v3_goods_receipt_lines  grl
+        join public.v3_goods_receipts        gr  on gr.id  = grl.receipt_id
+        join public.v3_purchase_order_lines  pol on pol.id = grl.order_line_id
+        join public.v3_purchase_orders       po  on po.id  = pol.order_id
+        join public.v3_suppliers             s   on s.id   = po.supplier_id
         where pol.product_id = ri.product_id
           and gr.hotel_id    = p_hotel_id
           and grl.quality_status = 'accepted'
@@ -2081,9 +2078,9 @@ begin
     from public.v3_recipe_ingredients ri
     join lateral (
       select grl.unit_cost
-      from public.goods_receipt_lines  grl
-      join public.goods_receipts        gr  on gr.id  = grl.receipt_id
-      join public.purchase_order_lines  pol on pol.id = grl.order_line_id
+      from public.v3_goods_receipt_lines  grl
+      join public.v3_goods_receipts        gr  on gr.id  = grl.receipt_id
+      join public.v3_purchase_order_lines  pol on pol.id = grl.order_line_id
       where pol.product_id = ri.product_id
         and gr.hotel_id    = p_hotel_id
         and grl.quality_status = 'accepted'
@@ -2158,6 +2155,8 @@ declare
     'v3_products','v3_product_aliases','v3_product_categories','v3_units_of_measure',
     'v3_suppliers','v3_supplier_configs','v3_supplier_offers','v3_supplier_incidents',
     'v3_product_supplier_refs','v3_price_history',
+    'v3_purchase_requests','v3_purchase_orders','v3_purchase_order_lines',
+    'v3_goods_receipts','v3_goods_receipt_lines',
     'v3_import_runs','v3_audit_logs','v3_domain_events'
   ];
 begin

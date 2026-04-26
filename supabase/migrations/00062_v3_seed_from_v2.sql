@@ -5,7 +5,7 @@
 -- Casts enum explícitos: col::text::public.v3_<enum>.
 --
 -- NO se sembra v3_product_categories (v2 no tiene esa tabla).
--- v3_supplier_incidents.purchase_order_id → NULL (v3_purchase_orders pendiente sprint-05).
+-- v3_supplier_incidents.purchase_order_id → purchase_order_id.
 -- import_runs v2 se dropeó en 00058, no hay rows que copiar.
 
 -- ═══════════════════════════════════════════════════════════════════════════════
@@ -84,12 +84,12 @@ insert into public.v3_supplier_offers select * from public.supplier_offers
 where hotel_id = '22222222-2222-2222-2222-222222222222'
 on conflict (id) do nothing;
 
--- supplier_incidents: purchase_order_id → NULL (v3_purchase_orders no existe aún)
+-- supplier_incidents
 insert into public.v3_supplier_incidents (
   id, hotel_id, supplier_id, purchase_order_id, incident_type, description,
   severity, occurred_at, recorded_by, created_at
 )
-select id, hotel_id, supplier_id, null::uuid as purchase_order_id,
+select id, hotel_id, supplier_id, purchase_order_id,
   incident_type::text::public.v3_incident_type,
   description,
   severity::text::public.v3_incident_severity,
@@ -211,4 +211,46 @@ on conflict (id) do nothing;
 insert into public.v3_domain_events select * from public.domain_events
 where hotel_id = '22222222-2222-2222-2222-222222222222'
   and created_at > now() - interval '30 days'
+on conflict (id) do nothing;
+
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- Procurement (S05)
+-- ═══════════════════════════════════════════════════════════════════════════════
+
+insert into public.v3_purchase_requests (
+  id, hotel_id, event_id, request_number, requested_by, status, urgency, notes, approved_at, approved_by, cancel_reason, created_at, updated_at
+)
+select id, hotel_id, event_id, request_number, requested_by,
+  status::text::public.v3_pr_status,
+  urgency::text::public.v3_urgency_level,
+  notes, approved_at, approved_by, cancel_reason, created_at, updated_at
+from public.purchase_requests where hotel_id = '22222222-2222-2222-2222-222222222222'
+on conflict (id) do nothing;
+
+insert into public.v3_purchase_orders (
+  id, hotel_id, supplier_id, order_number, status, total_amount, expected_delivery_date, payment_terms, notes, created_by, approved_at, approved_by, sent_at, cancel_reason, created_at, updated_at
+)
+select id, hotel_id, supplier_id, order_number,
+  status::text::public.v3_po_status,
+  total_amount, expected_delivery_date, payment_terms, notes, created_by, approved_at, approved_by, sent_at, cancel_reason, created_at, updated_at
+from public.purchase_orders where hotel_id = '22222222-2222-2222-2222-222222222222'
+on conflict (id) do nothing;
+
+insert into public.v3_purchase_order_lines select * from public.purchase_order_lines
+where hotel_id = '22222222-2222-2222-2222-222222222222'
+on conflict (id) do nothing;
+
+insert into public.v3_goods_receipts select * from public.goods_receipts
+where hotel_id = '22222222-2222-2222-2222-222222222222'
+on conflict (id) do nothing;
+
+insert into public.v3_goods_receipt_lines (
+  id, hotel_id, receipt_id, order_line_id, quantity_received, unit_cost, quality_status, rejection_reason, lot_number, expiry_date, ocr_raw_text, ocr_product_name_extracted, ocr_match_confidence, ocr_review_status, created_at
+)
+select id, hotel_id, receipt_id, order_line_id, quantity_received, unit_cost,
+  quality_status::text::public.v3_quality_status,
+  rejection_reason, lot_number, expiry_date, ocr_raw_text, ocr_product_name_extracted, ocr_match_confidence,
+  ocr_review_status::text::public.v3_ocr_review_status,
+  created_at
+from public.goods_receipt_lines where hotel_id = '22222222-2222-2222-2222-222222222222'
 on conflict (id) do nothing;

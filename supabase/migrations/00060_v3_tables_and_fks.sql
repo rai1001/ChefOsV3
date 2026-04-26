@@ -8,7 +8,7 @@
 --  * v3_X.hotel_id, v3_X.tenant_id, v3_X.event_id, etc. → v3_*.
 --  * FK a auth.users se mantiene (users es global Supabase).
 --  * FK v3_products.category_id → v3_product_categories (nueva, v2 NO tiene product_categories).
---  * FK v3_supplier_incidents.purchase_order_id OMITIDA (v3_purchase_orders pendiente sprint-05).
+--  * FK v3_supplier_incidents.purchase_order_id → v3_purchase_orders.
 
 -- ═══════════════════════════════════════════════════════════════════════════════
 -- NIVEL 0 — sin FK a otras tablas v3_
@@ -326,8 +326,9 @@ alter table public.v3_supplier_incidents
   add constraint v3_supplier_incidents_supplier_id_fkey foreign key (supplier_id)
     references public.v3_suppliers(id) on delete cascade,
   add constraint v3_supplier_incidents_recorded_by_fkey foreign key (recorded_by)
-    references auth.users(id) on delete set null;
--- FK OMITIDA: purchase_order_id → v3_purchase_orders (pendiente sprint-05).
+    references auth.users(id) on delete set null,
+  add constraint v3_supplier_incidents_purchase_order_id_fkey foreign key (purchase_order_id)
+    references public.v3_purchase_orders(id) on delete set null;
 alter table public.v3_supplier_incidents enable row level security;
 
 drop table if exists public.v3_product_supplier_refs cascade;
@@ -417,3 +418,98 @@ alter table public.v3_menu_section_recipes
   add constraint v3_menu_section_recipes_recipe_id_fkey foreign key (recipe_id)
     references public.v3_recipes(id) on delete cascade;
 alter table public.v3_menu_section_recipes enable row level security;
+
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- NIVEL 5 — PROCUREMENT (S05) — FK → v3_hotels / v3_suppliers / v3_products / etc.
+-- ═══════════════════════════════════════════════════════════════════════════════
+
+drop table if exists public.v3_purchase_requests cascade;
+create table public.v3_purchase_requests (like public.purchase_requests including all);
+alter table public.v3_purchase_requests alter column status drop default;
+alter table public.v3_purchase_requests alter column urgency drop default;
+alter table public.v3_purchase_requests
+  alter column status type public.v3_pr_status using status::text::public.v3_pr_status,
+  alter column urgency type public.v3_urgency_level using urgency::text::public.v3_urgency_level;
+alter table public.v3_purchase_requests
+  alter column status set default 'draft'::public.v3_pr_status,
+  alter column urgency set default 'normal'::public.v3_urgency_level;
+alter table public.v3_purchase_requests enable row level security;
+
+drop table if exists public.v3_purchase_orders cascade;
+create table public.v3_purchase_orders (like public.purchase_orders including all);
+alter table public.v3_purchase_orders alter column status drop default;
+alter table public.v3_purchase_orders
+  alter column status type public.v3_po_status using status::text::public.v3_po_status;
+alter table public.v3_purchase_orders
+  alter column status set default 'draft'::public.v3_po_status;
+alter table public.v3_purchase_orders enable row level security;
+
+drop table if exists public.v3_purchase_order_lines cascade;
+create table public.v3_purchase_order_lines (like public.purchase_order_lines including all);
+alter table public.v3_purchase_order_lines enable row level security;
+
+drop table if exists public.v3_goods_receipts cascade;
+create table public.v3_goods_receipts (like public.goods_receipts including all);
+alter table public.v3_goods_receipts enable row level security;
+
+drop table if exists public.v3_goods_receipt_lines cascade;
+create table public.v3_goods_receipt_lines (like public.goods_receipt_lines including all);
+alter table public.v3_goods_receipt_lines alter column quality_status drop default;
+alter table public.v3_goods_receipt_lines alter column ocr_review_status drop default;
+alter table public.v3_goods_receipt_lines
+  alter column quality_status type public.v3_quality_status using quality_status::text::public.v3_quality_status,
+  alter column ocr_review_status type public.v3_ocr_review_status using ocr_review_status::text::public.v3_ocr_review_status;
+alter table public.v3_goods_receipt_lines
+  alter column quality_status set default 'accepted'::public.v3_quality_status;
+alter table public.v3_goods_receipt_lines enable row level security;
+
+-- FKs para v3_purchase_requests
+alter table public.v3_purchase_requests
+  add constraint v3_purchase_requests_hotel_id_fkey foreign key (hotel_id)
+    references public.v3_hotels(id) on delete cascade,
+  add constraint v3_purchase_requests_event_id_fkey foreign key (event_id)
+    references public.v3_events(id) on delete set null,
+  add constraint v3_purchase_requests_requested_by_fkey foreign key (requested_by)
+    references auth.users(id) on delete restrict,
+  add constraint v3_purchase_requests_approved_by_fkey foreign key (approved_by)
+    references auth.users(id) on delete set null;
+
+-- FKs para v3_purchase_orders
+alter table public.v3_purchase_orders
+  add constraint v3_purchase_orders_hotel_id_fkey foreign key (hotel_id)
+    references public.v3_hotels(id) on delete cascade,
+  add constraint v3_purchase_orders_supplier_id_fkey foreign key (supplier_id)
+    references public.v3_suppliers(id) on delete restrict,
+  add constraint v3_purchase_orders_created_by_fkey foreign key (created_by)
+    references auth.users(id) on delete restrict,
+  add constraint v3_purchase_orders_approved_by_fkey foreign key (approved_by)
+    references auth.users(id) on delete set null;
+
+-- FKs para v3_purchase_order_lines
+alter table public.v3_purchase_order_lines
+  add constraint v3_purchase_order_lines_hotel_id_fkey foreign key (hotel_id)
+    references public.v3_hotels(id) on delete cascade,
+  add constraint v3_purchase_order_lines_order_id_fkey foreign key (order_id)
+    references public.v3_purchase_orders(id) on delete cascade,
+  add constraint v3_purchase_order_lines_product_id_fkey foreign key (product_id)
+    references public.v3_products(id) on delete restrict,
+  add constraint v3_purchase_order_lines_unit_id_fkey foreign key (unit_id)
+    references public.v3_units_of_measure(id) on delete set null;
+
+-- FKs para v3_goods_receipts
+alter table public.v3_goods_receipts
+  add constraint v3_goods_receipts_hotel_id_fkey foreign key (hotel_id)
+    references public.v3_hotels(id) on delete cascade,
+  add constraint v3_goods_receipts_order_id_fkey foreign key (order_id)
+    references public.v3_purchase_orders(id) on delete cascade,
+  add constraint v3_goods_receipts_received_by_fkey foreign key (received_by)
+    references auth.users(id) on delete restrict;
+
+-- FKs para v3_goods_receipt_lines
+alter table public.v3_goods_receipt_lines
+  add constraint v3_goods_receipt_lines_hotel_id_fkey foreign key (hotel_id)
+    references public.v3_hotels(id) on delete cascade,
+  add constraint v3_goods_receipt_lines_receipt_id_fkey foreign key (receipt_id)
+    references public.v3_goods_receipts(id) on delete cascade,
+  add constraint v3_goods_receipt_lines_order_line_id_fkey foreign key (order_line_id)
+    references public.v3_purchase_order_lines(id) on delete set null;

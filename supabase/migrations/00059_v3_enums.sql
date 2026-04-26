@@ -1,5 +1,5 @@
 -- 00059_v3_enums.sql
--- ADR-0015: crea los 16 enums v3_* con valores copiados 1:1 de los enums v2.
+-- ADR-0015: crea los 21 enums v3_* con valores copiados 1:1 de los enums v2.
 -- Idempotente: cada bloque valida existencia antes de crear. Dollar tags
 -- nombrados por enum (feedback_supabase_dollar_tags).
 
@@ -169,3 +169,50 @@ begin
     );
   end if;
 end $enum_v3_department$;
+
+-- v3_pr_status (5 valores)
+do $enum_v3_pr_status$
+begin
+  if not exists (select 1 from pg_type where typname = 'v3_pr_status') then
+    create type public.v3_pr_status as enum (
+      'draft','pending_approval','approved','consolidated','cancelled'
+    );
+  end if;
+end $enum_v3_pr_status$;
+
+-- v3_po_status (8 valores)
+do $enum_v3_po_status$
+begin
+  if not exists (select 1 from pg_type where typname = 'v3_po_status') then
+    create type public.v3_po_status as enum (
+      'draft','pending_approval','approved','sent','confirmed_by_supplier','partially_received',
+      'received', 'cancelled'
+    );
+  end if;
+end $enum_v3_po_status$;
+
+-- v3_quality_status (3 valores)
+do $enum_v3_quality_status$
+begin
+  if not exists (select 1 from pg_type where typname = 'v3_quality_status') then
+    create type public.v3_quality_status as enum ('accepted','rejected','partial');
+  end if;
+end $enum_v3_quality_status$;
+
+-- v3_ocr_review_status (5 valores)
+do $enum_v3_ocr_review_status$
+begin
+  if not exists (select 1 from pg_type where typname = 'v3_ocr_review_status') then
+    create type public.v3_ocr_review_status as enum (
+      'auto_matched','pending_review','product_unknown','reviewed_ok','reviewed_fixed'
+    );
+  end if;
+end $enum_v3_ocr_review_status$;
+
+-- v3_urgency_level (3 valores)
+do $enum_v3_urgency_level$
+begin
+  if not exists (select 1 from pg_type where typname = 'v3_urgency_level') then
+    create type public.v3_urgency_level as enum ('normal','urgent','critical');
+  end if;
+end $enum_v3_urgency_level$;
