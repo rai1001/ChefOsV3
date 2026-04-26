@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ClipboardCheck, ClipboardList, ShoppingCart } from 'lucide-react'
+import { Bot, ClipboardCheck, ClipboardList, ShoppingCart } from 'lucide-react'
 import { getActiveHotelOrNull } from '@/features/identity/server'
 
 export const dynamic = 'force-dynamic'
@@ -24,7 +24,7 @@ export default async function ProcurementPage() {
         </header>
 
         <nav
-          className="grid gap-3 rounded border p-4 md:grid-cols-3"
+          className="grid gap-3 rounded border p-4 md:grid-cols-4"
           style={{
             borderColor: 'var(--color-border)',
             background: 'var(--color-bg-card)',
@@ -61,6 +61,17 @@ export default async function ProcurementPage() {
             <p className="kpi-label">Recepciones</p>
             <p className="text-sm text-[color:var(--color-text-muted)]">
               Entradas manuales contra pedidos enviados.
+            </p>
+          </Link>
+          <Link
+            href="/procurement/ocr/upload"
+            className="rounded border p-4 transition-colors hover:bg-[color:var(--color-bg-hover)]"
+            style={{ borderColor: 'var(--color-border)' }}
+          >
+            <Bot className="mb-3 h-5 w-5" aria-hidden="true" />
+            <p className="kpi-label">OCR</p>
+            <p className="text-sm text-[color:var(--color-text-muted)]">
+              Facturas y albaranes con revision humana.
             </p>
           </Link>
         </nav>
