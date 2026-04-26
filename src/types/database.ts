@@ -5543,6 +5543,113 @@ export type Database = {
           },
         ]
       }
+      v3_procurement_ocr_jobs: {
+        Row: {
+          applied_goods_receipt_id: string | null
+          created_at: string
+          created_by: string | null
+          error_code: string | null
+          error_message: string | null
+          extracted_payload: Json | null
+          hotel_id: string
+          id: string
+          mime_type: string
+          purchase_order_id: string | null
+          reviewed_payload: Json | null
+          sha256: string
+          status: Database["public"]["Enums"]["v3_ocr_job_status"]
+          storage_path: string
+          supplier_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          applied_goods_receipt_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          error_code?: string | null
+          error_message?: string | null
+          extracted_payload?: Json | null
+          hotel_id: string
+          id?: string
+          mime_type: string
+          purchase_order_id?: string | null
+          reviewed_payload?: Json | null
+          sha256: string
+          status?: Database["public"]["Enums"]["v3_ocr_job_status"]
+          storage_path: string
+          supplier_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          applied_goods_receipt_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          error_code?: string | null
+          error_message?: string | null
+          extracted_payload?: Json | null
+          hotel_id?: string
+          id?: string
+          mime_type?: string
+          purchase_order_id?: string | null
+          reviewed_payload?: Json | null
+          sha256?: string
+          status?: Database["public"]["Enums"]["v3_ocr_job_status"]
+          storage_path?: string
+          supplier_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "v3_procurement_ocr_jobs_applied_goods_receipt_id_fkey"
+            columns: ["applied_goods_receipt_id"]
+            isOneToOne: false
+            referencedRelation: "v3_goods_receipts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_procurement_ocr_jobs_gr_hotel_fkey"
+            columns: ["hotel_id", "applied_goods_receipt_id"]
+            isOneToOne: false
+            referencedRelation: "v3_goods_receipts"
+            referencedColumns: ["hotel_id", "id"]
+          },
+          {
+            foreignKeyName: "v3_procurement_ocr_jobs_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "v3_hotels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_procurement_ocr_jobs_po_hotel_fkey"
+            columns: ["hotel_id", "purchase_order_id"]
+            isOneToOne: false
+            referencedRelation: "v3_purchase_orders"
+            referencedColumns: ["hotel_id", "id"]
+          },
+          {
+            foreignKeyName: "v3_procurement_ocr_jobs_purchase_order_id_fkey"
+            columns: ["purchase_order_id"]
+            isOneToOne: false
+            referencedRelation: "v3_purchase_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_procurement_ocr_jobs_supplier_hotel_fkey"
+            columns: ["hotel_id", "supplier_id"]
+            isOneToOne: false
+            referencedRelation: "v3_suppliers"
+            referencedColumns: ["hotel_id", "id"]
+          },
+          {
+            foreignKeyName: "v3_procurement_ocr_jobs_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "v3_suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       v3_product_aliases: {
         Row: {
           alias_name: string
@@ -8197,6 +8304,10 @@ export type Database = {
         Returns: Json
       }
       v3_accept_invite: { Args: { p_token: string }; Returns: Json }
+      v3_apply_ocr_job: {
+        Args: { p_hotel_id: string; p_job_id: string }
+        Returns: Json
+      }
       v3_approve_recipe: {
         Args: { p_hotel_id: string; p_recipe_id: string }
         Returns: undefined
@@ -8263,6 +8374,17 @@ export type Database = {
           p_role: Database["public"]["Enums"]["v3_app_role"]
         }
         Returns: Json
+      }
+      v3_create_ocr_job: {
+        Args: {
+          p_hotel_id: string
+          p_mime_type: string
+          p_purchase_order_id?: string
+          p_sha256: string
+          p_storage_path: string
+          p_supplier_id?: string
+        }
+        Returns: string
       }
       v3_create_purchase_request: {
         Args: {
@@ -8371,9 +8493,17 @@ export type Database = {
         }
         Returns: Json
       }
+      v3_reject_ocr_job: {
+        Args: { p_hotel_id: string; p_job_id: string; p_reason: string }
+        Returns: undefined
+      }
       v3_resolve_ingredient_mapping_bulk: {
         Args: { p_hotel_id: string; p_mapping: Json }
         Returns: Json
+      }
+      v3_review_ocr_job: {
+        Args: { p_hotel_id: string; p_job_id: string; p_reviewed_payload: Json }
+        Returns: undefined
       }
       v3_revoke_invite: { Args: { p_invite_id: string }; Returns: undefined }
       v3_scale_recipe: {
@@ -8383,6 +8513,19 @@ export type Database = {
           p_recipe_id: string
         }
         Returns: Json
+      }
+      v3_set_ocr_job_extracted: {
+        Args: { p_hotel_id: string; p_job_id: string; p_payload: Json }
+        Returns: undefined
+      }
+      v3_set_ocr_job_failed: {
+        Args: {
+          p_error_code: string
+          p_error_message: string
+          p_hotel_id: string
+          p_job_id: string
+        }
+        Returns: undefined
       }
       v3_submit_recipe_for_review: {
         Args: { p_hotel_id: string; p_recipe_id: string }
@@ -8773,6 +8916,13 @@ export type Database = {
         | "no_delivery"
         | "other"
       v3_menu_type: "buffet" | "seated" | "cocktail" | "tasting" | "daily"
+      v3_ocr_job_status:
+        | "pending"
+        | "extracted"
+        | "reviewed"
+        | "applied"
+        | "rejected"
+        | "failed"
       v3_po_status:
         | "draft"
         | "sent"
@@ -9270,6 +9420,14 @@ export const Constants = {
         "other",
       ],
       v3_menu_type: ["buffet", "seated", "cocktail", "tasting", "daily"],
+      v3_ocr_job_status: [
+        "pending",
+        "extracted",
+        "reviewed",
+        "applied",
+        "rejected",
+        "failed",
+      ],
       v3_po_status: [
         "draft",
         "sent",
