@@ -533,7 +533,7 @@ E2E: PR → aprobar → consolidar en PO → enviar → recibir foto albarán �
 
 - **Storage OCR**: migración `00068_v3_procurement_ocr_storage.sql` crea bucket privado `v3-procurement-uploads` con policies por membership y path `<hotel_id>/<sha256>.<ext>`.
 - **Jobs OCR**: migración `00069_v3_procurement_ocr_jobs.sql` crea enum `v3_ocr_job_status`, tabla `v3_procurement_ocr_jobs`, índices, RLS y trigger `updated_at`.
-- **RPCs OCR**: migración `00070_v3_procurement_ocr_rpcs.sql` añade create/extracted/failed/review/apply/reject. `v3_apply_ocr_job` llama `v3_receive_goods`, guarda `applied_goods_receipt_id` y ejecuta `v3_sync_escandallo_prices` para recetas afectadas.
+- **RPCs OCR**: migración `00070_v3_procurement_ocr_rpcs.sql` añade create/extracted/failed/review/apply/reject. `v3_apply_ocr_job` llama `v3_receive_goods`, guarda `applied_goods_receipt_id` y ejecuta `v3_sync_escandallo_prices` para recetas afectadas. Migración `00071_v3_procurement_ocr_service_role_guard.sql` corrige las RPCs internas service-role tras smoke real.
 - **Edge Function**: `supabase/functions/v3-procurement-ocr-extract` valida JWT, membership, rate limit Upstash 10/hotel/hora, descarga Storage, llama Claude Vision `claude-sonnet-4-6` y persiste payload extraído.
 - **Capa TS**: schemas OCR, errores de dominio, wrappers RPC/query/storage y hooks TanStack Query.
 - **UI**: `/procurement/ocr/upload`, `/procurement/ocr/jobs`, `/procurement/ocr/jobs/[id]` con preview PDF/imagen, revisión editable, aplicar y rechazar.
@@ -554,6 +554,6 @@ E2E: PR → aprobar → consolidar en PO → enviar → recibir foto albarán �
 
 ### Pendiente operativo
 
-- WALL-E debe aplicar `00068`-`00070` en `dbtrgnyfmzqsrcoadcrs`, revisar advisors y regenerar `src/types/database.ts`.
+- WALL-E debe aplicar `00071` en `dbtrgnyfmzqsrcoadcrs`, revisar advisors y regenerar `src/types/database.ts` si cambia.
 - Desplegar Edge Function con `supabase functions deploy v3-procurement-ocr-extract`.
 - Configurar secrets `ANTHROPIC_API_KEY`, `UPSTASH_REDIS_REST_URL` y `UPSTASH_REDIS_REST_TOKEN` en Supabase Functions.

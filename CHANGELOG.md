@@ -8,7 +8,7 @@ Todos los cambios notables del proyecto se documentan aquí. Formato basado en [
 
 ### Added
 
-- Migraciones `00068`-`00070`: bucket `v3-procurement-uploads`, tabla `v3_procurement_ocr_jobs`, enum `v3_ocr_job_status` y RPCs OCR create/extract/fail/review/apply/reject.
+- Migraciones `00068`-`00071`: bucket `v3-procurement-uploads`, tabla `v3_procurement_ocr_jobs`, enum `v3_ocr_job_status`, RPCs OCR create/extract/fail/review/apply/reject y corrección service-role para persistir `extracted/failed` desde Edge Function.
 - Edge Function `v3-procurement-ocr-extract` con JWT, membership, Claude Vision, JSON estricto y rate limit Upstash 10/hotel/hora.
 - Capa TS OCR en `src/features/procurement`: schemas, errores, queries/RPC wrappers, storage helper y hooks TanStack Query.
 - UI OCR: upload, cola de revisión y detalle editable con preview PDF/imagen.
@@ -21,7 +21,7 @@ Todos los cambios notables del proyecto se documentan aquí. Formato basado en [
 
 ### Pending Ops
 
-- Aplicar migraciones `00068`-`00070` via WALL-E/MCP y regenerar `src/types/database.ts`.
+- Aplicar migración correctiva `00071` via WALL-E/MCP tras el smoke real y regenerar `src/types/database.ts` si cambia el diff.
 - Desplegar Edge Function y configurar `ANTHROPIC_API_KEY` + Upstash env vars.
 
 ## [0.5.1] - 2026-04-26
