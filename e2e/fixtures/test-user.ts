@@ -6,7 +6,10 @@ export const TEST_USER_FULL_NAME = 'E2E Test User'
 
 /**
  * Helper para login programático en specs E2E.
- * Redirige a `/` o `/no-access` dependiendo de si el usuario tiene hotel activo.
+ * Tras signIn redirige a uno de tres destinos válidos:
+ *   - `/` cuando el usuario tiene hotel activo.
+ *   - `/no-access` cuando no tiene memberships visibles.
+ *   - `/onboarding` cuando está autenticado pero aún no ha creado hotel.
  */
 export async function loginAs(
   page: Page,
@@ -18,6 +21,5 @@ export async function loginAs(
   await page.getByLabel(/contraseña/i).fill(password)
   await page.getByRole('button', { name: /entrar/i }).click()
 
-  // Tras signIn: redirect a / (protected) o /no-access si no hay hotel activo
-  await expect(page).toHaveURL(/\/(no-access)?$/, { timeout: 10_000 })
+  await expect(page).toHaveURL(/\/(no-access|onboarding)?$/, { timeout: 10_000 })
 }
