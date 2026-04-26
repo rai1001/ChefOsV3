@@ -25,6 +25,15 @@ export function useReceiveGoods() {
           input.purchase_order_id,
         ],
       })
+      qc.invalidateQueries({
+        queryKey: [
+          'procurement',
+          'purchase-orders',
+          'lines',
+          input.hotel_id,
+          input.purchase_order_id,
+        ],
+      })
       qc.invalidateQueries({ queryKey: ['procurement', 'goods-receipts', 'list'] })
       qc.invalidateQueries({
         queryKey: ['procurement', 'goods-receipts', 'detail', result.goods_receipt_id],

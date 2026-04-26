@@ -23,8 +23,8 @@ export type GoodsReceiptQualityStatus = (typeof GR_QUALITY_STATUSES)[number]
 export const GR_QUALITY_VARIANT = {
   accepted: 'neutral',
   partial: 'neutral',
-  rejected: 'bronze',
-} as const satisfies Record<GoodsReceiptQualityStatus, 'neutral' | 'bronze'>
+  rejected: 'warning',
+} as const satisfies Record<GoodsReceiptQualityStatus, 'neutral' | 'warning'>
 
 export const PROCUREMENT_DEPARTMENTS = [
   'cocina_caliente',
@@ -150,6 +150,7 @@ export interface GoodsReceiptLine {
 
 export interface GoodsReceiptListItem extends GoodsReceipt {
   line_count: number
+  quality_summary: GoodsReceiptQualityStatus
   supplier_name: string | null
   purchase_order_status: PurchaseOrderStatus | null
 }

@@ -12,6 +12,7 @@ import type {
   GoodsReceiptDetail,
   GoodsReceiptLineDetail,
   GoodsReceiptListItem,
+  GoodsReceiptQualityStatus,
   GoodsReceiptsFilter,
   PurchaseOrderStatus,
 } from '../domain/types'
@@ -19,7 +20,7 @@ import type {
 type GoodsReceiptListRow = GoodsReceipt & {
   supplier?: { name: string | null } | null
   purchase_order?: { status: PurchaseOrderStatus | null } | null
-  lines?: Array<{ id: string }> | null
+  lines?: Array<{ id: string; quality_status: GoodsReceiptQualityStatus }> | null
 }
 
 type GoodsReceiptDetailRow = GoodsReceipt & {
@@ -46,7 +47,7 @@ export async function fetchGoodsReceipts(
         *,
         supplier:v3_suppliers!v3_goods_receipts_supplier_id_fkey(name),
         purchase_order:v3_purchase_orders!v3_goods_receipts_purchase_order_id_fkey(status),
-        lines:v3_goods_receipt_lines!v3_goods_receipt_lines_goods_receipt_id_fkey(id)
+        lines:v3_goods_receipt_lines!v3_goods_receipt_lines_goods_receipt_id_fkey(id, quality_status)
       `
     )
     .eq('hotel_id', filter.hotelId)
@@ -106,7 +107,16 @@ function toGoodsReceiptListItem(row: GoodsReceiptListRow): GoodsReceiptListItem 
     supplier_name: supplier?.name ?? null,
     purchase_order_status: purchase_order?.status ?? null,
     line_count: lines?.length ?? 0,
+    quality_summary: summarizeQuality(lines ?? []),
   }
+}
+
+function summarizeQuality(
+  lines: ReadonlyArray<{ quality_status: GoodsReceiptQualityStatus }>
+): GoodsReceiptQualityStatus {
+  if (lines.some((line) => line.quality_status === 'rejected')) return 'rejected'
+  if (lines.some((line) => line.quality_status === 'partial')) return 'partial'
+  return 'accepted'
 }
 
 function toGoodsReceiptDetail(row: GoodsReceiptDetailRow): GoodsReceiptDetail {
