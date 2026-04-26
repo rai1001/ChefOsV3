@@ -6,10 +6,6 @@
 // distinto. Si las variables UPSTASH_* no están definidas, la función `checkRateLimit`
 // devuelve `{ ok: true }` con un warning en logs (modo dev/test seguro).
 //
-// Uso:
-//   const result = await checkRateLimit('login', clientId)
-//   if (!result.ok) return new Response('Too many requests', { status: 429 })
-
 import { Ratelimit } from '@upstash/ratelimit'
 import { Redis } from '@upstash/redis'
 
