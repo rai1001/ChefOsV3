@@ -17,6 +17,7 @@ export type AppErrorCode =
   | 'VALIDATION'
   | 'RATE_LIMITED'
   | 'INFRASTRUCTURE'
+  | string
 
 export class AppError extends Error {
   readonly code: AppErrorCode = 'APP_ERROR'
@@ -29,7 +30,7 @@ export class AppError extends Error {
 }
 
 export class NotFoundError extends AppError {
-  override readonly code = 'NOT_FOUND' as const
+  override readonly code: string = 'NOT_FOUND'
   override readonly httpStatus = 404
 
   constructor(
@@ -42,7 +43,7 @@ export class NotFoundError extends AppError {
 }
 
 export class ConflictError extends AppError {
-  override readonly code = 'CONFLICT' as const
+  override readonly code: string = 'CONFLICT'
   override readonly httpStatus = 409
 
   constructor(message = 'Conflicto con el estado actual del recurso', options?: { cause?: unknown }) {
@@ -51,7 +52,7 @@ export class ConflictError extends AppError {
 }
 
 export class UnauthorizedError extends AppError {
-  override readonly code = 'UNAUTHORIZED' as const
+  override readonly code: string = 'UNAUTHORIZED'
   override readonly httpStatus = 401
 
   constructor(message = 'Sesión inválida o ausente', options?: { cause?: unknown }) {
@@ -60,7 +61,7 @@ export class UnauthorizedError extends AppError {
 }
 
 export class ForbiddenError extends AppError {
-  override readonly code = 'FORBIDDEN' as const
+  override readonly code: string = 'FORBIDDEN'
   override readonly httpStatus = 403
 
   constructor(message = 'No tienes permiso para esta operación', options?: { cause?: unknown }) {
@@ -69,7 +70,7 @@ export class ForbiddenError extends AppError {
 }
 
 export class ValidationError extends AppError {
-  override readonly code = 'VALIDATION' as const
+  override readonly code: string = 'VALIDATION'
   override readonly httpStatus = 422
 
   constructor(
@@ -82,7 +83,7 @@ export class ValidationError extends AppError {
 }
 
 export class RateLimitedError extends AppError {
-  override readonly code = 'RATE_LIMITED' as const
+  override readonly code: string = 'RATE_LIMITED'
   override readonly httpStatus = 429
 
   constructor(
@@ -95,7 +96,7 @@ export class RateLimitedError extends AppError {
 }
 
 export class InfrastructureError extends AppError {
-  override readonly code = 'INFRASTRUCTURE' as const
+  override readonly code: string = 'INFRASTRUCTURE'
   override readonly httpStatus = 500
 
   constructor(message = 'Error de infraestructura', options?: { cause?: unknown }) {
