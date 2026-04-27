@@ -2,7 +2,7 @@
 
 Control operativo de cocina multi-servicio. Reescritura DDD del dominio validado en v2.
 
-> Estado 2026-04-26: procurement parcial con PR/PO/GR/OCR en v3. Inventory y stock quedan para sprint-06.
+> Estado 2026-04-26: procurement PR/PO/GR/OCR en v3 e inventory FIFO operativo. Producción queda para sprint-07.
 
 ## Capability matrix (2026-04-26)
 
@@ -15,8 +15,8 @@ Control operativo de cocina multi-servicio. Reescritura DDD del dominio validado
 | menus         | producción   | sprint-03b  | composición comercial, sections, recipes nested |
 | import        | producción   | sprint-03c  | bulk import Excel: recetas + ingredientes (mapping productos NULL pendiente) |
 | catalog       | pendiente    | sprint-04   | productos, conversiones unidad — desbloquea mapping post-import |
-| procurement   | parcial      | sprint-05   | PR/PO/GR/OCR ✓; inventory pendiente sprint-06 |
-| inventory     | pendiente    | sprint-06   | stock, mermas, movimientos |
+| procurement   | producción   | sprint-05   | PR/PO/GR/OCR ✓; lotes vía hook inventory |
+| inventory     | parcial      | sprint-06   | lotes FIFO, movimientos, consumo, merma y ajustes; producción pendiente sprint-07 |
 | production    | pendiente    | sprint-07   | producción diaria, batches |
 | reporting     | pendiente    | sprint-08   | KPIs, márgenes |
 | compliance    | pendiente    | sprint-09   | HACCP, trazabilidad |
@@ -90,6 +90,23 @@ Secrets necesarios en Supabase Functions para extracción real:
 - `UPSTASH_REDIS_REST_TOKEN`
 
 Si faltan las variables Upstash, la función registra warning y omite rate limit; si falta `ANTHROPIC_API_KEY`, el job queda `failed`.
+
+## Inventory
+
+Flujo operativo sprint-06:
+
+- Cerrar una recepción de mercancía crea lotes FIFO automáticamente.
+- `/inventory` muestra snapshot por producto.
+- `/inventory/products/[id]` muestra lotes activos y movimientos.
+- Acciones manuales: consumo, merma y ajuste.
+
+Smoke live:
+
+```bash
+INVENTORY_E2E_LIVE=1 npm run test:e2e -- e2e/tests/inventory-fifo-flow.spec.ts --project=chromium
+```
+
+El consumo automático desde producción llega en sprint-07.
 
 ## Arquitectura
 

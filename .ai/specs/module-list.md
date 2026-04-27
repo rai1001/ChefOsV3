@@ -55,6 +55,8 @@ Este documento es normativo.
 
 > **Nota ADR-0015 (2026-04-24):** todos los objetos de DB que crea v3 llevan prefijo `v3_` (tablas, enums, RPCs, triggers, índices). Archivos de migración: `NNNNN_v3_<descripcion>.sql`. Tablas antes listadas sin prefijo se renombran en el rewrite iniciado en branch `feature/v3-namespace-rewrite`. Ver `specs/decisions-log.md § ADR-0015` y `specs/coding-standards.md § Naming de objetos de base de datos`.
 
+> **Nota ADR-0018 (2026-04-26):** `inventory` se implementa con lotes FIFO y movimientos append-only. Procurement crea lotes mediante hook en `v3_receive_goods`; producción consumirá stock en sprint-07. Ver `specs/decisions-log.md § ADR-0018`.
+
 ---
 
 ## Estructura mínima por módulo
@@ -177,4 +179,4 @@ Este documento debe leerse junto con:
 
 Este documento enumera los módulos oficiales de ChefOS v3.
 
-Ninguna implementación puede vivir fuera de estos 16 módulos sin ADR.
+Ninguna implementación puede vivir fuera de estos 17 módulos sin ADR.

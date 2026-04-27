@@ -2,6 +2,29 @@
 
 Todos los cambios notables del proyecto se documentan aquí. Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.1.0/). Versionado: [SemVer](https://semver.org/lang/es/).
 
+## [0.6.0] - 2026-04-26
+
+### Sprint-06 — Inventory FIFO
+
+### Added
+
+- Migraciones `00072`-`00075`: `v3_inventory_lots`, `v3_inventory_movements`, enum `v3_inventory_movement_kind`, RPCs FIFO y hook automático desde `v3_receive_goods`.
+- Capa TS `src/features/inventory`: schemas Zod, errores de dominio, queries, RPC wrappers y hooks TanStack Query.
+- UI inventory: snapshot `/inventory`, detalle de producto, lotes FIFO, movimientos y formularios de consumo, merma y ajuste.
+- E2E `e2e/tests/inventory-fifo-flow.spec.ts` con ruta inventory y flujo FIFO live gated por `INVENTORY_E2E_LIVE=1`.
+
+### Changed
+
+- Procurement GR y OCR crean lotes automáticamente porque `v3_apply_ocr_job` usa `v3_receive_goods`.
+- Dashboard principal añade acceso a Inventario.
+
+### Verification
+
+- Smoke real: PR/PO → dos recepciones `5@10` y `5@12` → dos lotes automáticos → consumo FIFO `7` con `total_cost=74` y `weighted_unit_cost=10.5714`.
+- `npm test -- --run src/features/inventory` — 14 tests verdes.
+- `npm run typecheck` — verde.
+- `npm run lint` — verde.
+
 ## [0.5.2] - 2026-04-26
 
 ### Sprint-05c — Procurement OCR pipeline

@@ -5136,6 +5136,236 @@ export type Database = {
           },
         ]
       }
+      v3_inventory_lots: {
+        Row: {
+          created_at: string
+          expires_at: string | null
+          goods_receipt_line_id: string | null
+          hotel_id: string
+          id: string
+          notes: string | null
+          product_id: string
+          quantity_received: number
+          quantity_remaining: number
+          received_at: string
+          unit_cost: number
+          unit_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string | null
+          goods_receipt_line_id?: string | null
+          hotel_id: string
+          id?: string
+          notes?: string | null
+          product_id: string
+          quantity_received: number
+          quantity_remaining: number
+          received_at?: string
+          unit_cost: number
+          unit_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string | null
+          goods_receipt_line_id?: string | null
+          hotel_id?: string
+          id?: string
+          notes?: string | null
+          product_id?: string
+          quantity_received?: number
+          quantity_remaining?: number
+          received_at?: string
+          unit_cost?: number
+          unit_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "v3_inventory_lots_goods_receipt_line_id_fkey"
+            columns: ["goods_receipt_line_id"]
+            isOneToOne: false
+            referencedRelation: "v3_goods_receipt_lines"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_inventory_lots_gr_line_hotel_fkey"
+            columns: ["hotel_id", "goods_receipt_line_id"]
+            isOneToOne: false
+            referencedRelation: "v3_goods_receipt_lines"
+            referencedColumns: ["hotel_id", "id"]
+          },
+          {
+            foreignKeyName: "v3_inventory_lots_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "v3_hotels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_inventory_lots_product_hotel_fkey"
+            columns: ["hotel_id", "product_id"]
+            isOneToOne: false
+            referencedRelation: "v3_products"
+            referencedColumns: ["hotel_id", "id"]
+          },
+          {
+            foreignKeyName: "v3_inventory_lots_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "v3_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_inventory_lots_unit_hotel_fkey"
+            columns: ["hotel_id", "unit_id"]
+            isOneToOne: false
+            referencedRelation: "v3_units_of_measure"
+            referencedColumns: ["hotel_id", "id"]
+          },
+          {
+            foreignKeyName: "v3_inventory_lots_unit_id_fkey"
+            columns: ["unit_id"]
+            isOneToOne: false
+            referencedRelation: "v3_units_of_measure"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v3_inventory_movements: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          goods_receipt_line_id: string | null
+          hotel_id: string
+          id: string
+          kind: Database["public"]["Enums"]["v3_inventory_movement_kind"]
+          lot_id: string | null
+          notes: string | null
+          origin: Json
+          product_id: string
+          quantity: number
+          recipe_id: string | null
+          total_cost: number | null
+          unit_cost: number
+          unit_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          goods_receipt_line_id?: string | null
+          hotel_id: string
+          id?: string
+          kind: Database["public"]["Enums"]["v3_inventory_movement_kind"]
+          lot_id?: string | null
+          notes?: string | null
+          origin?: Json
+          product_id: string
+          quantity: number
+          recipe_id?: string | null
+          total_cost?: number | null
+          unit_cost: number
+          unit_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          goods_receipt_line_id?: string | null
+          hotel_id?: string
+          id?: string
+          kind?: Database["public"]["Enums"]["v3_inventory_movement_kind"]
+          lot_id?: string | null
+          notes?: string | null
+          origin?: Json
+          product_id?: string
+          quantity?: number
+          recipe_id?: string | null
+          total_cost?: number | null
+          unit_cost?: number
+          unit_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "v3_inventory_movements_goods_receipt_line_id_fkey"
+            columns: ["goods_receipt_line_id"]
+            isOneToOne: false
+            referencedRelation: "v3_goods_receipt_lines"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_inventory_movements_gr_line_hotel_fkey"
+            columns: ["hotel_id", "goods_receipt_line_id"]
+            isOneToOne: false
+            referencedRelation: "v3_goods_receipt_lines"
+            referencedColumns: ["hotel_id", "id"]
+          },
+          {
+            foreignKeyName: "v3_inventory_movements_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "v3_hotels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_inventory_movements_lot_hotel_fkey"
+            columns: ["hotel_id", "lot_id"]
+            isOneToOne: false
+            referencedRelation: "v3_inventory_lots"
+            referencedColumns: ["hotel_id", "id"]
+          },
+          {
+            foreignKeyName: "v3_inventory_movements_lot_id_fkey"
+            columns: ["lot_id"]
+            isOneToOne: false
+            referencedRelation: "v3_inventory_lots"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_inventory_movements_product_hotel_fkey"
+            columns: ["hotel_id", "product_id"]
+            isOneToOne: false
+            referencedRelation: "v3_products"
+            referencedColumns: ["hotel_id", "id"]
+          },
+          {
+            foreignKeyName: "v3_inventory_movements_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "v3_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_inventory_movements_recipe_hotel_fkey"
+            columns: ["hotel_id", "recipe_id"]
+            isOneToOne: false
+            referencedRelation: "v3_recipes"
+            referencedColumns: ["hotel_id", "id"]
+          },
+          {
+            foreignKeyName: "v3_inventory_movements_recipe_id_fkey"
+            columns: ["recipe_id"]
+            isOneToOne: false
+            referencedRelation: "v3_recipes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_inventory_movements_unit_hotel_fkey"
+            columns: ["hotel_id", "unit_id"]
+            isOneToOne: false
+            referencedRelation: "v3_units_of_measure"
+            referencedColumns: ["hotel_id", "id"]
+          },
+          {
+            foreignKeyName: "v3_inventory_movements_unit_id_fkey"
+            columns: ["unit_id"]
+            isOneToOne: false
+            referencedRelation: "v3_units_of_measure"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       v3_invites: {
         Row: {
           accepted_at: string | null
@@ -8341,6 +8571,15 @@ export type Database = {
             }
             Returns: Database["public"]["Enums"]["v3_app_role"]
           }
+      v3_consume_inventory: {
+        Args: {
+          p_hotel_id: string
+          p_origin: Json
+          p_product_id: string
+          p_quantity: number
+        }
+        Returns: Json
+      }
       v3_create_event: {
         Args: {
           p_client_id?: string
@@ -8407,6 +8646,18 @@ export type Database = {
         }
         Returns: Json
       }
+      v3_decrement_inventory_fifo: {
+        Args: {
+          p_created_by?: string
+          p_hotel_id: string
+          p_kind: Database["public"]["Enums"]["v3_inventory_movement_kind"]
+          p_notes?: string
+          p_origin?: Json
+          p_product_id: string
+          p_quantity: number
+        }
+        Returns: Json
+      }
       v3_deprecate_recipe: {
         Args: { p_hotel_id: string; p_recipe_id: string }
         Returns: undefined
@@ -8459,6 +8710,50 @@ export type Database = {
         Args: { p_from: string; p_hotel_id: string; p_to: string }
         Returns: Json
       }
+      v3_get_inventory_movements: {
+        Args: {
+          p_hotel_id: string
+          p_limit?: number
+          p_offset?: number
+          p_product_id: string
+        }
+        Returns: {
+          created_at: string
+          created_by: string | null
+          goods_receipt_line_id: string | null
+          hotel_id: string
+          id: string
+          kind: Database["public"]["Enums"]["v3_inventory_movement_kind"]
+          lot_id: string | null
+          notes: string | null
+          origin: Json
+          product_id: string
+          quantity: number
+          recipe_id: string | null
+          total_cost: number | null
+          unit_cost: number
+          unit_id: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "v3_inventory_movements"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      v3_get_inventory_snapshot: {
+        Args: { p_hotel_id: string }
+        Returns: {
+          category_id: string
+          last_received_at: string
+          last_unit_cost: number
+          lots_count: number
+          name: string
+          product_id: string
+          qty_on_hand: number
+          valor_stock: number
+        }[]
+      }
       v3_get_member_role: {
         Args: { p_hotel_id: string }
         Returns: Database["public"]["Enums"]["v3_app_role"]
@@ -8490,6 +8785,28 @@ export type Database = {
           p_notes?: string
           p_purchase_order_id: string
           p_received_at?: string
+        }
+        Returns: Json
+      }
+      v3_register_adjustment: {
+        Args: {
+          p_hotel_id: string
+          p_product_id: string
+          p_quantity_delta: number
+          p_reason: string
+        }
+        Returns: Json
+      }
+      v3_register_lot_from_receipt: {
+        Args: { p_goods_receipt_line_id: string; p_hotel_id: string }
+        Returns: string
+      }
+      v3_register_waste: {
+        Args: {
+          p_hotel_id: string
+          p_product_id: string
+          p_quantity: number
+          p_reason: string
         }
         Returns: Json
       }
@@ -8915,6 +9232,14 @@ export type Database = {
         | "wrong_product"
         | "no_delivery"
         | "other"
+      v3_inventory_movement_kind:
+        | "receive"
+        | "consume"
+        | "waste"
+        | "adjust_in"
+        | "adjust_out"
+        | "transfer_in"
+        | "transfer_out"
       v3_menu_type: "buffet" | "seated" | "cocktail" | "tasting" | "daily"
       v3_ocr_job_status:
         | "pending"
@@ -9418,6 +9743,15 @@ export const Constants = {
         "wrong_product",
         "no_delivery",
         "other",
+      ],
+      v3_inventory_movement_kind: [
+        "receive",
+        "consume",
+        "waste",
+        "adjust_in",
+        "adjust_out",
+        "transfer_in",
+        "transfer_out",
       ],
       v3_menu_type: ["buffet", "seated", "cocktail", "tasting", "daily"],
       v3_ocr_job_status: [

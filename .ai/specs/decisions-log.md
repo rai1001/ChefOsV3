@@ -972,6 +972,54 @@ Implementar OCR procurement como pipeline separado:
 
 ---
 
+### ADR-0018 — Inventory FIFO con movimientos append-only
+
+**Fecha**: 2026-04-26
+**Estado**: aceptada
+**Módulo / área afectada**: `inventory`, `procurement`, `supabase/migrations`
+
+#### Contexto
+
+Tras 05b/05c, `v3_receive_goods` y `v3_apply_ocr_job` cierran recepciones reales en `v3_goods_receipts`. Faltaba convertir esas recepciones en stock costeado y consumible sin reescribir histórico ni acoplar producción futura todavía.
+
+#### Decisión
+
+Implementar inventory con lotes FIFO y ledger append-only:
+
+- `v3_inventory_lots` guarda lotes por producto/hotel, con `quantity_received`, `quantity_remaining`, `unit_cost`, `received_at` y referencia opcional a `v3_goods_receipt_lines`.
+- `v3_inventory_movements` es append-only. No se corrige histórico con `UPDATE`; cualquier reverso operativo se registra como movimiento nuevo.
+- FIFO se resuelve por `received_at asc, id asc`, bloqueando lotes activos con `FOR UPDATE` durante el consumo.
+- Cada movement persiste `unit_cost` y `total_cost` como snapshot de coste; el histórico no se recalcula si cambia el precio futuro.
+- `v3_receive_goods` llama a `v3_register_lot_from_receipt` por cada línea aceptada/no rechazada con cantidad recibida. `v3_apply_ocr_job` hereda el hook porque usa `v3_receive_goods`.
+- Consumo manual, mermas y ajustes entran por RPCs (`v3_consume_inventory`, `v3_register_waste`, `v3_register_adjustment`), no por writes directos desde cliente.
+
+#### Razón
+
+- FIFO simple cubre el caso operativo validado sin introducir multi-almacén ni reservas antes de producción.
+- Lotes inmutables salvo `quantity_remaining` reducen ambigüedad de coste y trazabilidad.
+- Ledger append-only permite auditar mermas, ajustes y consumo real.
+- El hook en procurement evita duplicar lógica entre recepción manual y OCR.
+
+#### Consecuencias
+
+- Los lotes nunca se borran funcionalmente; pueden quedar en `quantity_remaining = 0`.
+- Stock insuficiente falla con `P0002` y se mapea a `InsufficientStockError`.
+- Ajuste positivo crea lote nuevo con último coste conocido o `0` si no hay histórico.
+- Ajuste negativo y mermas descuentan FIFO igual que consumo.
+- Si snapshot de inventario se vuelve costoso con volumen alto, se evaluará vista materializada en sprint posterior.
+
+#### Verificación
+
+- WALL-E validó en BD: lotes A(5@10) y B(5@12), consumo 7 → `total_cost=74`, `weighted_unit_cost=10.5714`, A queda 0 y B queda 3.
+- Chappie validó smoke real vía procurement: PR/PO enviado, dos recepciones del mismo producto crean dos lotes automáticos, consumo FIFO mantiene el mismo coste y orden.
+
+#### Revisable
+
+- Sprint-07 conectará producción/recetas con `v3_consume_inventory`.
+- Multi-almacén, reservas y alertas de caducidad quedan fuera de esta ADR.
+
+---
+
 ## Mantenimiento
 
 Cada ADR debe poder leerse en <5 minutos. Si una decisión requiere más, dividirla en varias ADRs.
