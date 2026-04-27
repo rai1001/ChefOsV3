@@ -2,9 +2,9 @@
 
 Control operativo de cocina multi-servicio. Reescritura DDD del dominio validado en v2.
 
-> Estado 2026-04-26: procurement PR/PO/GR/OCR en v3 e inventory FIFO operativo. Producción queda para sprint-07.
+> Estado 2026-04-27: procurement PR/PO/GR/OCR en v3, inventory FIFO operativo y production orders en implementación local pendiente de aplicación por WALL-E.
 
-## Capability matrix (2026-04-26)
+## Capability matrix (2026-04-27)
 
 | Módulo        | Estado       | Sprint      | Notas |
 |---------------|--------------|-------------|-------|
@@ -16,8 +16,8 @@ Control operativo de cocina multi-servicio. Reescritura DDD del dominio validado
 | import        | producción   | sprint-03c  | bulk import Excel: recetas + ingredientes (mapping productos NULL pendiente) |
 | catalog       | pendiente    | sprint-04   | productos, conversiones unidad — desbloquea mapping post-import |
 | procurement   | producción   | sprint-05   | PR/PO/GR/OCR ✓; lotes vía hook inventory |
-| inventory     | parcial      | sprint-06   | lotes FIFO, movimientos, consumo, merma y ajustes; producción pendiente sprint-07 |
-| production    | pendiente    | sprint-07   | producción diaria, batches |
+| inventory     | producción   | sprint-06   | lotes FIFO, movimientos, consumo, merma y ajustes |
+| production    | parcial      | sprint-07   | órdenes monoreceta, escalado, viabilidad y consumo FIFO atómico; pendiente aplicar migraciones |
 | reporting     | pendiente    | sprint-08   | KPIs, márgenes |
 | compliance    | pendiente    | sprint-09   | HACCP, trazabilidad |
 | automation    | pendiente    | sprint-10   | workflows, alertas |
@@ -106,7 +106,22 @@ Smoke live:
 INVENTORY_E2E_LIVE=1 npm run test:e2e -- e2e/tests/inventory-fifo-flow.spec.ts --project=chromium
 ```
 
-El consumo automático desde producción llega en sprint-07.
+## Production
+
+Flujo operativo sprint-07:
+
+- `/production` lista órdenes con filtros por estado y fecha.
+- `/production/new` crea una orden desde receta activa, raciones objetivo y preview de ingredientes escalados.
+- `/production/[id]` muestra costes estimado/real, líneas snapshot y movements asociados.
+- Iniciar producción comprueba stock y consume inventario FIFO de forma atómica via `v3_start_production`.
+- Si falta stock, `v3_start_production` falla con `P0002` y detalle de déficits antes de tocar inventario.
+- Cancelar desde `in_progress` no restaura stock automáticamente; requiere ajuste manual auditable.
+
+Smoke live pendiente de que WALL-E aplique `00076`-`00077` y regenere tipos:
+
+```bash
+PRODUCTION_E2E_LIVE=1 npm run test:e2e -- e2e/tests/production-fifo-flow.spec.ts --project=chromium
+```
 
 ## Arquitectura
 

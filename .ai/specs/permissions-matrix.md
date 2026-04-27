@@ -110,10 +110,12 @@ Leyenda: ✅ puede · ⚠️ solo lectura · ❌ denegado
 
 | Acción | superadmin | direction | admin | head_chef | sous_chef | cook | commercial | procurement | warehouse |
 |---|---|---|---|---|---|---|---|---|---|
-| CRUD production plans | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
-| Ver workflows + mise en place | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ⚠️ | ❌ | ⚠️ |
-| Marcar tarea done | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ |
-| KDS (kitchen orders) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ |
+| Ver órdenes de producción | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ⚠️ | ⚠️ | ⚠️ |
+| Crear órdenes de producción | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Comprobar viabilidad de stock | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ⚠️ | ⚠️ | ⚠️ |
+| Iniciar producción (consume FIFO) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ |
+| Completar producción | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ |
+| Cancelar producción | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
 
 ### Compliance (APPCC / Etiquetado / Trazabilidad)
 

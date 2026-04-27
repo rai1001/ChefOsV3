@@ -179,7 +179,7 @@ Planificación cerrada con detalle del dominio absorbido de v2:
 - `sprint-04-catalog.md` — productos, proveedores, ofertas, alias
 - `sprint-05-procurement.md` — PR/PO/GR, consolidación, OCR albaranes
 - `sprint-06-inventory.md` — FIFO, reservations, counts, waste, forensics
-- `sprint-07-production.md` — workflows, mise en place, KDS, kanban
+- `sprint-07-production.md` — órdenes de producción, escalado de recetas y consumo FIFO
 - `sprint-08-reporting.md` — KPIs, dashboard, alerts, food cost, variance
 - `sprint-09-compliance.md` — APPCC, temperaturas, etiquetado, trazabilidad
 - `sprint-10-automation.md` — jobs queue + worker

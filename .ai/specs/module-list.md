@@ -38,7 +38,7 @@ Este documento es normativo.
 | 7 | `catalog` | Productos, categorías, proveedores, ofertas, alias | sprint-04a / 04b / 04c (ADR-0014) |
 | 8 | `procurement` | PR / PO / GR, consolidación, OCR albaranes | sprint-05 |
 | 9 | `inventory` | Lotes FIFO, reservations, counts, waste, forensics | sprint-06 |
-| 10 | `production` | Workflows, mise en place, KDS, kanban, shopping list | sprint-07 |
+| 10 | `production` | Órdenes de producción, escalado de recetas, viabilidad de stock y consumo FIFO | sprint-07 |
 | 11 | `reporting` | KPIs, food cost, variance, dashboard, alerts, snapshots | sprint-08 |
 | 12 | `compliance` | APPCC, temperaturas, etiquetado, trazabilidad | sprint-09 |
 | 13 | `automation` | Jobs queue, worker, triggers automatizados | sprint-10 |
@@ -55,7 +55,9 @@ Este documento es normativo.
 
 > **Nota ADR-0015 (2026-04-24):** todos los objetos de DB que crea v3 llevan prefijo `v3_` (tablas, enums, RPCs, triggers, índices). Archivos de migración: `NNNNN_v3_<descripcion>.sql`. Tablas antes listadas sin prefijo se renombran en el rewrite iniciado en branch `feature/v3-namespace-rewrite`. Ver `specs/decisions-log.md § ADR-0015` y `specs/coding-standards.md § Naming de objetos de base de datos`.
 
-> **Nota ADR-0018 (2026-04-26):** `inventory` se implementa con lotes FIFO y movimientos append-only. Procurement crea lotes mediante hook en `v3_receive_goods`; producción consumirá stock en sprint-07. Ver `specs/decisions-log.md § ADR-0018`.
+> **Nota ADR-0018 (2026-04-26):** `inventory` se implementa con lotes FIFO y movimientos append-only. Procurement crea lotes mediante hook en `v3_receive_goods`; producción consume stock via `v3_consume_inventory`. Ver `specs/decisions-log.md § ADR-0018`.
+
+> **Nota ADR-0019 (2026-04-27):** `production` arranca con órdenes monoreceta, snapshot de ingredientes escalados y consumo FIFO atómico al iniciar. Workflows, mise en place y KDS quedan fuera de sprint-07. Ver `specs/decisions-log.md § ADR-0019`.
 
 ---
 
@@ -98,7 +100,7 @@ Ver `specs/module-template.md` para la plantilla completa con cada sección a re
 - `catalog` es owner de: productos, categorías de producto, proveedores, ofertas, alias, supplier_refs.
 - `procurement` es owner de: purchase requests, purchase orders, goods receipts, consolidación, OCR.
 - `inventory` es owner de: lotes FIFO, movimientos, reservations, counts, waste, forensics.
-- `production` es owner de: production plans, workflows, tasks, mise en place, kitchen orders, shopping list.
+- `production` es owner de: órdenes de producción, snapshot de ingredientes escalados, viabilidad de stock, state machine productiva y orquestación del consumo FIFO de una orden.
 - `reporting` es owner de: KPIs agregados, snapshots, dashboard data, alerts operacionales.
 - `compliance` es owner de: APPCC templates + records, temperature logs, labels, trace_lot.
 - `automation` es owner de: automation_jobs, triggers, worker logs.
