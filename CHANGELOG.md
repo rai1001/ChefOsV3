@@ -2,6 +2,28 @@
 
 Todos los cambios notables del proyecto se documentan aquí. Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.1.0/). Versionado: [SemVer](https://semver.org/lang/es/).
 
+## [0.7.0] - 2026-04-27
+
+### Sprint-07 — Production orders
+
+### Added
+
+- Migraciones `00076`-`00077`: `v3_production_orders`, `v3_production_order_lines`, enum `v3_production_status` y RPCs de escalado, creación, viabilidad, inicio, completado, cancelación, listado y detalle.
+- Consumo FIFO atómico desde `v3_start_production`, con `origin.source='production'` y `origin.production_order_id` en `v3_inventory_movements`.
+- Capa TS `src/features/production`: schemas Zod, errores de dominio, adapters RPC y hooks TanStack Query.
+- UI production: listado `/production`, creación `/production/new`, detalle `/production/[id]` y cancelación `/production/[id]/cancel`.
+- Tests unitarios de dominio, adapters y hooks de producción.
+
+### Changed
+
+- Dashboard principal añade acceso a Producción.
+- Documentación de Sprint-07 se ajusta de workflows/KDS a órdenes de producción con consumo FIFO atómico.
+
+### Pending Ops
+
+- WALL-E debe aplicar `00076`-`00077`, ejecutar smoke real de atomicidad, revisar advisors y regenerar `src/types/database.ts`.
+- E2E live de producción queda gated por `PRODUCTION_E2E_LIVE=1`.
+
 ## [0.6.0] - 2026-04-26
 
 ### Sprint-06 — Inventory FIFO

@@ -6028,6 +6028,180 @@ export type Database = {
           },
         ]
       }
+      v3_production_order_lines: {
+        Row: {
+          actual_consumed_quantity: number | null
+          actual_total_cost: number | null
+          created_at: string
+          estimated_total_cost: number | null
+          estimated_unit_cost: number
+          hotel_id: string
+          id: string
+          product_id: string
+          production_order_id: string
+          quantity_required: number
+          unit_id: string
+          weighted_unit_cost: number | null
+        }
+        Insert: {
+          actual_consumed_quantity?: number | null
+          actual_total_cost?: number | null
+          created_at?: string
+          estimated_total_cost?: number | null
+          estimated_unit_cost?: number
+          hotel_id: string
+          id?: string
+          product_id: string
+          production_order_id: string
+          quantity_required: number
+          unit_id: string
+          weighted_unit_cost?: number | null
+        }
+        Update: {
+          actual_consumed_quantity?: number | null
+          actual_total_cost?: number | null
+          created_at?: string
+          estimated_total_cost?: number | null
+          estimated_unit_cost?: number
+          hotel_id?: string
+          id?: string
+          product_id?: string
+          production_order_id?: string
+          quantity_required?: number
+          unit_id?: string
+          weighted_unit_cost?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "v3_production_order_lines_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "v3_hotels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_production_order_lines_order_hotel_fkey"
+            columns: ["hotel_id", "production_order_id"]
+            isOneToOne: false
+            referencedRelation: "v3_production_orders"
+            referencedColumns: ["hotel_id", "id"]
+          },
+          {
+            foreignKeyName: "v3_production_order_lines_product_hotel_fkey"
+            columns: ["hotel_id", "product_id"]
+            isOneToOne: false
+            referencedRelation: "v3_products"
+            referencedColumns: ["hotel_id", "id"]
+          },
+          {
+            foreignKeyName: "v3_production_order_lines_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "v3_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_production_order_lines_production_order_id_fkey"
+            columns: ["production_order_id"]
+            isOneToOne: false
+            referencedRelation: "v3_production_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_production_order_lines_unit_hotel_fkey"
+            columns: ["hotel_id", "unit_id"]
+            isOneToOne: false
+            referencedRelation: "v3_units_of_measure"
+            referencedColumns: ["hotel_id", "id"]
+          },
+          {
+            foreignKeyName: "v3_production_order_lines_unit_id_fkey"
+            columns: ["unit_id"]
+            isOneToOne: false
+            referencedRelation: "v3_units_of_measure"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v3_production_orders: {
+        Row: {
+          actual_total_cost: number
+          cancellation_reason: string | null
+          cancelled_at: string | null
+          completed_at: string | null
+          created_at: string
+          created_by: string | null
+          estimated_total_cost: number
+          hotel_id: string
+          id: string
+          notes: string | null
+          recipe_id: string
+          scheduled_at: string | null
+          servings: number
+          started_at: string | null
+          status: Database["public"]["Enums"]["v3_production_status"]
+          updated_at: string
+        }
+        Insert: {
+          actual_total_cost?: number
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          estimated_total_cost?: number
+          hotel_id: string
+          id?: string
+          notes?: string | null
+          recipe_id: string
+          scheduled_at?: string | null
+          servings: number
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["v3_production_status"]
+          updated_at?: string
+        }
+        Update: {
+          actual_total_cost?: number
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          estimated_total_cost?: number
+          hotel_id?: string
+          id?: string
+          notes?: string | null
+          recipe_id?: string
+          scheduled_at?: string | null
+          servings?: number
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["v3_production_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "v3_production_orders_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "v3_hotels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_production_orders_recipe_hotel_fkey"
+            columns: ["hotel_id", "recipe_id"]
+            isOneToOne: false
+            referencedRelation: "v3_recipes"
+            referencedColumns: ["hotel_id", "id"]
+          },
+          {
+            foreignKeyName: "v3_production_orders_recipe_id_fkey"
+            columns: ["recipe_id"]
+            isOneToOne: false
+            referencedRelation: "v3_recipes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       v3_products: {
         Row: {
           allergens: Json
@@ -8550,6 +8724,14 @@ export type Database = {
         Args: { p_hotel_id: string; p_recipe_id: string }
         Returns: Json
       }
+      v3_cancel_production: {
+        Args: {
+          p_hotel_id: string
+          p_production_order_id: string
+          p_reason: string
+        }
+        Returns: Json
+      }
       v3_cancel_purchase_requests_for_event_internal: {
         Args: { p_event_id: string; p_hotel_id: string }
         Returns: Json
@@ -8571,6 +8753,18 @@ export type Database = {
             }
             Returns: Database["public"]["Enums"]["v3_app_role"]
           }
+      v3_check_production_feasibility: {
+        Args: { p_hotel_id: string; p_production_order_id: string }
+        Returns: Json
+      }
+      v3_complete_production: {
+        Args: {
+          p_hotel_id: string
+          p_notes?: string
+          p_production_order_id: string
+        }
+        Returns: Json
+      }
       v3_consume_inventory: {
         Args: {
           p_hotel_id: string
@@ -8624,6 +8818,16 @@ export type Database = {
           p_supplier_id?: string
         }
         Returns: string
+      }
+      v3_create_production_order: {
+        Args: {
+          p_hotel_id: string
+          p_notes?: string
+          p_recipe_id: string
+          p_scheduled_at?: string
+          p_servings: number
+        }
+        Returns: Json
       }
       v3_create_purchase_request: {
         Args: {
@@ -8758,6 +8962,10 @@ export type Database = {
         Args: { p_hotel_id: string }
         Returns: Database["public"]["Enums"]["v3_app_role"]
       }
+      v3_get_production_order: {
+        Args: { p_hotel_id: string; p_id: string }
+        Returns: Json
+      }
       v3_get_recipe_tech_sheet: {
         Args: { p_hotel_id: string; p_recipe_id: string }
         Returns: Json
@@ -8769,6 +8977,34 @@ export type Database = {
         Returns: Json
       }
       v3_is_member_of: { Args: { p_hotel_id: string }; Returns: boolean }
+      v3_list_production_orders: {
+        Args: {
+          p_from?: string
+          p_hotel_id: string
+          p_limit?: number
+          p_offset?: number
+          p_status?: Database["public"]["Enums"]["v3_production_status"]
+          p_to?: string
+        }
+        Returns: {
+          actual_total_cost: number
+          cancelled_at: string
+          completed_at: string
+          created_at: string
+          created_by: string
+          estimated_total_cost: number
+          hotel_id: string
+          id: string
+          notes: string
+          recipe_id: string
+          recipe_name: string
+          scheduled_at: string
+          servings: number
+          started_at: string
+          status: Database["public"]["Enums"]["v3_production_status"]
+          updated_at: string
+        }[]
+      }
       v3_mark_offer_preferred: {
         Args: { p_hotel_id: string; p_offer_id: string }
         Returns: undefined
@@ -8823,14 +9059,28 @@ export type Database = {
         Returns: undefined
       }
       v3_revoke_invite: { Args: { p_invite_id: string }; Returns: undefined }
-      v3_scale_recipe: {
-        Args: {
-          p_hotel_id: string
-          p_new_servings: number
-          p_recipe_id: string
-        }
-        Returns: Json
-      }
+      v3_scale_recipe:
+        | {
+            Args: {
+              p_hotel_id: string
+              p_new_servings: number
+              p_recipe_id: string
+            }
+            Returns: Json
+          }
+        | {
+            Args: {
+              p_hotel_id: string
+              p_recipe_id: string
+              p_target_servings: number
+            }
+            Returns: {
+              estimated_unit_cost: number
+              product_id: string
+              quantity_required: number
+              unit_id: string
+            }[]
+          }
       v3_set_ocr_job_extracted: {
         Args: { p_hotel_id: string; p_job_id: string; p_payload: Json }
         Returns: undefined
@@ -8843,6 +9093,10 @@ export type Database = {
           p_job_id: string
         }
         Returns: undefined
+      }
+      v3_start_production: {
+        Args: { p_hotel_id: string; p_production_order_id: string }
+        Returns: Json
       }
       v3_submit_recipe_for_review: {
         Args: { p_hotel_id: string; p_recipe_id: string }
@@ -9257,6 +9511,12 @@ export type Database = {
         | "cancelled"
       v3_pr_origin: "manual" | "event" | "production"
       v3_pr_status: "draft" | "approved" | "consolidated" | "cancelled"
+      v3_production_status:
+        | "draft"
+        | "scheduled"
+        | "in_progress"
+        | "completed"
+        | "cancelled"
       v3_recipe_category:
         | "cold_starters"
         | "hot_starters"
@@ -9772,6 +10032,13 @@ export const Constants = {
       ],
       v3_pr_origin: ["manual", "event", "production"],
       v3_pr_status: ["draft", "approved", "consolidated", "cancelled"],
+      v3_production_status: [
+        "draft",
+        "scheduled",
+        "in_progress",
+        "completed",
+        "cancelled",
+      ],
       v3_recipe_category: [
         "cold_starters",
         "hot_starters",

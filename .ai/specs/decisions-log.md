@@ -1020,6 +1020,58 @@ Implementar inventory con lotes FIFO y ledger append-only:
 
 ---
 
+### ADR-0019 — Production orders con consumo FIFO atómico
+
+**Fecha**: 2026-04-27
+**Estado**: aceptada
+**Módulo / área afectada**: `production`, `inventory`, `recipes`, `supabase/migrations`
+
+#### Contexto
+
+Tras sprint-06, inventory ya tiene lotes FIFO y movimientos append-only. Falta conectar recetas con consumo real de stock para que cocina pueda planificar una produccion concreta por raciones y descontar inventario con coste real.
+
+El riesgo principal es consumir parcialmente una receta: si una orden tiene varios ingredientes y falta uno, no debe quedar el primer producto descontado. Tambien hay que evitar que una receta mutable cambie silenciosamente una orden ya creada.
+
+#### Opciones consideradas
+
+1. **Orden monoreceta con snapshot y consumo FIFO atomico** — simple, revisable y suficiente para MVP. Permite coste real sin reservas.
+2. **Orden multireceta desde el inicio** — mas cercana a menu diario completo, pero mezcla agregacion, batching y UX de planificacion.
+3. **Reservar stock al crear/programar** — reduce carreras, pero introduce release de reservas, expiraciones y conflictos operativos antes de tener produccion estable.
+
+#### Decisión
+
+Opcion 1. Sprint-07 implementa:
+
+- 1 orden = 1 receta + raciones objetivo.
+- Las lineas se guardan como snapshot escalado al crear la orden.
+- `v3_check_production_feasibility` solo consulta stock y devuelve deficits.
+- `v3_start_production` re-valida feasibility dentro de la transaccion antes de mutar inventario.
+- `v3_start_production` consume FIFO llamando `v3_consume_inventory` por linea con `origin.source='production'`.
+- Si falta cualquier producto, falla con `P0002` y no consume nada.
+- Cancelar desde `in_progress` no restaura stock automaticamente; requiere `v3_register_adjustment` manual si el equipo decide devolver stock.
+
+#### Razón
+
+- Mantiene el alcance cerrado de sprint-07.
+- Protege coste real y trazabilidad: cada movimiento de inventario queda ligado a una orden y linea de produccion.
+- Evita recalculos invisibles si la receta cambia despues de crear la orden.
+- Evita reservas prematuras hasta que el modulo demuestre volumen y casos reales.
+- El rollback transaccional de Postgres da atomicidad sin inventar una capa de compensacion.
+
+#### Consecuencias
+
+- `v3_production_order_lines` es fuente de verdad para la orden, no `v3_recipe_ingredients` en tiempo de inicio.
+- La UI debe mostrar deficits antes de iniciar, pero el servidor no confia en ese check externo.
+- Los movements de inventario se filtran por `origin->>'production_order_id'`.
+- Una cancelacion iniciada conserva coste real consumido; cualquier correccion de stock se hace como ajuste auditable.
+- Produccion multi-receta, sub-recetas, reservas y analisis de variacion quedan fuera de este sprint.
+
+#### Revisable
+
+Revisar si sprint-08 o reporting exige variacion estimado vs real agregada, o si aparecen menus diarios con varias recetas por orden. Reservas y sub-recetas deben entrar con ADR nueva.
+
+---
+
 ## Mantenimiento
 
 Cada ADR debe poder leerse en <5 minutos. Si una decisión requiere más, dividirla en varias ADRs.

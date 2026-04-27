@@ -12,7 +12,7 @@ Módulos oficiales (ver `.ai/specs/module-list.md`):
 - `catalog` — productos, proveedores, ofertas
 - `procurement` — PR/PO/GR, OCR albaranes
 - `inventory` — lotes FIFO, reservations, counts, waste
-- `production` — workflows, mise en place, KDS
+- `production` — órdenes de producción, escalado, viabilidad y consumo FIFO
 - `reporting` — KPIs, dashboard, alerts
 - `compliance` — APPCC, temperaturas, etiquetado
 - `automation` — jobs queue + worker
