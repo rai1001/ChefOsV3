@@ -25,20 +25,20 @@ describe('AliasManager', () => {
     vi.mocked(useProductAliases).mockReturnValue({
       data: [],
       isLoading: false,
-    } as any)
+    } as unknown as ReturnType<typeof useProductAliases>)
 
     mutateAsyncMock = vi.fn()
     vi.mocked(useAddAlias).mockReturnValue({
       mutateAsync: mutateAsyncMock,
       isPending: false,
       error: null,
-    } as any)
+    } as unknown as ReturnType<typeof useAddAlias>)
 
     mutateMock = vi.fn()
     vi.mocked(useRemoveAlias).mockReturnValue({
       mutate: mutateMock,
       isPending: false,
-    } as any)
+    } as unknown as ReturnType<typeof useRemoveAlias>)
   })
 
   it('debe registrar un error en la consola si la mutacion de añadir falla', async () => {
@@ -146,7 +146,7 @@ describe('AliasManager', () => {
         }
       ],
       isLoading: false,
-    } as any)
+    } as unknown as ReturnType<typeof useProductAliases>)
 
     render(<AliasManager hotelId={mockHotelId} productId={mockProductId} />)
 
@@ -167,7 +167,7 @@ describe('AliasManager', () => {
     vi.mocked(useProductAliases).mockReturnValue({
       data: [],
       isLoading: true,
-    } as any)
+    } as unknown as ReturnType<typeof useProductAliases>)
 
     render(<AliasManager hotelId={mockHotelId} productId={mockProductId} />)
     expect(screen.getByText('Cargando alias…')).toBeInTheDocument()
@@ -176,7 +176,7 @@ describe('AliasManager', () => {
     vi.mocked(useProductAliases).mockReturnValue({
       data: [],
       isLoading: false,
-    } as any)
+    } as unknown as ReturnType<typeof useProductAliases>)
 
     // re-render para mostrar estado vacío
     render(<AliasManager hotelId={mockHotelId} productId={mockProductId} />)
@@ -188,7 +188,7 @@ describe('AliasManager', () => {
       mutateAsync: mutateAsyncMock,
       isPending: false,
       error: new Error('Error al conectar con servidor'),
-    } as any)
+    } as unknown as ReturnType<typeof useAddAlias>)
 
     render(<AliasManager hotelId={mockHotelId} productId={mockProductId} />)
 
@@ -216,14 +216,14 @@ describe('AliasManager', () => {
           hotel_id: mockHotelId,
           product_id: mockProductId,
           alias_name: 'tomate desconocido',
-          source_type: 'unknown_source' as any,
+          source_type: 'unknown_source' as unknown as 'manual',
           confidence_score: 0.5,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         }
       ],
       isLoading: false,
-    } as any)
+    } as unknown as ReturnType<typeof useProductAliases>)
 
     render(<AliasManager hotelId={mockHotelId} productId={mockProductId} />)
 
