@@ -2,6 +2,23 @@
 
 Todos los cambios notables del proyecto se documentan aquí. Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.1.0/). Versionado: [SemVer](https://semver.org/lang/es/).
 
+## [0.9.0] - 2026-04-27
+
+### Sprint-09 — Reporting / Dashboards
+
+### Added
+
+- RPCs read-only `v3_report_*` para food cost por receta, mermas, top productos, cambios de precio y stock health.
+- Capa TS `src/features/reporting`: schemas Zod, filtros, adapters RPC, hooks TanStack Query y formatters CSV.
+- Export CSV server-side con Route Handler nativo para food-cost, waste, top-products y price-changes.
+- UI `/reports` con 5 dashboards, filtros por fecha/categoría/proveedor/producto, refresco manual y gráficos SVG nativos.
+- Tests unitarios de dominio, CSV, adapters y hooks; E2E live gated `reports-flow.spec.ts`.
+
+### Changed
+
+- Dashboard principal añade acceso a Informes.
+- README y documentación `.ai` incorporan ADR-0021 y alcance operativo de reporting read-only.
+
 ## [0.8.0] - 2026-04-27
 
 ### Sprint-08 — Sub-recetas / preparaciones intermedias

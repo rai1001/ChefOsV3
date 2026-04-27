@@ -9131,6 +9131,83 @@ export type Database = {
         Args: { p_hotel_id: string; p_job_id: string; p_reason: string }
         Returns: undefined
       }
+      v3_report_food_cost_by_recipe: {
+        Args: {
+          p_from: string
+          p_hotel_id: string
+          p_recipe_id?: string
+          p_to: string
+        }
+        Returns: {
+          avg_actual_cost_per_serving: number
+          cost_variance_pct: number
+          production_orders_count: number
+          recipe_id: string
+          recipe_name: string
+          total_actual_cost: number
+          total_estimated_cost: number
+          total_servings_produced: number
+        }[]
+      }
+      v3_report_price_changes: {
+        Args: {
+          p_from: string
+          p_hotel_id: string
+          p_limit?: number
+          p_product_id?: string
+          p_supplier_id?: string
+          p_to: string
+        }
+        Returns: {
+          created_at: string
+          delta_pct: number
+          detected_at: string
+          new_price: number
+          old_price: number
+          price_change_id: string
+          product_id: string
+          product_name: string
+          purchase_order_line_id: string
+          source: string
+          supplier_id: string
+          supplier_name: string
+        }[]
+      }
+      v3_report_stock_health: { Args: { p_hotel_id: string }; Returns: Json }
+      v3_report_top_products: {
+        Args: {
+          p_dimension: string
+          p_from: string
+          p_hotel_id: string
+          p_limit?: number
+          p_to: string
+        }
+        Returns: {
+          category_id: string
+          metric_secondary: number
+          metric_value: number
+          product_id: string
+          product_name: string
+          rank: number
+        }[]
+      }
+      v3_report_waste_by_period: {
+        Args: {
+          p_from: string
+          p_hotel_id: string
+          p_product_id?: string
+          p_to: string
+        }
+        Returns: {
+          category_id: string
+          movements_count: number
+          pct_of_consume: number
+          product_id: string
+          product_name: string
+          total_cost_wasted: number
+          total_quantity_wasted: number
+        }[]
+      }
       v3_resolve_ingredient_mapping_bulk: {
         Args: { p_hotel_id: string; p_mapping: Json }
         Returns: Json
