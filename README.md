@@ -2,7 +2,7 @@
 
 Control operativo de cocina multi-servicio. Reescritura DDD del dominio validado en v2.
 
-> Estado 2026-04-27: procurement PR/PO/GR/OCR en v3, inventory FIFO operativo y production orders en implementación local pendiente de aplicación por WALL-E.
+> Estado 2026-04-27: procurement PR/PO/GR/OCR en v3, inventory FIFO operativo, production orders y sub-recetas Sprint-08 aplicadas en Supabase.
 
 ## Capability matrix (2026-04-27)
 
@@ -11,14 +11,14 @@ Control operativo de cocina multi-servicio. Reescritura DDD del dominio validado
 | identity      | producción   | sprint-01   | auth, roles, permissions, active hotel, sanitización errores |
 | commercial    | producción   | sprint-02   | events, clients, BEO PDF, paginación cursor |
 | tenant-admin  | producción   | sprint-02b  | onboarding, hoteles, team, invites + Resend |
-| recipes       | producción   | sprint-03   | fichas, ingredientes, pasos, escandallo live |
+| recipes       | producción   | sprint-03/08 | fichas, ingredientes, pasos, sub-recetas stockables, escandallo live |
 | menus         | producción   | sprint-03b  | composición comercial, sections, recipes nested |
 | import        | producción   | sprint-03c  | bulk import Excel: recetas + ingredientes (mapping productos NULL pendiente) |
 | catalog       | pendiente    | sprint-04   | productos, conversiones unidad — desbloquea mapping post-import |
 | procurement   | producción   | sprint-05   | PR/PO/GR/OCR ✓; lotes vía hook inventory |
 | inventory     | producción   | sprint-06   | lotes FIFO, movimientos, consumo, merma y ajustes |
-| production    | parcial      | sprint-07   | órdenes monoreceta, escalado, viabilidad y consumo FIFO atómico; pendiente aplicar migraciones |
-| reporting     | pendiente    | sprint-08   | KPIs, márgenes |
+| production    | producción   | sprint-07/08 | órdenes monoreceta, escalado, viabilidad, cascada sub-recetas y consumo FIFO atómico |
+| reporting     | pendiente    | post sprint-08 | KPIs, márgenes |
 | compliance    | pendiente    | sprint-09   | HACCP, trazabilidad |
 | automation    | pendiente    | sprint-10   | workflows, alertas |
 | notifications | pendiente    | sprint-11   | in-app, push, email |
@@ -108,19 +108,22 @@ INVENTORY_E2E_LIVE=1 npm run test:e2e -- e2e/tests/inventory-fifo-flow.spec.ts -
 
 ## Production
 
-Flujo operativo sprint-07:
+Flujo operativo sprint-07/08:
 
 - `/production` lista órdenes con filtros por estado y fecha.
 - `/production/new` crea una orden desde receta activa, raciones objetivo y preview de ingredientes escalados.
-- `/production/[id]` muestra costes estimado/real, líneas snapshot y movements asociados.
+- `/production/[id]` muestra costes estimado/real, líneas snapshot, cascada de sub-recetas y movements asociados.
 - Iniciar producción comprueba stock y consume inventario FIFO de forma atómica via `v3_start_production`.
+- Si una línea usa una sub-receta stockable y falta stock, `v3_start_production` produce la preparación on-demand antes de consumir la orden padre.
+- Las preparaciones generan lote `is_preparation=true` y movement `kind='produce'`.
 - Si falta stock, `v3_start_production` falla con `P0002` y detalle de déficits antes de tocar inventario.
 - Cancelar desde `in_progress` no restaura stock automáticamente; requiere ajuste manual auditable.
 
-Smoke live pendiente de que WALL-E aplique `00076`-`00077` y regenere tipos:
+Smoke live:
 
 ```bash
 PRODUCTION_E2E_LIVE=1 npm run test:e2e -- e2e/tests/production-fifo-flow.spec.ts --project=chromium
+PRODUCTION_E2E_LIVE=1 npm run test:e2e -- e2e/tests/production-subrecipe-cascade.spec.ts --project=chromium
 ```
 
 ## Arquitectura

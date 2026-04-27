@@ -2,6 +2,24 @@
 
 Todos los cambios notables del proyecto se documentan aquí. Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.1.0/). Versionado: [SemVer](https://semver.org/lang/es/).
 
+## [0.8.0] - 2026-04-27
+
+### Sprint-08 — Sub-recetas / preparaciones intermedias
+
+### Added
+
+- Migraciones Sprint-08: recetas stockables con `is_preparation`, producto/cantidad de salida, `source_recipe_id` en ingredientes y lotes de preparación.
+- Cascada on-demand en `v3_start_production`: produce sub-recetas faltantes, crea lote `is_preparation=true` y movement `produce`.
+- `v3_check_production_feasibility` devuelve `subrecipe_chain` para mostrar qué preparaciones se producirán.
+- UI recipes: edición de preparación stockable y selector Producto/Sub-receta en ingredientes.
+- UI production: sección Cascada con sub-órdenes producidas y enlaces al detalle.
+- Tests unitarios de schemas, errores, adapters y hooks; E2E live gated `production-subrecipe-cascade.spec.ts`.
+
+### Changed
+
+- `ProductionInsufficientStockError` conserva el detalle jerárquico de feasibility cuando `P0002` viene de una cascada.
+- `production_order_lines` conserva `source_recipe_id` como snapshot de línea.
+
 ## [0.7.0] - 2026-04-27
 
 ### Sprint-07 — Production orders
