@@ -4513,6 +4513,292 @@ export type Database = {
           },
         ]
       }
+      v3_compliance_cleaning_areas: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          frequency: Database["public"]["Enums"]["v3_compliance_frequency"]
+          hotel_id: string
+          id: string
+          is_active: boolean
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          frequency?: Database["public"]["Enums"]["v3_compliance_frequency"]
+          hotel_id: string
+          id?: string
+          is_active?: boolean
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          frequency?: Database["public"]["Enums"]["v3_compliance_frequency"]
+          hotel_id?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "v3_compliance_cleaning_areas_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "v3_hotels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v3_compliance_cleaning_checks: {
+        Row: {
+          area_id: string
+          completed_at: string
+          completed_by: string
+          created_at: string
+          due_date: string
+          hotel_id: string
+          id: string
+          notes: string | null
+          updated_at: string
+        }
+        Insert: {
+          area_id: string
+          completed_at?: string
+          completed_by: string
+          created_at?: string
+          due_date: string
+          hotel_id: string
+          id?: string
+          notes?: string | null
+          updated_at?: string
+        }
+        Update: {
+          area_id?: string
+          completed_at?: string
+          completed_by?: string
+          created_at?: string
+          due_date?: string
+          hotel_id?: string
+          id?: string
+          notes?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "v3_compliance_cleaning_checks_area_hotel_fkey"
+            columns: ["hotel_id", "area_id"]
+            isOneToOne: false
+            referencedRelation: "v3_compliance_cleaning_areas"
+            referencedColumns: ["hotel_id", "id"]
+          },
+          {
+            foreignKeyName: "v3_compliance_cleaning_checks_area_id_fkey"
+            columns: ["area_id"]
+            isOneToOne: false
+            referencedRelation: "v3_compliance_cleaning_areas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_compliance_cleaning_checks_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "v3_hotels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v3_compliance_equipment: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          equipment_type: Database["public"]["Enums"]["v3_compliance_equipment_type"]
+          hotel_id: string
+          id: string
+          is_active: boolean
+          location: string | null
+          max_temperature_c: number
+          min_temperature_c: number
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          equipment_type: Database["public"]["Enums"]["v3_compliance_equipment_type"]
+          hotel_id: string
+          id?: string
+          is_active?: boolean
+          location?: string | null
+          max_temperature_c: number
+          min_temperature_c: number
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          equipment_type?: Database["public"]["Enums"]["v3_compliance_equipment_type"]
+          hotel_id?: string
+          id?: string
+          is_active?: boolean
+          location?: string | null
+          max_temperature_c?: number
+          min_temperature_c?: number
+          name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "v3_compliance_equipment_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "v3_hotels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v3_compliance_quality_checks: {
+        Row: {
+          all_ok: boolean | null
+          checked_at: string
+          checked_by: string
+          created_at: string
+          expiry_ok: boolean
+          goods_receipt_id: string
+          hotel_id: string
+          id: string
+          notes: string | null
+          packaging_ok: boolean
+          temperature_c: number | null
+          temperature_ok: boolean
+          updated_at: string
+        }
+        Insert: {
+          all_ok?: boolean | null
+          checked_at?: string
+          checked_by: string
+          created_at?: string
+          expiry_ok?: boolean
+          goods_receipt_id: string
+          hotel_id: string
+          id?: string
+          notes?: string | null
+          packaging_ok?: boolean
+          temperature_c?: number | null
+          temperature_ok?: boolean
+          updated_at?: string
+        }
+        Update: {
+          all_ok?: boolean | null
+          checked_at?: string
+          checked_by?: string
+          created_at?: string
+          expiry_ok?: boolean
+          goods_receipt_id?: string
+          hotel_id?: string
+          id?: string
+          notes?: string | null
+          packaging_ok?: boolean
+          temperature_c?: number | null
+          temperature_ok?: boolean
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "v3_compliance_quality_checks_goods_receipt_id_fkey"
+            columns: ["goods_receipt_id"]
+            isOneToOne: false
+            referencedRelation: "v3_goods_receipts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_compliance_quality_checks_gr_hotel_fkey"
+            columns: ["hotel_id", "goods_receipt_id"]
+            isOneToOne: false
+            referencedRelation: "v3_goods_receipts"
+            referencedColumns: ["hotel_id", "id"]
+          },
+          {
+            foreignKeyName: "v3_compliance_quality_checks_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "v3_hotels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v3_compliance_temperature_logs: {
+        Row: {
+          created_at: string
+          equipment_id: string
+          hotel_id: string
+          id: string
+          in_range: boolean | null
+          max_temperature_c: number
+          measured_at: string
+          measured_by: string
+          min_temperature_c: number
+          notes: string | null
+          temperature_c: number
+        }
+        Insert: {
+          created_at?: string
+          equipment_id: string
+          hotel_id: string
+          id?: string
+          in_range?: boolean | null
+          max_temperature_c: number
+          measured_at?: string
+          measured_by: string
+          min_temperature_c: number
+          notes?: string | null
+          temperature_c: number
+        }
+        Update: {
+          created_at?: string
+          equipment_id?: string
+          hotel_id?: string
+          id?: string
+          in_range?: boolean | null
+          max_temperature_c?: number
+          measured_at?: string
+          measured_by?: string
+          min_temperature_c?: number
+          notes?: string | null
+          temperature_c?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "v3_compliance_temperature_logs_equipment_hotel_fkey"
+            columns: ["hotel_id", "equipment_id"]
+            isOneToOne: false
+            referencedRelation: "v3_compliance_equipment"
+            referencedColumns: ["hotel_id", "id"]
+          },
+          {
+            foreignKeyName: "v3_compliance_temperature_logs_equipment_id_fkey"
+            columns: ["equipment_id"]
+            isOneToOne: false
+            referencedRelation: "v3_compliance_equipment"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_compliance_temperature_logs_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "v3_hotels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       v3_domain_events: {
         Row: {
           aggregate_id: string
@@ -8806,6 +9092,15 @@ export type Database = {
         Args: { p_hotel_id: string; p_production_order_id: string }
         Returns: Json
       }
+      v3_complete_cleaning_check: {
+        Args: {
+          p_area_id: string
+          p_due_date?: string
+          p_hotel_id: string
+          p_notes?: string
+        }
+        Returns: Json
+      }
       v3_complete_production: {
         Args: {
           p_hotel_id: string
@@ -8974,6 +9269,10 @@ export type Database = {
         Args: { p_hotel_id: string; p_product_ids: string[] }
         Returns: Json
       }
+      v3_get_compliance_overview: {
+        Args: { p_hotel_id: string }
+        Returns: Json
+      }
       v3_get_escandallo_live: {
         Args: { p_hotel_id: string; p_recipe_id: string }
         Returns: Json
@@ -9077,6 +9376,16 @@ export type Database = {
           updated_at: string
         }[]
       }
+      v3_log_equipment_temperature: {
+        Args: {
+          p_equipment_id: string
+          p_hotel_id: string
+          p_measured_at?: string
+          p_notes?: string
+          p_temperature_c: number
+        }
+        Returns: Json
+      }
       v3_mark_offer_preferred: {
         Args: { p_hotel_id: string; p_offer_id: string }
         Returns: undefined
@@ -9102,6 +9411,18 @@ export type Database = {
           p_notes?: string
           p_purchase_order_id: string
           p_received_at?: string
+        }
+        Returns: Json
+      }
+      v3_record_goods_receipt_quality_check: {
+        Args: {
+          p_expiry_ok?: boolean
+          p_goods_receipt_id: string
+          p_hotel_id: string
+          p_notes?: string
+          p_packaging_ok?: boolean
+          p_temperature_c?: number
+          p_temperature_ok?: boolean
         }
         Returns: Json
       }
@@ -9266,6 +9587,10 @@ export type Database = {
       }
       v3_sync_escandallo_prices: {
         Args: { p_hotel_id: string; p_recipe_id: string }
+        Returns: Json
+      }
+      v3_trace_lot: {
+        Args: { p_hotel_id: string; p_lot_id: string }
         Returns: Json
       }
       v3_transition_event: {
@@ -9593,6 +9918,12 @@ export type Database = {
         | "reception"
         | "operations"
         | "maintenance"
+      v3_compliance_equipment_type:
+        | "fridge"
+        | "freezer"
+        | "blast_chiller"
+        | "hot_holding"
+      v3_compliance_frequency: "daily" | "weekly" | "monthly"
       v3_department:
         | "cocina_caliente"
         | "cocina_fria"
@@ -10106,6 +10437,13 @@ export const Constants = {
         "operations",
         "maintenance",
       ],
+      v3_compliance_equipment_type: [
+        "fridge",
+        "freezer",
+        "blast_chiller",
+        "hot_holding",
+      ],
+      v3_compliance_frequency: ["daily", "weekly", "monthly"],
       v3_department: [
         "cocina_caliente",
         "cocina_fria",
