@@ -1,8 +1,12 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { updateSession } from '@/lib/supabase/middleware'
-import { checkRateLimit, identifierFromHeaders, type RateLimitPreset } from '@/lib/rate-limit'
+import { checkRateLimit, identifierFromRequest, type RateLimitPreset } from '@/lib/rate-limit'
 
-const RATE_LIMITED_PATHS: Array<{ pathPrefix: string; methods: string[]; preset: RateLimitPreset }> = [
+const RATE_LIMITED_PATHS: Array<{
+  pathPrefix: string
+  methods: string[]
+  preset: RateLimitPreset
+}> = [
   { pathPrefix: '/login', methods: ['POST'], preset: 'login' },
   { pathPrefix: '/signup', methods: ['POST'], preset: 'signup' },
   { pathPrefix: '/forgot-password', methods: ['POST'], preset: 'forgot-password' },
@@ -20,8 +24,11 @@ function matchRateLimit(request: NextRequest): RateLimitPreset | null {
   return null
 }
 
-async function maybeHandleRateLimit(request: NextRequest, preset: RateLimitPreset): Promise<NextResponse | null> {
-  const id = identifierFromHeaders(request.headers)
+async function maybeHandleRateLimit(
+  request: NextRequest,
+  preset: RateLimitPreset
+): Promise<NextResponse | null> {
+  const id = identifierFromRequest(request)
   const limit = await checkRateLimit(preset, id)
   if (!limit.ok) {
     return new NextResponse(
@@ -44,9 +51,7 @@ async function maybeHandleRateLimit(request: NextRequest, preset: RateLimitPrese
 
 export async function proxy(request: NextRequest) {
   const preset = matchRateLimit(request)
-  const rateLimitResponse = preset
-    ? await maybeHandleRateLimit(request, preset)
-    : null
+  const rateLimitResponse = preset ? await maybeHandleRateLimit(request, preset) : null
 
   if (rateLimitResponse) return rateLimitResponse
 
