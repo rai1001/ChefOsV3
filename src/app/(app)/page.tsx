@@ -126,6 +126,28 @@ export default async function DashboardPage() {
               </Button>
             </div>
           </div>
+
+          <div
+            className="rounded-lg border p-6"
+            style={{
+              borderColor: 'var(--color-border)',
+              background: 'var(--color-bg-card)',
+            }}
+          >
+            <p className="kpi-label mb-2">sprint-07 · production</p>
+            <h2>Producción</h2>
+            <p className="mt-2 text-[color:var(--color-text-secondary)]">
+              Órdenes con receta escalada, viabilidad de stock y consumo FIFO.
+            </p>
+            <div className="mt-4 flex gap-2 flex-wrap">
+              <Button asChild size="sm">
+                <Link href="/production">Abrir</Link>
+              </Button>
+              <Button asChild variant="secondary" size="sm">
+                <Link href="/production/new">Nueva orden</Link>
+              </Button>
+            </div>
+          </div>
         </section>
       </div>
     </main>
