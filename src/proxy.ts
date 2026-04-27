@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { updateSession } from '@/lib/supabase/middleware'
-import { checkRateLimit, identifierFromHeaders, type RateLimitPreset } from '@/lib/rate-limit'
+import { checkRateLimit, identifierFromRequest, type RateLimitPreset } from '@/lib/rate-limit'
 
 const RATE_LIMITED_PATHS: Array<{ pathPrefix: string; methods: string[]; preset: RateLimitPreset }> = [
   { pathPrefix: '/login', methods: ['POST'], preset: 'login' },
@@ -21,7 +21,7 @@ function matchRateLimit(request: NextRequest): RateLimitPreset | null {
 }
 
 async function maybeHandleRateLimit(request: NextRequest, preset: RateLimitPreset): Promise<NextResponse | null> {
-  const id = identifierFromHeaders(request.headers)
+  const id = identifierFromRequest(request)
   const limit = await checkRateLimit(preset, id)
   if (!limit.ok) {
     return new NextResponse(

@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { checkRateLimit, identifierFromHeaders } from './index'
+import { type NextRequest } from 'next/server'
+import { checkRateLimit, identifierFromRequest } from './index'
 
 beforeEach(() => {
   vi.stubEnv('UPSTASH_REDIS_REST_URL', '')
@@ -25,23 +26,14 @@ describe('checkRateLimit (skip mode without Upstash vars)', () => {
   })
 })
 
-describe('identifierFromHeaders', () => {
-  it('uses x-forwarded-for first IP when present', () => {
-    const headers = new Headers({ 'x-forwarded-for': '203.0.113.5, 10.0.0.1' })
-    expect(identifierFromHeaders(headers)).toBe('203.0.113.5')
+describe('identifierFromRequest', () => {
+  it('uses request.ip when present', () => {
+    const request = { ip: '203.0.113.5' } as NextRequest
+    expect(identifierFromRequest(request)).toBe('203.0.113.5')
   })
 
-  it('falls back to x-real-ip when x-forwarded-for is missing', () => {
-    const headers = new Headers({ 'x-real-ip': '198.51.100.7' })
-    expect(identifierFromHeaders(headers)).toBe('198.51.100.7')
-  })
-
-  it('returns "anonymous" when no IP headers are set', () => {
-    expect(identifierFromHeaders(new Headers())).toBe('anonymous')
-  })
-
-  it('handles empty x-forwarded-for', () => {
-    const headers = new Headers({ 'x-forwarded-for': '' })
-    expect(identifierFromHeaders(headers)).toBe('anonymous')
+  it('returns "anonymous" when request.ip is missing (e.g. local development)', () => {
+    const request = {} as NextRequest
+    expect(identifierFromRequest(request)).toBe('anonymous')
   })
 })

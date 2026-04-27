@@ -8,6 +8,7 @@
 //
 import { Ratelimit } from '@upstash/ratelimit'
 import { Redis } from '@upstash/redis'
+import { type NextRequest } from 'next/server'
 
 export type RateLimitPreset = 'login' | 'signup' | 'forgot-password' | 'invite-accept'
 
@@ -93,14 +94,9 @@ export async function checkRateLimit(
 
 // Identificador para rate limit. Usa IP cuando está disponible (Vercel Edge), fallback "anonymous".
 // Para flows autenticados, combinar con el user id externamente: `${ip}:${userId}`.
-export function identifierFromHeaders(headers: Headers): string {
-  // Vercel Edge incluye 'x-forwarded-for' con la IP real al frente.
-  const forwarded = headers.get('x-forwarded-for')
-  if (forwarded) {
-    const first = forwarded.split(',')[0]?.trim()
-    if (first) return first
-  }
-  const realIp = headers.get('x-real-ip')
-  if (realIp) return realIp
-  return 'anonymous'
+export function identifierFromRequest(request: NextRequest): string {
+  // En Next.js / Vercel Edge, request.ip es provisto de forma segura y validada
+  // por la plataforma, lo que evita ataques de IP Spoofing que ocurrirían
+  // al confiar ciegamente en 'x-forwarded-for'.
+  return request.ip ?? 'anonymous'
 }
