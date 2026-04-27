@@ -48,8 +48,10 @@ export function buildPaginatedResult<T>(rows: T[], pageSize: number, offset: num
 }
 
 // Parsea un cursor previamente devuelto. Devuelve 0 si es null/inválido.
+// Acepta solo enteros no negativos puros — rechaza "10abc", " 10", "1.5", etc.
 export function parseCursor(cursor: string | null | undefined): number {
   if (!cursor) return 0
+  if (!/^\d+$/.test(cursor)) return 0
   const parsed = Number.parseInt(cursor, 10)
   return Number.isFinite(parsed) && parsed >= 0 ? parsed : 0
 }
