@@ -52,6 +52,9 @@ export interface Recipe {
   dietary_tags: string[]
   notes: string | null
   image_url: string | null
+  is_preparation: boolean
+  output_product_id: string | null
+  output_quantity_per_batch: number | null
   created_by: string
   approved_by: string | null
   approved_at: string | null
@@ -65,6 +68,7 @@ export interface RecipeIngredient {
   hotel_id: string
   ingredient_name: string
   product_id: string | null
+  source_recipe_id: string | null
   unit_id: string | null
   quantity_gross: number
   waste_pct: number
@@ -151,6 +155,7 @@ export interface RecipesFilter {
   status?: RecipeStatus | RecipeStatus[]
   category?: RecipeCategory
   search?: string
+  isPreparation?: boolean
 }
 
 // ─── Tech sheet export (RPC v3_get_recipe_tech_sheet) ─────────────────────────

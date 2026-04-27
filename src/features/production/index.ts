@@ -37,10 +37,15 @@ export {
 export type { ScaleRecipeLine, ProductionOrderLine } from './domain/line'
 export { scaleRecipeLineSchema, productionOrderLineSchema } from './domain/line'
 
-export type { ProductionFeasibility, ProductionDeficit } from './domain/feasibility'
+export type {
+  ProductionFeasibility,
+  ProductionDeficit,
+  ProductionSubrecipeChainNode,
+} from './domain/feasibility'
 export {
   productionFeasibilitySchema,
   productionDeficitSchema,
+  productionSubrecipeChainNodeSchema,
   getMissingProductionProducts,
 } from './domain/feasibility'
 

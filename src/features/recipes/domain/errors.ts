@@ -65,3 +65,42 @@ export class IngredientUnmappedError extends ValidationError {
     this.name = 'IngredientUnmappedError'
   }
 }
+
+export class SubrecipeCascadeTooDeepError extends ConflictError {
+  override readonly code = 'SUBRECIPE_CASCADE_TOO_DEEP' as const
+
+  constructor(
+    public readonly recipeId: string,
+    public readonly depth: number,
+    message?: string
+  ) {
+    super(message ?? `La cascada de sub-recetas supera la profundidad máxima: ${recipeId}`)
+    this.name = 'SubrecipeCascadeTooDeepError'
+  }
+}
+
+export class RecipePreparationInUseError extends ConflictError {
+  override readonly code = 'RECIPE_PREPARATION_IN_USE' as const
+
+  constructor(
+    public readonly recipeId: string,
+    message?: string
+  ) {
+    super(message ?? `La preparación está en uso por otras recetas: ${recipeId}`)
+    this.name = 'RecipePreparationInUseError'
+  }
+}
+
+export class SubrecipeOutputMismatchError extends ValidationError {
+  override readonly code = 'SUBRECIPE_OUTPUT_MISMATCH' as const
+
+  constructor(
+    public readonly sourceRecipeId: string,
+    public readonly expectedProductId: string,
+    public readonly receivedProductId: string | null,
+    message?: string
+  ) {
+    super(message ?? 'La línea de sub-receta no coincide con el producto de salida')
+    this.name = 'SubrecipeOutputMismatchError'
+  }
+}

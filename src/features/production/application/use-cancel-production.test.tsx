@@ -57,6 +57,7 @@ describe('useCancelProduction', () => {
       },
       lines: [],
       movements: [],
+      subrecipe_productions: [],
     })
 
     const { result } = renderHook(() => useCancelProduction(), { wrapper })

@@ -15,6 +15,7 @@ import { useCompleteProduction } from '../application/use-complete-production'
 import { useProductionDetail } from '../application/use-production-detail'
 import { useStartProduction } from '../application/use-start-production'
 import { ProductionStatusBadge } from './production-status-badge'
+import { SubrecipeTree } from './subrecipe-tree'
 
 const currencyFormatter = new Intl.NumberFormat('es-ES', {
   style: 'currency',
@@ -42,9 +43,11 @@ export function ProductionOrderDetail({
   if (detail.error) return <p className="text-danger">Error: {detail.error.message}</p>
   if (!detail.data) return null
 
-  const { order, lines, movements } = detail.data
+  const { order, lines, movements, subrecipe_productions } = detail.data
   const feasibilityData = feasibility.data
   const deficits = startError?.deficits ?? feasibilityData?.deficits ?? []
+  const subrecipeChain =
+    startError?.feasibility?.subrecipe_chain ?? feasibilityData?.subrecipe_chain ?? []
   const canStart = canStartProductionOrder(order.status)
   const canStartNow = canStart && feasibilityData?.feasible === true
 
@@ -198,6 +201,8 @@ export function ProductionOrderDetail({
         </section>
       ) : null}
 
+      <SubrecipeTree chain={subrecipeChain} productions={subrecipe_productions} />
+
       <section className="space-y-2">
         <h2>Líneas</h2>
         <div
@@ -212,6 +217,7 @@ export function ProductionOrderDetail({
                 <th className="kpi-label px-3 py-2">Consumido</th>
                 <th className="kpi-label px-3 py-2">Coste estimado</th>
                 <th className="kpi-label px-3 py-2">Coste real</th>
+                <th className="kpi-label px-3 py-2">Origen</th>
               </tr>
             </thead>
             <tbody>
@@ -233,6 +239,13 @@ export function ProductionOrderDetail({
                     {line.actual_total_cost !== null
                       ? currencyFormatter.format(line.actual_total_cost)
                       : '-'}
+                  </td>
+                  <td className="px-3 py-2">
+                    {line.source_recipe_id ? (
+                      <span className="badge-status info">Sub-receta</span>
+                    ) : (
+                      <span className="badge-status neutral">Producto</span>
+                    )}
                   </td>
                 </tr>
               ))}

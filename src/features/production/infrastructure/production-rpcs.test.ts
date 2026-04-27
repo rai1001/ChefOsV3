@@ -1,5 +1,4 @@
 import { describe, expect, it, vi } from 'vitest'
-import { ProductionInsufficientStockError } from '../domain/errors'
 import {
   checkProductionFeasibility,
   createProductionOrder,
@@ -23,6 +22,7 @@ describe('production RPC adapters', () => {
               hotel_id: hotelId,
               production_order_id: orderId,
               product_id: '66666666-6666-4666-8666-666666666666',
+              source_recipe_id: null,
               quantity_required: 12.5,
               unit_id: '77777777-7777-4777-8777-777777777777',
               estimated_unit_cost: 2.2,
@@ -33,6 +33,7 @@ describe('production RPC adapters', () => {
               created_at: '2026-04-27T10:00:00.000Z',
             },
           ],
+          subrecipe_chain: [],
         },
         error: null,
       }),
@@ -83,15 +84,41 @@ describe('production RPC adapters', () => {
     expect(result.deficits[0]?.missing).toBe(7.5)
   })
 
-  it('mapea P0002 de start_production a ProductionInsufficientStockError', async () => {
+  it('mapea P0002 jerárquico de start_production a ProductionInsufficientStockError', async () => {
     const supabase = {
       rpc: vi.fn().mockResolvedValue({
         data: null,
         error: {
           code: 'P0002',
           message: 'insufficient stock for production order',
-          details:
-            '[{"product_id":"66666666-6666-4666-8666-666666666666","required":12.5,"available":5,"missing":7.5}]',
+          details: JSON.stringify({
+            feasible: false,
+            deficits: [
+              {
+                product_id: '66666666-6666-4666-8666-666666666666',
+                required: 12.5,
+                available: 5,
+                missing: 7.5,
+              },
+            ],
+            subrecipe_chain: [
+              {
+                depth: 1,
+                parent_recipe_id: recipeId,
+                recipe_id: '77777777-7777-4777-8777-777777777777',
+                product_id: '88888888-8888-4888-8888-888888888888',
+                unit_id: '99999999-9999-4999-8999-999999999999',
+                required: 0.6,
+                available: 0,
+                missing: 0.6,
+                output_quantity_per_batch: 1,
+                batches_needed: 1,
+                target_servings: 8,
+                quantity_to_produce: 1,
+                will_produce: true,
+              },
+            ],
+          }),
         },
       }),
     }
@@ -101,6 +128,21 @@ describe('production RPC adapters', () => {
         hotel_id: hotelId,
         production_order_id: orderId,
       })
-    ).rejects.toBeInstanceOf(ProductionInsufficientStockError)
+    ).rejects.toMatchObject({
+      deficits: [
+        {
+          product_id: '66666666-6666-4666-8666-666666666666',
+          missing: 7.5,
+        },
+      ],
+      feasibility: {
+        subrecipe_chain: [
+          {
+            recipe_id: '77777777-7777-4777-8777-777777777777',
+            will_produce: true,
+          },
+        ],
+      },
+    })
   })
 })

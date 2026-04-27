@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { mapSupabaseError } from '@/lib/errors/map-supabase-error'
+import { SubrecipeCascadeTooDeepError } from '@/features/recipes'
 import {
   ProductionInsufficientStockError,
   ProductionInvalidStateError,
@@ -42,8 +43,21 @@ function isErrorLike(error: unknown): error is SupabaseErrorLike {
   return error !== null && typeof error === 'object'
 }
 
+function parseFeasibility(details: string | null | undefined): ProductionFeasibility | null {
+  if (!details) return null
+  try {
+    const raw = JSON.parse(details) as unknown
+    return productionFeasibilitySchema.parse(raw)
+  } catch {
+    return null
+  }
+}
+
 function parseDeficits(details: string | null | undefined): ProductionDeficit[] {
   if (!details) return []
+  const feasibility = parseFeasibility(details)
+  if (feasibility) return feasibility.deficits
+
   try {
     const raw = JSON.parse(details) as unknown
     return productionDeficitSchema.array().parse(raw)
@@ -59,10 +73,16 @@ function mapProductionRpcError(
 ): never {
   if (isErrorLike(error)) {
     if (error.code === 'P0002') {
+      const feasibility = parseFeasibility(error.details)
       throw new ProductionInsufficientStockError(
-        parseDeficits(error.details),
-        error.message
+        feasibility?.deficits ?? parseDeficits(error.details),
+        error.message,
+        feasibility ?? undefined
       )
+    }
+
+    if (error.code === 'P0017') {
+      throw new SubrecipeCascadeTooDeepError(fallbackOrderId ?? '', 6, error.message)
     }
 
     const lowerMessage = error.message?.toLowerCase() ?? ''

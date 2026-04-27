@@ -1072,6 +1072,55 @@ Revisar si sprint-08 o reporting exige variacion estimado vs real agregada, o si
 
 ---
 
+### ADR-0020 — Sub-recetas con cascada FIFO on-demand
+
+**Fecha**: 2026-04-27
+**Estado**: aceptada
+**Módulo / área afectada**: `recipes`, `production`, `inventory`, `supabase/migrations`
+
+#### Contexto
+
+Tras sprint-07, producción ya consume ingredientes directos de una receta con FIFO atómico. Falta modelar preparaciones intermedias reutilizables, como fondos o bases, sin introducir mise en place anticipada ni multi-output.
+
+#### Decisión
+
+Sprint-08 implementa sub-recetas stockables on-demand:
+
+- Una receta marcada `is_preparation=true` produce exactamente un `output_product_id`.
+- `output_quantity_per_batch` define cuánto stock genera un batch basado en las raciones base de la receta.
+- Una línea de `v3_recipe_ingredients.source_recipe_id` apunta a la receta-preparación; su `product_id` debe coincidir con el producto de salida de esa preparación.
+- `v3_start_production` expande la cadena de sub-recetas antes de consumir la orden padre. Si falta stock de una preparación, llama a `v3_produce_subrecipe` dentro de la misma transacción.
+- `v3_produce_subrecipe` crea una sub-orden, inicia producción, crea un lote `is_preparation=true` y registra movement `kind='produce'`.
+- La profundidad máxima de cascada es 5. Excederla falla con `P0017`.
+- La operación sigue siendo all-or-nothing: si falta un ingrediente terminal, no quedan sub-órdenes, lotes ni movimientos parciales.
+
+#### Razón
+
+- Mantiene una preparación como stock real y costeado, no como cálculo efímero.
+- Reutiliza el mecanismo de órdenes y FIFO ya validado en sprint-07.
+- Evita reservas y batching anticipado antes de tener volumen operativo.
+- La profundidad máxima protege la recursión y hace comprensible el fallo para cocina/soporte.
+
+#### Consecuencias
+
+- La orden padre mantiene snapshot de sus líneas; las sub-recetas se calculan al iniciar, usando la versión vigente de la preparación.
+- Cancelar una orden padre desde `in_progress` no cancela sub-órdenes ni elimina lotes producidos; quedan como stock auditable.
+- Dos órdenes que necesitan la misma preparación producen sub-órdenes independientes. No hay consolidación cross-orden en este sprint.
+- El coste del lote de preparación es `actual_total_cost / quantity_produced`.
+- Si una preparación deja de ser stockable mientras está referenciada, DB bloquea el cambio.
+
+#### Verificación
+
+- WALL-E validó en Supabase real: padre 8 raciones → produce sub-orden, consume ingrediente terminal, crea lote `is_preparation=true`, movement `produce` y consume la orden padre con coste real.
+- WALL-E validó atomicidad: sin stock terminal, `v3_start_production` falla `P0002` con detail jerárquico sin tocar inventario.
+- WALL-E validó profundidad: cadena de 6 niveles falla `P0017`.
+
+#### Revisable
+
+Revisar si aparece necesidad real de mise en place anticipada, consolidación de sub-órdenes o preparaciones multi-output. Cualquiera de esos cambios requiere ADR nueva.
+
+---
+
 ## Mantenimiento
 
 Cada ADR debe poder leerse en <5 minutos. Si una decisión requiere más, dividirla en varias ADRs.

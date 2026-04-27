@@ -32,14 +32,14 @@ Este documento es normativo.
 | 1 | `identity` | Auth, sesión, memberships (consulta), roles, perfiles UX, active hotel context | sprint-01 |
 | 2 | `commercial` | Eventos, clientes, BEO, calendario comercial | sprint-02 |
 | 3 | `tenant-admin` | Tenants, hoteles (creación), memberships (mutación), invites email+token | sprint-02b |
-| 4 | `recipes` | Recetas, ingredientes, pasos, sub-recetas, costeo recursivo, escandallo live | sprint-03 |
+| 4 | `recipes` | Recetas, ingredientes, pasos, sub-recetas, costeo recursivo, escandallo live | sprint-03 / sprint-08 |
 | 5 | `menus` | Menús, secciones, recetas en secciones, alérgenos agregados, tipos | sprint-03b |
 | 6 | `import` | Importación bulk desde Excel/CSV (recetas, productos, inventario, etc.) + import_runs log | sprint-03c |
 | 7 | `catalog` | Productos, categorías, proveedores, ofertas, alias | sprint-04a / 04b / 04c (ADR-0014) |
 | 8 | `procurement` | PR / PO / GR, consolidación, OCR albaranes | sprint-05 |
 | 9 | `inventory` | Lotes FIFO, reservations, counts, waste, forensics | sprint-06 |
-| 10 | `production` | Órdenes de producción, escalado de recetas, viabilidad de stock y consumo FIFO | sprint-07 |
-| 11 | `reporting` | KPIs, food cost, variance, dashboard, alerts, snapshots | sprint-08 |
+| 10 | `production` | Órdenes de producción, escalado de recetas, viabilidad de stock, cascada sub-recetas y consumo FIFO | sprint-07 / sprint-08 |
+| 11 | `reporting` | KPIs, food cost, variance, dashboard, alerts, snapshots | post sprint-08 |
 | 12 | `compliance` | APPCC, temperaturas, etiquetado, trazabilidad | sprint-09 |
 | 13 | `automation` | Jobs queue, worker, triggers automatizados | sprint-10 |
 | 14 | `notifications` | In-app Realtime, email, preferencias, severity | sprint-11 |
@@ -58,6 +58,8 @@ Este documento es normativo.
 > **Nota ADR-0018 (2026-04-26):** `inventory` se implementa con lotes FIFO y movimientos append-only. Procurement crea lotes mediante hook en `v3_receive_goods`; producción consume stock via `v3_consume_inventory`. Ver `specs/decisions-log.md § ADR-0018`.
 
 > **Nota ADR-0019 (2026-04-27):** `production` arranca con órdenes monoreceta, snapshot de ingredientes escalados y consumo FIFO atómico al iniciar. Workflows, mise en place y KDS quedan fuera de sprint-07. Ver `specs/decisions-log.md § ADR-0019`.
+
+> **Nota ADR-0020 (2026-04-27):** `recipes` y `production` incorporan sub-recetas stockables con cascada FIFO on-demand. Una preparación produce un solo producto, la cascada es all-or-nothing y la profundidad máxima es 5. Ver `specs/decisions-log.md § ADR-0020`.
 
 ---
 

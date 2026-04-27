@@ -8,7 +8,11 @@ import type {
   RecipeTechSheet,
   RecipesFilter,
 } from '../domain/types'
-import { RecipeNotFoundError } from '../domain/errors'
+import {
+  RecipeNotFoundError,
+  RecipePreparationInUseError,
+  SubrecipeCascadeTooDeepError,
+} from '../domain/errors'
 import { mapSupabaseError } from '@/lib/errors/map-supabase-error'
 import {
   buildPaginatedResult,
@@ -16,6 +20,30 @@ import {
   type PaginatedResult,
   type PaginationParams,
 } from '@/lib/pagination'
+
+interface SupabaseErrorLike {
+  code?: string
+  message?: string
+}
+
+function mapRecipeError(error: unknown, recipeId?: string): never {
+  const candidate =
+    error !== null && typeof error === 'object'
+      ? (error as SupabaseErrorLike)
+      : null
+  const message = candidate?.message ?? ''
+  const lower = message.toLowerCase()
+
+  if (candidate?.code === 'P0017' || lower.includes('cascade too deep')) {
+    throw new SubrecipeCascadeTooDeepError(recipeId ?? '', 6, message)
+  }
+
+  if (lower.includes('preparation is in use')) {
+    throw new RecipePreparationInUseError(recipeId ?? '', message)
+  }
+
+  throw mapSupabaseError(error, { resource: 'recipe' })
+}
 
 // ─── Lista / detalle ──────────────────────────────────────────────────────────
 
@@ -41,6 +69,9 @@ export async function fetchRecipes(
   }
   if (filter?.category) query = query.eq('category', filter.category)
   if (filter?.search) query = query.ilike('name', `%${filter.search}%`)
+  if (typeof filter?.isPreparation === 'boolean') {
+    query = query.eq('is_preparation', filter.isPreparation)
+  }
 
   const { data, error } = await query
   if (error) throw mapSupabaseError(error, { resource: 'recipe' })
@@ -82,6 +113,9 @@ export interface CreateRecipeInput {
   dietary_tags?: string[]
   notes?: string | null
   image_url?: string | null
+  is_preparation?: boolean
+  output_product_id?: string | null
+  output_quantity_per_batch?: number | null
 }
 
 export async function createRecipe(
@@ -111,11 +145,14 @@ export async function createRecipe(
       dietary_tags: input.dietary_tags ?? [],
       notes: input.notes ?? null,
       image_url: input.image_url ?? null,
+      is_preparation: input.is_preparation ?? false,
+      output_product_id: input.output_product_id ?? null,
+      output_quantity_per_batch: input.output_quantity_per_batch ?? null,
       created_by: userId,
     })
     .select()
     .single()
-  if (error) throw mapSupabaseError(error, { resource: 'recipe' })
+  if (error) mapRecipeError(error)
   return data as Recipe
 }
 
@@ -136,6 +173,9 @@ export interface UpdateRecipeInput {
   dietary_tags?: string[]
   notes?: string | null
   image_url?: string | null
+  is_preparation?: boolean
+  output_product_id?: string | null
+  output_quantity_per_batch?: number | null
 }
 
 export async function updateRecipe(
@@ -151,8 +191,54 @@ export async function updateRecipe(
     .eq('hotel_id', hotelId)
     .select()
     .single()
-  if (error) throw mapSupabaseError(error, { resource: 'recipe' })
+  if (error) mapRecipeError(error, recipeId)
   return data as Recipe
+}
+
+export interface UpdateRecipePreparationInput {
+  is_preparation: boolean
+  output_product_id?: string | null
+  output_quantity_per_batch?: number | null
+}
+
+export async function updateRecipePreparation(
+  supabase: SupabaseClient,
+  hotelId: string,
+  recipeId: string,
+  input: UpdateRecipePreparationInput
+): Promise<Recipe> {
+  const { data, error } = await supabase
+    .from('v3_recipes')
+    .update({
+      is_preparation: input.is_preparation,
+      output_product_id: input.is_preparation ? (input.output_product_id ?? null) : null,
+      output_quantity_per_batch: input.is_preparation
+        ? (input.output_quantity_per_batch ?? null)
+        : null,
+    })
+    .eq('id', recipeId)
+    .eq('hotel_id', hotelId)
+    .select()
+    .single()
+
+  if (error) mapRecipeError(error, recipeId)
+  return data as Recipe
+}
+
+export async function isRecipePreparationInUse(
+  supabase: SupabaseClient,
+  hotelId: string,
+  recipeId: string
+): Promise<boolean> {
+  const { data, error } = await supabase
+    .from('v3_recipe_ingredients')
+    .select('id')
+    .eq('hotel_id', hotelId)
+    .eq('source_recipe_id', recipeId)
+    .limit(1)
+
+  if (error) throw mapSupabaseError(error, { resource: 'recipe_ingredient' })
+  return (data?.length ?? 0) > 0
 }
 
 // ─── Workflow RPCs (v3_) ─────────────────────────────────────────────────────

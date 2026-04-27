@@ -5143,8 +5143,10 @@ export type Database = {
           goods_receipt_line_id: string | null
           hotel_id: string
           id: string
+          is_preparation: boolean
           notes: string | null
           product_id: string
+          production_order_id: string | null
           quantity_received: number
           quantity_remaining: number
           received_at: string
@@ -5158,8 +5160,10 @@ export type Database = {
           goods_receipt_line_id?: string | null
           hotel_id: string
           id?: string
+          is_preparation?: boolean
           notes?: string | null
           product_id: string
+          production_order_id?: string | null
           quantity_received: number
           quantity_remaining: number
           received_at?: string
@@ -5173,8 +5177,10 @@ export type Database = {
           goods_receipt_line_id?: string | null
           hotel_id?: string
           id?: string
+          is_preparation?: boolean
           notes?: string | null
           product_id?: string
+          production_order_id?: string | null
           quantity_received?: number
           quantity_remaining?: number
           received_at?: string
@@ -5217,6 +5223,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v3_products"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_inventory_lots_production_order_hotel_fkey"
+            columns: ["hotel_id", "production_order_id"]
+            isOneToOne: false
+            referencedRelation: "v3_production_orders"
+            referencedColumns: ["hotel_id", "id"]
           },
           {
             foreignKeyName: "v3_inventory_lots_unit_hotel_fkey"
@@ -6040,6 +6053,7 @@ export type Database = {
           product_id: string
           production_order_id: string
           quantity_required: number
+          source_recipe_id: string | null
           unit_id: string
           weighted_unit_cost: number | null
         }
@@ -6054,6 +6068,7 @@ export type Database = {
           product_id: string
           production_order_id: string
           quantity_required: number
+          source_recipe_id?: string | null
           unit_id: string
           weighted_unit_cost?: number | null
         }
@@ -6068,6 +6083,7 @@ export type Database = {
           product_id?: string
           production_order_id?: string
           quantity_required?: number
+          source_recipe_id?: string | null
           unit_id?: string
           weighted_unit_cost?: number | null
         }
@@ -6106,6 +6122,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v3_production_orders"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_production_order_lines_source_recipe_hotel_fkey"
+            columns: ["hotel_id", "source_recipe_id"]
+            isOneToOne: false
+            referencedRelation: "v3_recipes"
+            referencedColumns: ["hotel_id", "id"]
           },
           {
             foreignKeyName: "v3_production_order_lines_unit_hotel_fkey"
@@ -6674,6 +6697,7 @@ export type Database = {
           quantity_net: number | null
           recipe_id: string
           sort_order: number
+          source_recipe_id: string | null
           unit_cost: number
           unit_id: string | null
           waste_pct: number
@@ -6689,6 +6713,7 @@ export type Database = {
           quantity_net?: number | null
           recipe_id: string
           sort_order?: number
+          source_recipe_id?: string | null
           unit_cost?: number
           unit_id?: string | null
           waste_pct?: number
@@ -6704,6 +6729,7 @@ export type Database = {
           quantity_net?: number | null
           recipe_id?: string
           sort_order?: number
+          source_recipe_id?: string | null
           unit_cost?: number
           unit_id?: string | null
           waste_pct?: number
@@ -6729,6 +6755,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v3_recipes"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_recipe_ingredients_source_recipe_hotel_fkey"
+            columns: ["hotel_id", "source_recipe_id"]
+            isOneToOne: false
+            referencedRelation: "v3_recipes"
+            referencedColumns: ["hotel_id", "id"]
           },
           {
             foreignKeyName: "v3_recipe_ingredients_unit_id_fkey"
@@ -6907,8 +6940,11 @@ export type Database = {
           hotel_id: string
           id: string
           image_url: string | null
+          is_preparation: boolean
           name: string
           notes: string | null
+          output_product_id: string | null
+          output_quantity_per_batch: number | null
           prep_time_min: number | null
           rest_time_min: number | null
           servings: number
@@ -6938,8 +6974,11 @@ export type Database = {
           hotel_id: string
           id?: string
           image_url?: string | null
+          is_preparation?: boolean
           name: string
           notes?: string | null
+          output_product_id?: string | null
+          output_quantity_per_batch?: number | null
           prep_time_min?: number | null
           rest_time_min?: number | null
           servings?: number
@@ -6969,8 +7008,11 @@ export type Database = {
           hotel_id?: string
           id?: string
           image_url?: string | null
+          is_preparation?: boolean
           name?: string
           notes?: string | null
+          output_product_id?: string | null
+          output_quantity_per_batch?: number | null
           prep_time_min?: number | null
           rest_time_min?: number | null
           servings?: number
@@ -6991,6 +7033,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v3_hotels"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_recipes_output_product_hotel_fkey"
+            columns: ["hotel_id", "output_product_id"]
+            isOneToOne: false
+            referencedRelation: "v3_products"
+            referencedColumns: ["hotel_id", "id"]
           },
           {
             foreignKeyName: "v3_recipes_yield_unit_id_fkey"
@@ -8765,6 +8814,29 @@ export type Database = {
         }
         Returns: Json
       }
+      v3_compute_subrecipe_chain: {
+        Args: {
+          p_depth?: number
+          p_hotel_id: string
+          p_recipe_id: string
+          p_target_servings: number
+        }
+        Returns: {
+          available: number
+          batches_needed: number
+          depth: number
+          missing: number
+          output_quantity_per_batch: number
+          parent_recipe_id: string
+          product_id: string
+          quantity_to_produce: number
+          recipe_id: string
+          required: number
+          target_servings: number
+          unit_id: string
+          will_produce: boolean
+        }[]
+      }
       v3_consume_inventory: {
         Args: {
           p_hotel_id: string
@@ -9014,6 +9086,15 @@ export type Database = {
         Returns: Json
       }
       v3_preview_invite: { Args: { p_token: string }; Returns: Json }
+      v3_produce_subrecipe: {
+        Args: {
+          p_hotel_id: string
+          p_origin?: Json
+          p_recipe_id: string
+          p_target_quantity: number
+        }
+        Returns: Json
+      }
       v3_receive_goods: {
         Args: {
           p_hotel_id: string
@@ -9494,6 +9575,7 @@ export type Database = {
         | "adjust_out"
         | "transfer_in"
         | "transfer_out"
+        | "produce"
       v3_menu_type: "buffet" | "seated" | "cocktail" | "tasting" | "daily"
       v3_ocr_job_status:
         | "pending"
@@ -10012,6 +10094,7 @@ export const Constants = {
         "adjust_out",
         "transfer_in",
         "transfer_out",
+        "produce",
       ],
       v3_menu_type: ["buffet", "seated", "cocktail", "tasting", "daily"],
       v3_ocr_job_status: [

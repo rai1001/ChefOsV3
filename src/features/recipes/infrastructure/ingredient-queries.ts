@@ -21,6 +21,7 @@ export interface AddRecipeIngredientInput {
   recipe_id: string
   ingredient_name: string
   product_id?: string | null
+  source_recipe_id?: string | null
   unit_id?: string | null
   quantity_gross: number
   waste_pct?: number
@@ -41,6 +42,7 @@ export async function addRecipeIngredient(
       recipe_id: input.recipe_id,
       ingredient_name: input.ingredient_name,
       product_id: input.product_id ?? null,
+      source_recipe_id: input.source_recipe_id ?? null,
       unit_id: input.unit_id ?? null,
       quantity_gross: input.quantity_gross,
       waste_pct: input.waste_pct ?? 0,

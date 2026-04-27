@@ -28,6 +28,7 @@ function ing(overrides: Partial<RecipeIngredient> = {}): RecipeIngredient {
     hotel_id: 'h1',
     ingredient_name: 'Tomate',
     product_id: 'p1',
+    source_recipe_id: null,
     unit_id: 'u1',
     quantity_gross: 1,
     waste_pct: 0,
