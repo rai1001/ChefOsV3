@@ -1575,6 +1575,9 @@ $$;
 
 -- ═══════════════════════════════════════════════════════════════════════════════
 -- SECCIÓN 11 — RPCs recipes (9 copiados de v2)
+-- TODO sprint-05: v3_get_escandallo_live y v3_sync_escandallo_prices consultan
+-- public.goods_receipts / purchase_orders (v2). Cuando sprint-05 cree
+-- v3_goods_receipts, actualizar estas 2 RPCs para apuntar a v3_.
 -- ═══════════════════════════════════════════════════════════════════════════════
 
 create or replace function public.v3_submit_recipe_for_review(p_hotel_id uuid, p_recipe_id uuid)
@@ -1976,7 +1979,6 @@ $$;
 create or replace function public.v3_get_escandallo_live(p_hotel_id uuid, p_recipe_id uuid)
 returns jsonb
 language plpgsql security definer
-set search_path = public
 as $$
 declare
   v_role public.v3_app_role;
@@ -1997,23 +1999,15 @@ begin
       )
       from public.v3_recipe_ingredients ri_c
       left join lateral (
-        select grl.unit_price as unit_cost
-        from public.v3_goods_receipt_lines grl
-        join public.v3_goods_receipts gr
-          on gr.id = grl.goods_receipt_id
-         and gr.hotel_id = p_hotel_id
-        join public.v3_purchase_order_lines pol
-          on pol.id = grl.purchase_order_line_id
-         and pol.hotel_id = p_hotel_id
-        join public.v3_purchase_orders po
-          on po.id = gr.purchase_order_id
-         and po.hotel_id = p_hotel_id
+        select grl.unit_cost
+        from public.goods_receipt_lines grl
+        join public.goods_receipts   gr  on gr.id  = grl.receipt_id
+        join public.purchase_order_lines pol on pol.id = grl.order_line_id
         where pol.product_id = ri_c.product_id
-          and grl.hotel_id = p_hotel_id
+          and gr.hotel_id    = p_hotel_id
           and grl.quality_status = 'accepted'
-          and grl.unit_price is not null
-        order by gr.received_at desc, grl.created_at desc
-        limit 1
+          and grl.unit_cost  is not null
+        order by gr.received_at desc limit 1
       ) lp on ri_c.product_id is not null
       where ri_c.recipe_id = p_recipe_id and ri_c.hotel_id = p_hotel_id
     ), false),
@@ -2027,8 +2021,8 @@ begin
         'unit_cost', ri.unit_cost,
         'line_cost', ri.quantity_net * ri.unit_cost,
         'latest_gr_cost', lp.unit_cost, 'latest_gr_date', lp.received_at,
-        'latest_gr_receipt', lp.receipt_id,
-        'latest_gr_delivery_note', lp.delivery_note_image_hash,
+        'latest_gr_receipt', lp.receipt_number,
+        'latest_gr_delivery_note', lp.delivery_note_number,
         'latest_gr_supplier', lp.supplier_name,
         'price_changed', (lp.unit_cost is not null and abs(lp.unit_cost - ri.unit_cost) > 0.001),
         'price_delta', lp.unit_cost - ri.unit_cost,
@@ -2044,33 +2038,20 @@ begin
       from public.v3_recipe_ingredients ri
       left join public.v3_units_of_measure u on u.id = ri.unit_id
       left join lateral (
-        select
-          grl.unit_price as unit_cost,
-          gr.received_at,
-          gr.id as receipt_id,
-          gr.delivery_note_image_hash,
-          s.name as supplier_name
-        from public.v3_goods_receipt_lines grl
-        join public.v3_goods_receipts gr
-          on gr.id = grl.goods_receipt_id
-         and gr.hotel_id = p_hotel_id
-        join public.v3_purchase_order_lines pol
-          on pol.id = grl.purchase_order_line_id
-         and pol.hotel_id = p_hotel_id
-        join public.v3_purchase_orders po
-          on po.id = gr.purchase_order_id
-         and po.hotel_id = p_hotel_id
-        join public.v3_suppliers s
-          on s.id = po.supplier_id
-         and s.hotel_id = p_hotel_id
+        select grl.unit_cost, gr.received_at, gr.receipt_number,
+               gr.delivery_note_number, s.name as supplier_name
+        from public.goods_receipt_lines  grl
+        join public.goods_receipts        gr  on gr.id  = grl.receipt_id
+        join public.purchase_order_lines  pol on pol.id = grl.order_line_id
+        join public.purchase_orders       po  on po.id  = pol.order_id
+        join public.suppliers             s   on s.id   = po.supplier_id
         where pol.product_id = ri.product_id
-          and grl.hotel_id = p_hotel_id
+          and gr.hotel_id    = p_hotel_id
           and grl.quality_status = 'accepted'
-          and grl.unit_price is not null
-        order by gr.received_at desc, grl.created_at desc
-        limit 1
+          and grl.unit_cost  is not null
+        order by gr.received_at desc limit 1
       ) lp on ri.product_id is not null
-      where ri.recipe_id = p_recipe_id and ri.hotel_id = p_hotel_id
+      where ri.recipe_id = p_recipe_id and ri.hotel_id  = p_hotel_id
     ), '[]')
   ) into v_result
   from public.v3_recipes r
@@ -2083,7 +2064,6 @@ $$;
 create or replace function public.v3_sync_escandallo_prices(p_hotel_id uuid, p_recipe_id uuid)
 returns jsonb
 language plpgsql security definer
-set search_path = public
 as $$
 declare
   v_role         public.v3_app_role;
@@ -2093,52 +2073,37 @@ declare
   v_servings     integer;
   v_target_price numeric;
 begin
-  v_role := public.v3_check_membership(
-    auth.uid(),
-    p_hotel_id,
-    array['superadmin','direction','admin','head_chef']::public.v3_app_role[]
-  );
+  v_role := public.v3_check_membership(auth.uid(), p_hotel_id,
+    array['superadmin','direction','admin','head_chef']::public.v3_app_role[]);
 
   for v_rec in
     select ri.id, ri.ingredient_name, ri.unit_cost as old_cost, lp.unit_cost as new_cost
     from public.v3_recipe_ingredients ri
     join lateral (
-      select grl.unit_price as unit_cost
-      from public.v3_goods_receipt_lines grl
-      join public.v3_goods_receipts gr
-        on gr.id = grl.goods_receipt_id
-       and gr.hotel_id = p_hotel_id
-      join public.v3_purchase_order_lines pol
-        on pol.id = grl.purchase_order_line_id
-       and pol.hotel_id = p_hotel_id
-      join public.v3_purchase_orders po
-        on po.id = gr.purchase_order_id
-       and po.hotel_id = p_hotel_id
+      select grl.unit_cost
+      from public.goods_receipt_lines  grl
+      join public.goods_receipts        gr  on gr.id  = grl.receipt_id
+      join public.purchase_order_lines  pol on pol.id = grl.order_line_id
       where pol.product_id = ri.product_id
-        and grl.hotel_id = p_hotel_id
+        and gr.hotel_id    = p_hotel_id
         and grl.quality_status = 'accepted'
-        and grl.unit_price is not null
-      order by gr.received_at desc, grl.created_at desc
-      limit 1
+        and grl.unit_cost  is not null
+      order by gr.received_at desc limit 1
     ) lp on true
-    where ri.recipe_id = p_recipe_id
-      and ri.hotel_id = p_hotel_id
+    where ri.recipe_id  = p_recipe_id and ri.hotel_id   = p_hotel_id
       and ri.product_id is not null
       and abs(lp.unit_cost - ri.unit_cost) > 0.001
   loop
     update public.v3_recipe_ingredients
     set unit_cost = v_rec.new_cost
-    where id = v_rec.id
-      and hotel_id = p_hotel_id;
+    where id = v_rec.id;
 
     v_changes := v_changes || jsonb_build_array(jsonb_build_object(
       'ingredient', v_rec.ingredient_name,
       'old_cost', v_rec.old_cost, 'new_cost', v_rec.new_cost,
-      'delta_pct', case
-        when v_rec.old_cost > 0
+      'delta_pct', case when v_rec.old_cost > 0
         then round(((v_rec.new_cost - v_rec.old_cost) / v_rec.old_cost) * 100, 2)
-        else null
-      end
+        else null end
     ));
   end loop;
 
@@ -2148,7 +2113,7 @@ begin
     into v_new_total, v_servings, v_target_price
     from public.v3_recipe_ingredients ri
     join public.v3_recipes r on r.id = ri.recipe_id
-    where ri.recipe_id = p_recipe_id and ri.hotel_id = p_hotel_id
+    where ri.recipe_id = p_recipe_id and ri.hotel_id  = p_hotel_id
     group by r.servings, r.target_price;
 
     update public.v3_recipes
@@ -2157,16 +2122,12 @@ begin
         food_cost_pct = case
           when v_target_price > 0 and v_servings > 0
           then round((v_new_total / v_servings / v_target_price) * 100, 2)
-          else 0
-        end,
+          else 0 end,
         updated_at = now()
     where id = p_recipe_id and hotel_id = p_hotel_id;
 
     perform public.v3_emit_event(
-      p_hotel_id,
-      'recipe',
-      p_recipe_id,
-      'recipe.prices_synced',
+      p_hotel_id, 'recipe', p_recipe_id, 'recipe.prices_synced',
       jsonb_build_object(
         'changes_count', jsonb_array_length(v_changes),
         'new_total_cost', v_new_total
