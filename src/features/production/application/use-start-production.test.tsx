@@ -58,6 +58,7 @@ describe('useStartProduction', () => {
       },
       lines: [],
       movements: [],
+      subrecipe_productions: [],
     })
 
     const { result } = renderHook(() => useStartProduction(), { wrapper })
