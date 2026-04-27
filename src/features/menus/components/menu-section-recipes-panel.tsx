@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -32,8 +32,18 @@ export function MenuSectionRecipesPanel({ hotelId, sectionId }: Props) {
   const [price, setPrice] = useState('')
   const [error, setError] = useState<string | null>(null)
 
-  const approvedRecipes = recipesQ.data?.rows ?? []
+  const approvedRecipesData = recipesQ.data?.rows
+  const approvedRecipes = useMemo(() => approvedRecipesData ?? [], [approvedRecipesData])
   const existing = sectionRecipesQ.data ?? []
+
+  const recipesMap = useMemo(() => {
+    const map: Record<string, NonNullable<typeof approvedRecipes[0]>> = {}
+    for (let i = 0; i < approvedRecipes.length; i++) {
+      const r = approvedRecipes[i]
+      if (r) map[r.id] = r
+    }
+    return map
+  }, [approvedRecipes])
 
   const addRecipe = async () => {
     if (!selectedRecipe) return
@@ -61,7 +71,7 @@ export function MenuSectionRecipesPanel({ hotelId, sectionId }: Props) {
       ) : (
         <ul className="space-y-1">
           {existing.map((sr) => {
-            const recipe = approvedRecipes.find((r) => r.id === sr.recipe_id)
+            const recipe = recipesMap[sr.recipe_id]
             return (
               <li
                 key={sr.id}
