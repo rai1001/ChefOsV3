@@ -1121,6 +1121,53 @@ Revisar si aparece necesidad real de mise en place anticipada, consolidación de
 
 ---
 
+### ADR-0021 — Reporting read-only con CSV nativo
+
+**Fecha**: 2026-04-27
+**Estado**: aceptada
+**Módulo / área afectada**: `reporting`, `inventory`, `production`, `procurement`, Next Route Handlers
+
+#### Contexto
+
+Tras procurement, inventory, recipes, production y sub-recetas, el sistema ya genera datos operativos suficientes para consultar coste real, mermas, cambios de precio y salud de stock. Falta una capa de reporting consultable sin modificar flujos de cocina ni introducir jobs anticipados.
+
+#### Decisión
+
+Sprint-09 implementa reporting como módulo solo lectura:
+
+- Cinco RPCs `SECURITY DEFINER` SELECT-only: food cost por receta, mermas, top productos, cambios de precio y stock health.
+- Todas las RPCs reciben `p_hotel_id`, ejecutan `v3_check_membership` y quedan limitadas a roles de dirección, administración, cocina senior y compras.
+- No se crean materialized views, schedulers, workers ni realtime en este sprint.
+- La UI usa TanStack Query con `staleTime` de 5 minutos y refresco manual.
+- Los gráficos se renderizan con SVG nativo porque no hay dependencia de charts aprobada en `package.json`.
+- Export CSV se resuelve con Route Handler nativo, `Response` y `Content-Disposition`, sin librerías nuevas.
+- El CSV añade BOM UTF-8 para compatibilidad con Excel y se limita a 10.000 filas por export.
+
+#### Razón
+
+- Mantiene reporting como capa de consulta sobre hechos ya registrados, sin introducir escrituras ni estados derivados prematuros.
+- Evita coste operativo de cron/materialización hasta medir volumen real.
+- El CSV nativo cubre la necesidad de extracción sin ampliar stack.
+- La cache de 5 minutos reduce carga sin esconder cambios: el usuario puede refrescar manualmente.
+
+#### Consecuencias
+
+- Los filtros de fecha se envían como `YYYY-MM-DD` desde UI y se convierten a inicio UTC para RPCs.
+- La exportación CSV cubre las cuatro tablas tabulares; `stock_health` queda como JSON/dashboard sin CSV en este sprint.
+- Si food cost a 6+ meses degrada, la primera mejora será indexado específico antes de considerar materialized views.
+- Cualquier escritura, snapshot programado o notificación derivada requiere ADR posterior.
+
+#### Verificación
+
+- WALL-E validó en Supabase real las 5 RPCs con fixtures de orden completada, merma y cambio de precio.
+- Chappie añade tests unitarios de schemas, CSV, adapters y hooks, más E2E live gated para navegación y export CSV.
+
+#### Revisable
+
+Revisar tras uso real si hacen falta snapshots diarios, alertas o materialización. Esos cambios pertenecen a automation/reporting posterior, no a Sprint-09.
+
+---
+
 ## Mantenimiento
 
 Cada ADR debe poder leerse en <5 minutos. Si una decisión requiere más, dividirla en varias ADRs.
