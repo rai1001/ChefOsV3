@@ -1,5 +1,5 @@
 import { ConflictError, NotFoundError } from '@/lib/errors'
-import type { ProductionDeficit } from './feasibility'
+import type { ProductionDeficit, ProductionFeasibility } from './feasibility'
 
 export class ProductionOrderNotFoundError extends NotFoundError {
   override readonly code = 'PRODUCTION_ORDER_NOT_FOUND' as const
@@ -18,7 +18,8 @@ export class ProductionInsufficientStockError extends ConflictError {
 
   constructor(
     public readonly deficits: ProductionDeficit[],
-    message = 'Stock insuficiente para iniciar la producción'
+    message = 'Stock insuficiente para iniciar la producción',
+    public readonly feasibility?: ProductionFeasibility
   ) {
     super(message)
     this.name = 'ProductionInsufficientStockError'

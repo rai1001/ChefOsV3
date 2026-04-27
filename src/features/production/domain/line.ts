@@ -1,6 +1,9 @@
 import { z } from 'zod'
 
-const uuidString = () => z.uuid()
+const UUID_LOOSE =
+  /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/
+
+const uuidString = () => z.string().regex(UUID_LOOSE, 'Invalid UUID')
 
 export const scaleRecipeLineSchema = z.object({
   product_id: uuidString(),
@@ -17,6 +20,8 @@ export const productionOrderLineSchema = z.object({
   production_order_id: uuidString(),
   product_id: uuidString(),
   product_name: z.string().nullable().optional(),
+  source_recipe_id: uuidString().nullable().optional(),
+  source_recipe_name: z.string().nullable().optional(),
   quantity_required: z.number().positive(),
   unit_id: uuidString(),
   unit_name: z.string().nullable().optional(),

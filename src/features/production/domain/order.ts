@@ -1,7 +1,10 @@
 import { z } from 'zod'
 import { productionOrderLineSchema } from './line'
 
-const uuidString = () => z.uuid()
+const UUID_LOOSE =
+  /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/
+
+const uuidString = () => z.string().regex(UUID_LOOSE, 'Invalid UUID')
 
 export const PRODUCTION_STATUSES = [
   'draft',
@@ -83,10 +86,32 @@ export const productionMovementSchema = z.object({
 
 export type ProductionMovement = z.infer<typeof productionMovementSchema>
 
+export const productionSubrecipeProductionSchema = z.object({
+  movement_id: uuidString().optional(),
+  production_order_id: uuidString(),
+  recipe_id: uuidString().nullable(),
+  product_id: uuidString(),
+  product_name: z.string().nullable().optional(),
+  lot_id: uuidString().nullable(),
+  quantity_produced: z.number().positive(),
+  unit_id: uuidString(),
+  unit_name: z.string().nullable().optional(),
+  unit_abbreviation: z.string().nullable().optional(),
+  unit_cost: z.number().min(0),
+  total_cost: z.number().min(0).nullable(),
+  origin: z.record(z.string(), z.unknown()),
+  created_at: z.string().min(1).optional(),
+})
+
+export type ProductionSubrecipeProduction = z.infer<
+  typeof productionSubrecipeProductionSchema
+>
+
 export const productionOrderDetailSchema = z.object({
   order: productionOrderSchema.required({ recipe_name: true }),
   lines: z.array(productionOrderLineSchema),
   movements: z.array(productionMovementSchema),
+  subrecipe_productions: z.array(productionSubrecipeProductionSchema).default([]),
 })
 
 export type ProductionOrderDetail = z.infer<typeof productionOrderDetailSchema>
