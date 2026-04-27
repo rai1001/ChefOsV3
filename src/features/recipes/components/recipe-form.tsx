@@ -1,11 +1,13 @@
 'use client'
 
-import { useState, type FormEvent } from 'react'
+import { useMemo, useState, type FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
+import { PackageCheck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { useProducts } from '@/features/catalog'
 import {
   Select,
   SelectContent,
@@ -15,6 +17,7 @@ import {
 } from '@/components/ui/select'
 import { useCreateRecipe } from '../application/use-create-recipe'
 import { useUpdateRecipe } from '../application/use-update-recipe'
+import { useRecipePreparationUsage } from '../application/use-update-recipe-preparation'
 import { createRecipeSchema } from '../application/schemas'
 import {
   RECIPE_CATEGORIES,
@@ -40,8 +43,19 @@ export function RecipeForm({ hotelId, userId, recipe }: Props) {
 
   const [category, setCategory] = useState<RecipeCategory>(recipe?.category ?? 'main')
   const [difficulty, setDifficulty] = useState<RecipeDifficulty>(recipe?.difficulty ?? 'medium')
+  const [isPreparation, setIsPreparation] = useState(recipe?.is_preparation ?? false)
+  const [outputProductSearch, setOutputProductSearch] = useState(recipe?.output_product_id ?? '')
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({})
   const [formError, setFormError] = useState<string | null>(null)
+  const products = useProducts({ hotelId, activeOnly: true }, { pageSize: 250 })
+  const preparationUsage = useRecipePreparationUsage(hotelId, recipe?.id)
+
+  const productRows = useMemo(() => products.data?.rows ?? [], [products.data?.rows])
+  const outputProduct = productRows.find(
+    (product) => product.name === outputProductSearch || product.id === outputProductSearch
+  )
+  const outputProductInputValue = outputProduct?.name ?? outputProductSearch
+  const preparationInUse = recipe?.is_preparation === true && preparationUsage.data === true
 
   const pending = create.isPending || update.isPending
 
@@ -62,6 +76,13 @@ export function RecipeForm({ hotelId, userId, recipe }: Props) {
       notes: (data.get('notes') as string) || null,
       allergens: parseCommaSeparatedList(data.get('allergens')),
       dietary_tags: parseCommaSeparatedList(data.get('dietary_tags')),
+      is_preparation: isPreparation,
+      output_product_id: isPreparation
+        ? ((outputProduct?.id ?? (data.get('output_product_id') as string)) || null)
+        : null,
+      output_quantity_per_batch: isPreparation
+        ? ((data.get('output_quantity_per_batch') as string) || null)
+        : null,
     }
 
     const parsed = createRecipeSchema.safeParse(raw)
@@ -148,6 +169,68 @@ export function RecipeForm({ hotelId, userId, recipe }: Props) {
             step="0.01"
             defaultValue={recipe?.target_price ?? ''}
           />
+        </div>
+
+        <div
+          className="space-y-3 rounded border p-3 md:col-span-2"
+          style={{ borderColor: 'var(--color-border)', background: 'var(--color-bg-sidebar)' }}
+        >
+          <label className="flex items-center gap-3 text-sm font-medium">
+            <input
+              type="checkbox"
+              className="h-4 w-4 accent-[color:var(--color-accent)]"
+              checked={isPreparation}
+              disabled={preparationInUse}
+              onChange={(event) => setIsPreparation(event.target.checked)}
+            />
+            <span className="inline-flex items-center gap-2">
+              <PackageCheck className="h-4 w-4" aria-hidden="true" />
+              Preparación stockable
+            </span>
+          </label>
+
+          {isPreparation ? (
+            <div className="grid gap-3 md:grid-cols-2">
+              <div className="space-y-1">
+                <Label htmlFor="output_product_id">Producto de salida</Label>
+                <Input
+                  id="output_product_id"
+                  name="output_product_id"
+                  list="recipe-output-products"
+                  value={outputProductInputValue}
+                  onChange={(event) => setOutputProductSearch(event.target.value)}
+                  required
+                  placeholder="Buscar producto"
+                />
+                <datalist id="recipe-output-products">
+                  {productRows.map((product) => (
+                    <option key={product.id} value={product.name} />
+                  ))}
+                </datalist>
+                {fieldErrors.output_product_id ? (
+                  <p className="text-xs text-danger">{fieldErrors.output_product_id[0]}</p>
+                ) : null}
+              </div>
+
+              <div className="space-y-1">
+                <Label htmlFor="output_quantity_per_batch">Cantidad por batch</Label>
+                <Input
+                  id="output_quantity_per_batch"
+                  name="output_quantity_per_batch"
+                  type="number"
+                  min="0"
+                  step="0.0001"
+                  required
+                  defaultValue={recipe?.output_quantity_per_batch ?? ''}
+                />
+                {fieldErrors.output_quantity_per_batch ? (
+                  <p className="text-xs text-danger">
+                    {fieldErrors.output_quantity_per_batch[0]}
+                  </p>
+                ) : null}
+              </div>
+            </div>
+          ) : null}
         </div>
 
         <div className="space-y-1">
