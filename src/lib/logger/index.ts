@@ -55,6 +55,10 @@ function emit(level: LogLevel, message: string, context?: LogContext): void {
     console.error(serialized)
   } else if (level === 'warn') {
     console.warn(serialized)
+  } else if (level === 'info') {
+    console.info(serialized)
+  } else if (level === 'debug') {
+    console.debug(serialized)
   } else {
     console.log(serialized)
   }
