@@ -119,8 +119,15 @@ function downloadErrorsCsv(result: ImportResult) {
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' })
   const url = URL.createObjectURL(blob)
 
-  // Security: Ensure the URL is a blob to prevent potential XSS if generation logic changes
-  if (!url.startsWith('blob:')) {
+  // Security: Ensure the URL strictly uses the blob protocol to prevent potential XSS
+  // if generation logic changes in the future
+  try {
+    const parsed = new URL(url)
+    if (parsed.protocol !== 'blob:') {
+      URL.revokeObjectURL(url)
+      return
+    }
+  } catch {
     URL.revokeObjectURL(url)
     return
   }
