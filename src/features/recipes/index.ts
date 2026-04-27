@@ -59,6 +59,9 @@ export {
   CircularSubRecipeError,
   RecipeLockedError,
   IngredientUnmappedError,
+  RecipePreparationInUseError,
+  SubrecipeCascadeTooDeepError,
+  SubrecipeOutputMismatchError,
 } from './domain/errors'
 
 // ── Application: client hooks ──────────────────────────────────────
@@ -66,6 +69,10 @@ export { useRecipes, useRecipesInfinite } from './application/use-recipes'
 export { useRecipe } from './application/use-recipe'
 export { useCreateRecipe } from './application/use-create-recipe'
 export { useUpdateRecipe } from './application/use-update-recipe'
+export {
+  useRecipePreparationUsage,
+  useUpdateRecipePreparation,
+} from './application/use-update-recipe-preparation'
 export { useTransitionRecipe } from './application/use-transition-recipe'
 export {
   useRecipeIngredients,

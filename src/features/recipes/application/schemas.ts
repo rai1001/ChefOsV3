@@ -5,7 +5,12 @@ import {
   RECIPE_STATUSES,
 } from '../domain/types'
 
-export const createRecipeSchema = z.object({
+const UUID_LOOSE =
+  /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/
+
+const uuidString = () => z.string().regex(UUID_LOOSE, 'Invalid UUID')
+
+const recipeBaseSchema = z.object({
   name: z.string().min(2, 'Nombre requerido').max(200),
   category: z.enum(RECIPE_CATEGORIES),
   servings: z.coerce.number().int().min(1).max(10_000),
@@ -22,15 +27,56 @@ export const createRecipeSchema = z.object({
   dietary_tags: z.array(z.string()).default([]),
   notes: z.string().max(5_000).optional().nullable(),
   image_url: z.string().url().optional().nullable(),
+  is_preparation: z.boolean().default(false),
+  output_product_id: uuidString().optional().nullable(),
+  output_quantity_per_batch: z.coerce.number().positive().optional().nullable(),
 })
 
-export const updateRecipeSchema = createRecipeSchema.partial()
+function validatePreparationOutput(
+  value: {
+    is_preparation?: boolean
+    output_product_id?: string | null
+    output_quantity_per_batch?: number | null
+  },
+  ctx: z.RefinementCtx
+) {
+  if (!value.is_preparation) return
+
+  if (!value.output_product_id) {
+    ctx.addIssue({
+      code: 'custom',
+      path: ['output_product_id'],
+      message: 'Producto de salida requerido',
+    })
+  }
+
+  if (!value.output_quantity_per_batch || value.output_quantity_per_batch <= 0) {
+    ctx.addIssue({
+      code: 'custom',
+      path: ['output_quantity_per_batch'],
+      message: 'Cantidad de salida requerida',
+    })
+  }
+}
+
+export const createRecipeSchema = recipeBaseSchema.superRefine(validatePreparationOutput)
+
+export const updateRecipeSchema = recipeBaseSchema
+  .partial()
+  .superRefine(validatePreparationOutput)
+
+export const updateRecipePreparationSchema = z.object({
+  is_preparation: z.boolean(),
+  output_product_id: uuidString().optional().nullable(),
+  output_quantity_per_batch: z.coerce.number().positive().optional().nullable(),
+}).superRefine(validatePreparationOutput)
 
 export const addRecipeIngredientSchema = z.object({
-  recipe_id: z.string().uuid(),
+  recipe_id: uuidString(),
   ingredient_name: z.string().min(1).max(200),
-  product_id: z.string().uuid().optional().nullable(),
-  unit_id: z.string().uuid().optional().nullable(),
+  product_id: uuidString().optional().nullable(),
+  source_recipe_id: uuidString().optional().nullable(),
+  unit_id: uuidString().optional().nullable(),
   quantity_gross: z.coerce.number().positive(),
   waste_pct: z.coerce.number().min(0).max(100).default(0),
   unit_cost: z.coerce.number().nonnegative().default(0),
@@ -39,7 +85,7 @@ export const addRecipeIngredientSchema = z.object({
 })
 
 export const addRecipeStepSchema = z.object({
-  recipe_id: z.string().uuid(),
+  recipe_id: uuidString(),
   step_number: z.coerce.number().int().min(1),
   instruction: z.string().min(1).max(2_000),
   duration_min: z.coerce.number().int().min(0).max(10_000).optional().nullable(),
@@ -49,14 +95,14 @@ export const addRecipeStepSchema = z.object({
 })
 
 export const addSubRecipeSchema = z.object({
-  recipe_id: z.string().uuid(),
-  sub_recipe_id: z.string().uuid(),
+  recipe_id: uuidString(),
+  sub_recipe_id: uuidString(),
   quantity: z.coerce.number().positive(),
-  unit_id: z.string().uuid().optional().nullable(),
+  unit_id: uuidString().optional().nullable(),
 })
 
 export const transitionRecipeSchema = z.object({
-  recipe_id: z.string().uuid(),
+  recipe_id: uuidString(),
   to: z.enum(RECIPE_STATUSES),
 })
 
@@ -65,3 +111,4 @@ export type UpdateRecipeInput = z.input<typeof updateRecipeSchema>
 export type AddRecipeIngredientInput = z.input<typeof addRecipeIngredientSchema>
 export type AddRecipeStepInput = z.input<typeof addRecipeStepSchema>
 export type AddSubRecipeInput = z.input<typeof addSubRecipeSchema>
+export type UpdateRecipePreparationInput = z.input<typeof updateRecipePreparationSchema>
