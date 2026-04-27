@@ -40,7 +40,7 @@ export function mapSupabaseError(
   context?: { resource?: string }
 ): AppError {
   const e = asSupabaseError(raw)
-  const message = e?.message ?? (raw instanceof Error ? raw.message : 'Error desconocido')
+  const message = e?.message ?? (raw instanceof Error ? raw.message || 'Error desconocido' : 'Error desconocido')
   const code = typeof e?.code === 'string' ? e.code : ''
   const status = typeof e?.status === 'number' ? e.status : undefined
 

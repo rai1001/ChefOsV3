@@ -130,4 +130,94 @@ describe('mapSupabaseError', () => {
     const result = mapSupabaseError(raw)
     expect(result.cause).toBe(raw)
   })
+
+  // --- NEW TESTS TO HIT 100% COVERAGE ---
+  it('returns InfrastructureError with Error desconocido when object has no code or message', () => {
+    const result = mapSupabaseError({})
+    expect(result).toBeInstanceOf(InfrastructureError)
+    expect(result.message).toBe('Error desconocido')
+  })
+
+  it('handles object with numeric code but no message', () => {
+    const result = mapSupabaseError({ code: 123 })
+    expect(result.message).toBe('Error desconocido')
+  })
+
+  it('handles object with string code but no message', () => {
+    const result = mapSupabaseError({ code: 'UNKNOWN' })
+    expect(result.message).toBe('Error desconocido')
+  })
+
+  it('handles native Error objects', () => {
+    const result = mapSupabaseError(new Error('native error'))
+    expect(result).toBeInstanceOf(InfrastructureError)
+    expect(result.message).toBe('native error')
+  })
+
+  it('maps Postgres not_null_violation (23502) to ValidationError', () => {
+    const result = mapSupabaseError({ code: '23502', message: 'not null' })
+    expect(result).toBeInstanceOf(ValidationError)
+  })
+
+  it('maps Auth status 403 to ForbiddenError', () => {
+    const result = mapSupabaseError({ status: 403, message: 'forbidden' })
+    expect(result).toBeInstanceOf(ForbiddenError)
+  })
+
+  it('maps Auth status 404 to NotFoundError', () => {
+    const result = mapSupabaseError({ status: 404, message: 'not found' }, { resource: 'user' })
+    expect(result).toBeInstanceOf(NotFoundError)
+  })
+
+  it('maps Auth status 409 to ConflictError', () => {
+    const result = mapSupabaseError({ status: 409, message: 'conflict' })
+    expect(result).toBeInstanceOf(ConflictError)
+  })
+
+  it('PGRST116 fallback resource', () => {
+    const result = mapSupabaseError({ code: 'PGRST116', message: 'no rows' })
+    expect(result).toBeInstanceOf(NotFoundError)
+    expect((result as NotFoundError).resource).toBe('recurso')
+  })
+
+  it('Auth status 404 fallback resource', () => {
+    const result = mapSupabaseError({ status: 404, message: 'not found' })
+    expect(result).toBeInstanceOf(NotFoundError)
+    expect((result as NotFoundError).resource).toBe('recurso')
+  })
+
+  it('Heuristics fallback resource', () => {
+    const result = mapSupabaseError({ message: 'not found' })
+    expect(result).toBeInstanceOf(NotFoundError)
+    expect((result as NotFoundError).resource).toBe('recurso')
+  })
+
+  it('native Error object with explicit null message property', () => {
+    const err = new Error();
+    Object.defineProperty(err, 'message', { value: undefined });
+    const result = mapSupabaseError(err)
+    expect(result).toBeInstanceOf(InfrastructureError)
+    expect(result.message).toBe('Error desconocido')
+  })
+
+  it('native Error with empty message string but object has message property', () => {
+    class CustomError extends Error {
+      override message: string;
+      constructor(msg: string) {
+        super(msg);
+        this.message = msg;
+      }
+    }
+    const err = new CustomError('');
+    const result = mapSupabaseError(err)
+    expect(result).toBeInstanceOf(InfrastructureError)
+    expect(result.message).toBe('')
+  })
+
+  it('native Error object with empty message string', () => {
+    const err = new Error();
+    const result = mapSupabaseError(err)
+    expect(result).toBeInstanceOf(InfrastructureError)
+    expect(result.message).toBe('')
+  })
 })
