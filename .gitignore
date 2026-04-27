@@ -27,6 +27,7 @@ playwright-report/
 test-results/
 .nyc_output/
 playwright/.cache/
+.playwright-cli/
 
 # Supabase (temp/local)
 supabase/.temp/
