@@ -2,7 +2,7 @@
 
 Control operativo de cocina multi-servicio. Reescritura DDD del dominio validado en v2.
 
-> Estado 2026-04-27: procurement PR/PO/GR/OCR en v3, inventory FIFO operativo, production orders y sub-recetas Sprint-08 aplicadas en Supabase.
+> Estado 2026-04-27: procurement PR/PO/GR/OCR en v3, inventory FIFO operativo, production orders/sub-recetas y reporting Sprint-09 aplicados en Supabase.
 
 ## Capability matrix (2026-04-27)
 
@@ -18,8 +18,8 @@ Control operativo de cocina multi-servicio. Reescritura DDD del dominio validado
 | procurement   | producción   | sprint-05   | PR/PO/GR/OCR ✓; lotes vía hook inventory |
 | inventory     | producción   | sprint-06   | lotes FIFO, movimientos, consumo, merma y ajustes |
 | production    | producción   | sprint-07/08 | órdenes monoreceta, escalado, viabilidad, cascada sub-recetas y consumo FIFO atómico |
-| reporting     | pendiente    | post sprint-08 | KPIs, márgenes |
-| compliance    | pendiente    | sprint-09   | HACCP, trazabilidad |
+| reporting     | producción   | sprint-09   | dashboards read-only, food cost, mermas, top productos, precio y stock health |
+| compliance    | pendiente    | post sprint-09 | HACCP, trazabilidad |
 | automation    | pendiente    | sprint-10   | workflows, alertas |
 | notifications | pendiente    | sprint-11   | in-app, push, email |
 | integrations  | pendiente    | sprint-12   | TPV, ERP, delivery |
@@ -126,6 +126,25 @@ PRODUCTION_E2E_LIVE=1 npm run test:e2e -- e2e/tests/production-fifo-flow.spec.ts
 PRODUCTION_E2E_LIVE=1 npm run test:e2e -- e2e/tests/production-subrecipe-cascade.spec.ts --project=chromium
 ```
 
+## Reporting
+
+Flujo consultivo sprint-09:
+
+- `/reports` concentra los cinco informes read-only.
+- `/reports/food-cost` muestra coste real por receta y variación frente a estimado.
+- `/reports/waste` muestra mermas por producto, coste y ratio contra consumo.
+- `/reports/top-products` rankea productos por consumo, merma o volatilidad de precio.
+- `/reports/price-changes` lista cambios de precio de compra desde `v3_price_change_log`.
+- `/reports/stock-health` resume valor de stock, lotes próximos a caducar y stock muerto.
+- Los CSV de informes tabulares se descargan desde Route Handlers nativos, con BOM UTF-8 y límite de 10.000 filas.
+- La UI cachea consultas 5 minutos y permite refresco manual.
+
+Smoke live:
+
+```bash
+PRODUCTION_E2E_LIVE=1 npm run test:e2e -- e2e/tests/reports-flow.spec.ts --project=chromium
+```
+
 ## Arquitectura
 
 Estructura oficial (ver `.ai/specs/architecture.md`):
@@ -143,7 +162,7 @@ src/
 │   ├── rbac/     # helpers permisos cliente
 │   └── utils.ts  # cn() + utilidades puras
 ├── types/        # tipos transversales
-└── middleware.ts # Next middleware → supabase/middleware
+└── proxy.ts     # Next middleware (renombrado a proxy) → supabase/middleware
 
 supabase/
 ├── migrations/   # DDL + RLS + RPCs

@@ -119,4 +119,20 @@ describe('parseCursor', () => {
   it('rejects negatives', () => {
     expect(parseCursor('-5')).toBe(0)
   })
+
+  it('rejects mixed numeric/text cursors', () => {
+    expect(parseCursor('10abc')).toBe(0)
+    expect(parseCursor('abc10')).toBe(0)
+    expect(parseCursor('10 ')).toBe(0)
+    expect(parseCursor(' 10')).toBe(0)
+  })
+
+  it('rejects fractional cursors', () => {
+    expect(parseCursor('1.5')).toBe(0)
+    expect(parseCursor('10.0')).toBe(0)
+  })
+
+  it('accepts zero', () => {
+    expect(parseCursor('0')).toBe(0)
+  })
 })
