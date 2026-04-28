@@ -94,9 +94,21 @@ export async function updateClient(
   clientId: string,
   input: UpdateClientInput
 ): Promise<Client> {
+  const updatePayload: UpdateClientInput = {}
+
+  if (input.name !== undefined) updatePayload.name = input.name
+  if (input.company !== undefined) updatePayload.company = input.company
+  if (input.contact_person !== undefined) updatePayload.contact_person = input.contact_person
+  if (input.email !== undefined) updatePayload.email = input.email
+  if (input.phone !== undefined) updatePayload.phone = input.phone
+  if (input.tax_id !== undefined) updatePayload.tax_id = input.tax_id
+  if (input.vip_level !== undefined) updatePayload.vip_level = input.vip_level
+  if (input.notes !== undefined) updatePayload.notes = input.notes
+  if (input.is_active !== undefined) updatePayload.is_active = input.is_active
+
   const { data, error } = await supabase
     .from('v3_clients')
-    .update(input)
+    .update(updatePayload)
     .eq('id', clientId)
     .eq('hotel_id', hotelId)
     .select()
