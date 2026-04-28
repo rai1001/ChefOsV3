@@ -17,7 +17,7 @@ export function EventsList({ hotelId, filter }: Props) {
     useEventsInfinite(hotelId, filter)
 
   if (isLoading) return <p className="kpi-label">Cargando eventos…</p>
-  if (error) return <p className="text-danger">Error: {error.message}</p>
+  if (error) return <p className="text-danger">No se pudieron cargar los eventos.</p>
   const items = data?.pages.flatMap((p) => p.rows) ?? []
   if (items.length === 0) {
     return <p className="text-[color:var(--color-text-muted)]">No hay eventos en este rango.</p>
