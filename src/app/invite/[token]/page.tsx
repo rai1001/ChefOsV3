@@ -11,7 +11,6 @@ export default async function AcceptInvitePage({
   params: Promise<{ token: string }>
 }) {
   const { token: rawToken } = await params
-  const token = decodeURIComponent(rawToken)
 
   const user = await getCurrentUserOrNull()
   if (!user) {
@@ -20,11 +19,21 @@ export default async function AcceptInvitePage({
   }
 
   let preview
+  let token: string | null = null
   let loadError: string | null = null
+
   try {
-    preview = await previewInviteServer(token)
-  } catch (err) {
-    loadError = err instanceof Error ? err.message : 'Error al leer la invitación'
+    token = decodeURIComponent(rawToken)
+  } catch {
+    loadError = 'Invitación no válida'
+  }
+
+  if (token) {
+    try {
+      preview = await previewInviteServer(token)
+    } catch (err) {
+      loadError = err instanceof Error ? err.message : 'Error al leer la invitación'
+    }
   }
 
   return (
@@ -50,7 +59,7 @@ export default async function AcceptInvitePage({
             </div>
           ) : (
             <AcceptInviteCard
-              token={token}
+              token={token!}
               preview={preview}
               callerEmail={user.email ?? ''}
             />
