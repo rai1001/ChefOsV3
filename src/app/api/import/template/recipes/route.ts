@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import ExcelJS from 'exceljs'
+import { getActiveHotelOrNull } from '@/features/identity/server'
 
 // Genera el template Excel runtime con headers + 1 fila de ejemplo.
 // Sprint-03c (ADR-0013).
@@ -8,6 +9,11 @@ export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
 export async function GET() {
+  const activeHotel = await getActiveHotelOrNull()
+  if (!activeHotel) {
+    return new Response('Unauthorized', { status: 401 })
+  }
+
   const workbook = new ExcelJS.Workbook()
   workbook.creator = 'ChefOS'
   workbook.created = new Date()
@@ -96,7 +102,7 @@ export async function GET() {
     headers: {
       'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       'Content-Disposition': 'attachment; filename="chefos-recetas-template.xlsx"',
-      'Cache-Control': 'public, max-age=3600',
+      'Cache-Control': 'private, max-age=0, must-revalidate',
     },
   })
 }
