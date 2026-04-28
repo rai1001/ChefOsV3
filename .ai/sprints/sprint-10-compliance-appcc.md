@@ -2,11 +2,13 @@
 
 ## Estado
 
-- Rama: `feat/sprint-10-compliance`
-- PR: #87 draft
+- Rama: `feat/sprint-10-compliance` (mergeada en `main` 2026-04-28, commit `1aa07c1`)
+- PR: #87 mergeado
 - Migración aplicada: `supabase/migrations/00082_v3_compliance_appcc.sql`
 - Types regenerados: `src/types/database.ts`
 - Scope TS/UI/docs: commits 2-6 del handoff `sprint-10-compliance-appcc-CODEX-fase2.md`
+- Hardening posterior: hallazgos C1 (permisos compliance) y C6 (export shape)
+  cerrados en sprint-hardening-2 (PR #90, migraciones 00084/00085).
 
 ## Objetivo
 

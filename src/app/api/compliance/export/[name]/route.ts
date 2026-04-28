@@ -1,4 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
+import { z } from 'zod'
 import { getActiveHotelOrNull } from '@/features/identity/server'
 import type { Role } from '@/features/identity'
 import {
@@ -32,7 +33,19 @@ export async function GET(
   }
 
   const searchParams = new URL(request.url).searchParams
-  const range = rangeFromSearchParams(searchParams)
+  let range
+  try {
+    range = rangeFromSearchParams(searchParams)
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return Response.json(
+        { error: 'invalid_range', issues: error.issues },
+        { status: 400 }
+      )
+    }
+    throw error
+  }
+
   const supabase = await createClient()
   const csv = await buildCsv({
     name,
