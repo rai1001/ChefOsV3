@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { ROLES } from '@/features/identity'
+import { uuidString } from '@/lib/zod/uuid-string'
 import { COMMON_CURRENCIES, COMMON_TIMEZONES } from '../domain/types'
 
 const slugRegex = /^[a-z0-9][a-z0-9-]{1,48}[a-z0-9]$/
@@ -17,7 +18,7 @@ export const createTenantWithHotelSchema = z.object({
 })
 
 export const createHotelSchema = z.object({
-  tenant_id: z.string().uuid(),
+  tenant_id: uuidString(),
   name: z.string().min(2).max(200),
   slug: z.string().min(3).max(50).regex(slugRegex, 'Slug inválido'),
   timezone: z.string().min(3).default('Europe/Madrid'),
@@ -25,7 +26,7 @@ export const createHotelSchema = z.object({
 })
 
 export const createInviteSchema = z.object({
-  hotel_id: z.string().uuid(),
+  hotel_id: uuidString(),
   email: z.string().email('Email no válido').transform((v) => v.trim().toLowerCase()),
   role: z.enum(ROLES),
 })

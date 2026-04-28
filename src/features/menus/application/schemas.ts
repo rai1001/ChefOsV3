@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { uuidString } from '@/lib/zod/uuid-string'
 import { MENU_TYPES } from '../domain/types'
 
 export const createMenuSchema = z.object({
@@ -15,14 +16,14 @@ export const updateMenuSchema = createMenuSchema.partial().extend({
 })
 
 export const addMenuSectionSchema = z.object({
-  menu_id: z.string().uuid(),
+  menu_id: uuidString(),
   name: z.string().min(2).max(200),
   sort_order: z.coerce.number().int().min(0),
 })
 
 export const addRecipeToSectionSchema = z.object({
-  section_id: z.string().uuid(),
-  recipe_id: z.string().uuid(),
+  section_id: uuidString(),
+  recipe_id: uuidString(),
   servings_override: z.coerce.number().positive().optional().nullable(),
   price: z.coerce.number().nonnegative().optional().nullable(),
   sort_order: z.coerce.number().int().min(0),

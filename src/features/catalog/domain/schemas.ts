@@ -2,18 +2,12 @@
 // Validación de inputs antes de tocar Supabase.
 
 import { z } from 'zod'
+import { uuidString } from '@/lib/zod/uuid-string'
 import {
   ALIAS_SOURCE_TYPES,
   PRODUCT_STORAGE_TYPES,
   UNIT_TYPES,
 } from './types'
-
-// Zod 4 `.uuid()` aplica RFC 4122 estricto (version + variant bits).
-// Rechaza UUIDs demo/test (ej. 22222222-2222-2222-2222-222222222222) que
-// Postgres acepta sin problema. Usamos regex laxo que valida formato canónico
-// 8-4-4-4-12 hex sin imponer version/variant — consistente con Postgres uuid.
-const UUID_LOOSE = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/
-const uuidString = () => z.string().regex(UUID_LOOSE, 'Invalid UUID')
 
 // ─── Unidades de medida (v3 per-hotel) ────────────────────────────────────────
 

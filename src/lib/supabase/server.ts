@@ -2,6 +2,7 @@ import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
 import type { CookieOptions } from '@supabase/ssr'
+import type { Database } from '@/types/database'
 
 export class SupabaseEnvMissingError extends Error {
   readonly code = 'SUPABASE_ENV_MISSING' as const
@@ -44,7 +45,7 @@ export async function createClient() {
 
   const cookieStore = await cookies()
 
-  return createServerClient(url, anonKey, {
+  return createServerClient<Database>(url, anonKey, {
     cookies: createServerCookieAdapter(cookieStore),
   })
 }
