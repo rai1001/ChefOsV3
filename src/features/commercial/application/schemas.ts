@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { uuidString } from '@/lib/zod/uuid-string'
 import { EVENT_STATUSES, EVENT_TYPES, SERVICE_TYPES, VIP_LEVELS } from '../domain/types'
 
 const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Formato fecha inválido (YYYY-MM-DD)')
@@ -12,7 +13,7 @@ export const createEventSchema = z.object({
   service_type: z.enum(SERVICE_TYPES),
   event_date: isoDate,
   guest_count: z.coerce.number().int().min(1, 'Mínimo 1 invitado').max(10_000, 'Máximo 10 000'),
-  client_id: z.string().uuid().optional().nullable(),
+  client_id: uuidString().optional().nullable(),
   start_time: timeHHMM.optional().nullable(),
   end_time: timeHHMM.optional().nullable(),
   venue: z.string().max(200).optional().nullable(),
@@ -22,7 +23,7 @@ export const createEventSchema = z.object({
 export const updateEventSchema = createEventSchema.partial()
 
 export const transitionEventSchema = z.object({
-  event_id: z.string().uuid(),
+  event_id: uuidString(),
   new_status: z.enum(EVENT_STATUSES),
   reason: z.string().max(500).optional().nullable(),
 })

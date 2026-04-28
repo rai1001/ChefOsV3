@@ -6,6 +6,7 @@ import {
   type PaginationParams,
 } from '@/lib/pagination'
 import { mapSupabaseError } from '@/lib/errors/map-supabase-error'
+import type { Database } from '@/types/database'
 import { OcrJobNotFoundError } from '../domain/errors'
 import type {
   OcrJob,
@@ -15,39 +16,31 @@ import type {
 } from '../domain/ocr'
 import type { PurchaseOrderStatus } from '../domain/types'
 
-type QueryLike = PromiseLike<{ data: unknown; error: unknown }> & {
-  eq(column: string, value: unknown): QueryLike
-  in(column: string, values: unknown[]): QueryLike
-  gte(column: string, value: unknown): QueryLike
-  lte(column: string, value: unknown): QueryLike
-  order(column: string, options: { ascending: boolean }): QueryLike
-  range(from: number, to: number): QueryLike
-  maybeSingle(): Promise<{ data: unknown; error: unknown }>
-}
+type Client = SupabaseClient<Database>
 
 type OcrJobRow = OcrJob & {
   supplier?: { name: string | null } | null
   purchase_order?: { status: PurchaseOrderStatus | null } | null
 }
 
+const OCR_SELECT = `
+  *,
+  supplier:v3_suppliers!v3_procurement_ocr_jobs_supplier_id_fkey(name),
+  purchase_order:v3_purchase_orders!v3_procurement_ocr_jobs_purchase_order_id_fkey(status)
+`
+
 export async function fetchOcrJobs(
-  supabase: SupabaseClient,
+  supabase: Client,
   filter: OcrJobsFilter,
   pagination?: PaginationParams
 ): Promise<PaginatedResult<OcrJobListItem>> {
   const { from, to, pageSize } = pageRange(pagination)
   let query = supabase
-    .from('v3_procurement_ocr_jobs' as never)
-    .select(
-      `
-        *,
-        supplier:v3_suppliers!v3_procurement_ocr_jobs_supplier_id_fkey(name),
-        purchase_order:v3_purchase_orders!v3_procurement_ocr_jobs_purchase_order_id_fkey(status)
-      `
-    )
+    .from('v3_procurement_ocr_jobs')
+    .select(OCR_SELECT)
     .eq('hotel_id', filter.hotelId)
     .order('created_at', { ascending: false })
-    .range(from, to) as unknown as QueryLike
+    .range(from, to)
 
   if (filter.status) {
     query = Array.isArray(filter.status)
@@ -67,30 +60,24 @@ export async function fetchOcrJobs(
   const { data, error } = await query
   if (error) throw mapSupabaseError(error, { resource: 'ocr_job' })
 
-  const rows = ((data as OcrJobRow[]) ?? []).map(toOcrJobListItem)
+  const rows = ((data as unknown as OcrJobRow[]) ?? []).map(toOcrJobListItem)
   return buildPaginatedResult(rows, pageSize, from)
 }
 
 export async function fetchOcrJob(
-  supabase: SupabaseClient,
+  supabase: Client,
   jobId: string
 ): Promise<OcrJobDetail> {
-  const query = supabase
-    .from('v3_procurement_ocr_jobs' as never)
-    .select(
-      `
-        *,
-        supplier:v3_suppliers!v3_procurement_ocr_jobs_supplier_id_fkey(name),
-        purchase_order:v3_purchase_orders!v3_procurement_ocr_jobs_purchase_order_id_fkey(status)
-      `
-    )
-    .eq('id', jobId) as unknown as QueryLike
+  const { data, error } = await supabase
+    .from('v3_procurement_ocr_jobs')
+    .select(OCR_SELECT)
+    .eq('id', jobId)
+    .maybeSingle()
 
-  const { data, error } = await query.maybeSingle()
   if (error) throw mapSupabaseError(error, { resource: 'ocr_job' })
   if (!data) throw new OcrJobNotFoundError(jobId)
 
-  return toOcrJobListItem(data as OcrJobRow)
+  return toOcrJobListItem(data as unknown as OcrJobRow)
 }
 
 function toOcrJobListItem(row: OcrJobRow): OcrJobListItem {

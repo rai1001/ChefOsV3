@@ -22,6 +22,8 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run typecheck
+      - name: Validate permissions-matrix vs compliance migrations
+        run: npm run validate:permissions
 
   test-unit:
     runs-on: ubuntu-latest

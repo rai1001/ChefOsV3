@@ -1,14 +1,10 @@
 import { z } from 'zod'
+import { uuidString } from '@/lib/zod/uuid-string'
 import {
   RECIPE_CATEGORIES,
   RECIPE_DIFFICULTIES,
   RECIPE_STATUSES,
 } from '../domain/types'
-
-const UUID_LOOSE =
-  /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/
-
-const uuidString = () => z.string().regex(UUID_LOOSE, 'Invalid UUID')
 
 const recipeBaseSchema = z.object({
   name: z.string().min(2, 'Nombre requerido').max(200),
@@ -17,7 +13,7 @@ const recipeBaseSchema = z.object({
   description: z.string().max(2_000).optional().nullable(),
   subcategory: z.string().max(100).optional().nullable(),
   yield_qty: z.coerce.number().positive().optional().nullable(),
-  yield_unit_id: z.string().uuid().optional().nullable(),
+  yield_unit_id: uuidString().optional().nullable(),
   prep_time_min: z.coerce.number().int().min(0).max(10_000).optional().nullable(),
   cook_time_min: z.coerce.number().int().min(0).max(10_000).optional().nullable(),
   rest_time_min: z.coerce.number().int().min(0).max(10_000).optional().nullable(),
