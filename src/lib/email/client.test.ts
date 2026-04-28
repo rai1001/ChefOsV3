@@ -4,10 +4,7 @@ import { Resend } from 'resend'
 describe('getResendClient', () => {
 
   beforeEach(() => {
-    // Reset module registry so the `let cached` and `let warned` variables
-    // in `client.ts` are reset for every test.
     vi.resetModules()
-    // Reset process.env mock to ensure test isolation
     vi.stubEnv('RESEND_API_KEY', '')
     vi.stubEnv('NODE_ENV', 'test')
     vi.restoreAllMocks()
@@ -41,14 +38,12 @@ describe('getResendClient', () => {
 
     const { getResendClient } = await import('./client')
 
-    // First call logs warning
     getResendClient()
     expect(consoleWarnSpy).toHaveBeenCalledTimes(1)
     expect(consoleWarnSpy).toHaveBeenCalledWith(
       expect.stringContaining('RESEND_API_KEY no configurada')
     )
 
-    // Second call does not log warning again
     getResendClient()
     expect(consoleWarnSpy).toHaveBeenCalledTimes(1)
   })
@@ -70,5 +65,28 @@ describe('getResendClient', () => {
 
     expect(firstClient).toBeInstanceOf(Resend)
     expect(firstClient).toBe(secondClient)
+  })
+
+  it('should only construct the Resend client once when cached', async () => {
+    vi.stubEnv('RESEND_API_KEY', 're_123456789')
+
+    // We mock the 'resend' module to track constructor calls
+    vi.doMock('resend', () => {
+      return {
+        Resend: vi.fn()
+      }
+    })
+
+    const { getResendClient } = await import('./client')
+    const { Resend: MockedResend } = await import('resend')
+
+    getResendClient()
+    getResendClient()
+    getResendClient()
+
+    expect(MockedResend).toHaveBeenCalledTimes(1)
+    expect(MockedResend).toHaveBeenCalledWith('re_123456789')
+
+    vi.doUnmock('resend')
   })
 })
