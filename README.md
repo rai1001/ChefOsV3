@@ -2,9 +2,9 @@
 
 Control operativo de cocina multi-servicio. Reescritura DDD del dominio validado en v2.
 
-> Estado 2026-04-27: procurement PR/PO/GR/OCR en v3, inventory FIFO operativo, production orders/sub-recetas y reporting Sprint-09 aplicados en Supabase.
+> Estado 2026-04-28: procurement PR/PO/GR/OCR en v3, inventory FIFO operativo, production orders/sub-recetas, reporting Sprint-09 y compliance APPCC Sprint-10 aplicados en Supabase.
 
-## Capability matrix (2026-04-27)
+## Capability matrix (2026-04-28)
 
 | Módulo        | Estado       | Sprint      | Notas |
 |---------------|--------------|-------------|-------|
@@ -19,7 +19,7 @@ Control operativo de cocina multi-servicio. Reescritura DDD del dominio validado
 | inventory     | producción   | sprint-06   | lotes FIFO, movimientos, consumo, merma y ajustes |
 | production    | producción   | sprint-07/08 | órdenes monoreceta, escalado, viabilidad, cascada sub-recetas y consumo FIFO atómico |
 | reporting     | producción   | sprint-09   | dashboards read-only, food cost, mermas, top productos, precio y stock health |
-| compliance    | pendiente    | post sprint-09 | HACCP, trazabilidad |
+| compliance    | producción   | sprint-10   | APPCC: recepción, temperaturas, limpieza, trazabilidad y export CSV |
 | automation    | pendiente    | sprint-10   | workflows, alertas |
 | notifications | pendiente    | sprint-11   | in-app, push, email |
 | integrations  | pendiente    | sprint-12   | TPV, ERP, delivery |
@@ -143,6 +143,27 @@ Smoke live:
 
 ```bash
 PRODUCTION_E2E_LIVE=1 npm run test:e2e -- e2e/tests/reports-flow.spec.ts --project=chromium
+```
+
+## Compliance APPCC
+
+Flujo operativo sprint-10:
+
+- `/compliance` concentra overview de recepción, temperaturas y limpieza.
+- `/compliance/quality` registra controles de recepción sobre `v3_goods_receipts`.
+- `/compliance/temperature` registra temperaturas por equipo y muestra sparkline 7d.
+- `/compliance/cleaning` completa checklist diario de áreas.
+- `/compliance/traceability` traza lotes FIFO desde `v3_trace_lot`.
+- `/compliance/equipment` gestiona equipos APPCC activos/inactivos.
+- `/compliance/areas` gestiona áreas de limpieza y frecuencia.
+- `/api/compliance/export/{quality|temperature|cleaning|full-monthly}` exporta CSV APPCC con guard `head_chef/admin/direction`.
+
+PDF queda fuera de esta fase hasta aprobar dependencia y validar bundle minified <= 80 KB; no se añadió `pdf-lib`.
+
+Smoke live:
+
+```bash
+COMPLIANCE_E2E_LIVE=1 npm run test:e2e -- e2e/tests/compliance-flow.spec.ts --project=chromium
 ```
 
 ## Arquitectura

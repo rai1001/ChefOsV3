@@ -40,7 +40,7 @@ Este documento es normativo.
 | 9 | `inventory` | Lotes FIFO, reservations, counts, waste, forensics | sprint-06 |
 | 10 | `production` | Órdenes de producción, escalado de recetas, viabilidad de stock, cascada sub-recetas y consumo FIFO | sprint-07 / sprint-08 |
 | 11 | `reporting` | KPIs, food cost, variance, dashboard, alerts, snapshots | sprint-09 |
-| 12 | `compliance` | APPCC, temperaturas, etiquetado, trazabilidad | post sprint-09 |
+| 12 | `compliance` | APPCC, temperaturas, limpieza, trazabilidad y export sanitario | sprint-10 |
 | 13 | `automation` | Jobs queue, worker, triggers automatizados | sprint-10 |
 | 14 | `notifications` | In-app Realtime, email, preferencias, severity | sprint-11 |
 | 15 | `integrations` | PMS (Mews, OPERA), POS (Lightspeed, Simphony), sync | sprint-12 |
@@ -62,6 +62,8 @@ Este documento es normativo.
 > **Nota ADR-0020 (2026-04-27):** `recipes` y `production` incorporan sub-recetas stockables con cascada FIFO on-demand. Una preparación produce un solo producto, la cascada es all-or-nothing y la profundidad máxima es 5. Ver `specs/decisions-log.md § ADR-0020`.
 
 > **Nota ADR-0021 (2026-04-27):** `reporting` arranca con dashboards read-only, RPCs SELECT-only y CSV nativo sin materialized views ni schedulers. Ver `specs/decisions-log.md § ADR-0021`.
+
+> **Nota ADR-0022 (2026-04-28):** `compliance` arranca con APPCC v0 acotado: recepción, temperaturas, limpieza, trazabilidad de lote y export CSV. Alérgenos, fotos, firma digital, auditor externo y consumo de eventos quedan fuera. Ver `specs/decisions-log.md § ADR-0022`.
 
 ---
 
