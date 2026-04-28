@@ -175,6 +175,6 @@ Archivos nuevos esperados:
 
 La ruta indicada en AGENTS para memoria persistente:
 
-`C:\Users\Israel\.Codex\projects\C--APLICACIONES-ChefOsv3\memory\`
+`[ruta-local-redactada]/memory/`
 
 no existe en este entorno. Este archivo queda como handoff persistente dentro del repo.
