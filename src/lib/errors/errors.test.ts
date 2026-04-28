@@ -76,6 +76,11 @@ describe('mapSupabaseError', () => {
     expect(result).toBeInstanceOf(ConflictError)
   })
 
+  it('maps Postgres not_null_violation (23502) to ValidationError', () => {
+    const result = mapSupabaseError({ code: '23502', message: 'not null violated' })
+    expect(result).toBeInstanceOf(ValidationError)
+  })
+
   it('maps Postgres check_violation (23514) to ValidationError', () => {
     const result = mapSupabaseError({ code: '23514', message: 'check failed' })
     expect(result).toBeInstanceOf(ValidationError)
@@ -92,6 +97,12 @@ describe('mapSupabaseError', () => {
     expect((result as NotFoundError).resource).toBe('event')
   })
 
+  it('maps PGRST116 to NotFoundError with default resource when context missing', () => {
+    const result = mapSupabaseError({ code: 'PGRST116', message: 'no rows' })
+    expect(result).toBeInstanceOf(NotFoundError)
+    expect((result as NotFoundError).resource).toBe('recurso')
+  })
+
   it('maps ChefOS P0003 (no active hotel) to ForbiddenError', () => {
     const result = mapSupabaseError({ code: 'P0003', message: 'no active hotel' })
     expect(result).toBeInstanceOf(ForbiddenError)
@@ -102,6 +113,21 @@ describe('mapSupabaseError', () => {
     expect(result).toBeInstanceOf(UnauthorizedError)
   })
 
+  it('maps Auth status 403 to ForbiddenError', () => {
+    const result = mapSupabaseError({ status: 403, message: 'forbidden' })
+    expect(result).toBeInstanceOf(ForbiddenError)
+  })
+
+  it('maps Auth status 404 to NotFoundError', () => {
+    const result = mapSupabaseError({ status: 404, message: 'not found' })
+    expect(result).toBeInstanceOf(NotFoundError)
+  })
+
+  it('maps Auth status 409 to ConflictError', () => {
+    const result = mapSupabaseError({ status: 409, message: 'conflict' })
+    expect(result).toBeInstanceOf(ConflictError)
+  })
+
   it('maps Auth status 422 to ValidationError', () => {
     const result = mapSupabaseError({ status: 422, message: 'invalid email format' })
     expect(result).toBeInstanceOf(ValidationError)
@@ -109,6 +135,7 @@ describe('mapSupabaseError', () => {
 
   it('falls back to message heuristics when no code is set', () => {
     expect(mapSupabaseError({ message: 'item not found' }, { resource: 'recipe' })).toBeInstanceOf(NotFoundError)
+    expect(mapSupabaseError({ message: 'item not found' })).toBeInstanceOf(NotFoundError)
     expect(mapSupabaseError({ message: 'duplicate entry' })).toBeInstanceOf(ConflictError)
     expect(mapSupabaseError({ message: 'permission denied for table' })).toBeInstanceOf(ForbiddenError)
     expect(mapSupabaseError({ message: 'unauthorized' })).toBeInstanceOf(UnauthorizedError)
@@ -119,8 +146,33 @@ describe('mapSupabaseError', () => {
     expect(result).toBeInstanceOf(InfrastructureError)
   })
 
+  it('handles errors with numeric code gracefully', () => {
+    const result = mapSupabaseError({ code: 500, message: 'internal' })
+    expect(result).toBeInstanceOf(InfrastructureError)
+  })
+
+  it('extracts message from native Error instances gracefully', () => {
+    const result = mapSupabaseError(new Error('native error extracted'))
+    expect(result).toBeInstanceOf(InfrastructureError)
+    expect(result.message).toBe('native error extracted')
+  })
+
+  it('handles native Error instances with missing message gracefully', () => {
+    const err = new Error('native')
+    Object.defineProperty(err, 'message', { value: undefined })
+    const result = mapSupabaseError(err)
+    expect(result).toBeInstanceOf(InfrastructureError)
+    expect(result.message).toBe('Error desconocido')
+  })
+
   it('handles non-object input gracefully', () => {
     const result = mapSupabaseError('string error')
+    expect(result).toBeInstanceOf(InfrastructureError)
+    expect(result.message).toBe('Error desconocido')
+  })
+
+  it('handles empty object input gracefully', () => {
+    const result = mapSupabaseError({})
     expect(result).toBeInstanceOf(InfrastructureError)
     expect(result.message).toBe('Error desconocido')
   })
