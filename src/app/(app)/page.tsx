@@ -167,6 +167,28 @@ export default async function DashboardPage() {
               </Button>
             </div>
           </div>
+
+          <div
+            className="rounded-lg border p-6"
+            style={{
+              borderColor: 'var(--color-border)',
+              background: 'var(--color-bg-card)',
+            }}
+          >
+            <p className="kpi-label mb-2">sprint-10 · compliance</p>
+            <h2>APPCC</h2>
+            <p className="mt-2 text-[color:var(--color-text-secondary)]">
+              Recepción, temperaturas, limpieza, trazabilidad y export APPCC.
+            </p>
+            <div className="mt-4 flex gap-2 flex-wrap">
+              <Button asChild size="sm">
+                <Link href="/compliance">Abrir</Link>
+              </Button>
+              <Button asChild variant="secondary" size="sm">
+                <Link href="/compliance/cleaning">Limpieza</Link>
+              </Button>
+            </div>
+          </div>
         </section>
       </div>
     </main>
