@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react'
 import { PackageSearch } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useProductCategories, useSuppliers } from '@/features/catalog'
+import { useWarehouses } from '@/features/warehouse'
 import { useInventorySnapshot } from '../application/use-inventory-snapshot'
 import { inventorySnapshotTotals } from '../domain/snapshot'
 
@@ -20,18 +21,21 @@ const currencyFormatter = new Intl.NumberFormat('es-ES', {
 export function InventorySnapshotList({ hotelId }: { hotelId: string }) {
   const [categoryId, setCategoryId] = useState('')
   const [supplierId, setSupplierId] = useState('')
+  const [warehouseId, setWarehouseId] = useState('')
   const [onlyWithStock, setOnlyWithStock] = useState(true)
 
   const categories = useProductCategories(hotelId)
   const suppliers = useSuppliers({ hotelId, activeOnly: true }, { pageSize: 200 })
+  const warehouses = useWarehouses(hotelId, { activeOnly: true })
   const filter = useMemo(
     () => ({
       hotelId,
       categoryId: categoryId || undefined,
       supplierId: supplierId || undefined,
+      warehouseId: warehouseId || undefined,
       onlyWithStock,
     }),
-    [categoryId, hotelId, onlyWithStock, supplierId]
+    [categoryId, hotelId, onlyWithStock, supplierId, warehouseId]
   )
   const snapshot = useInventorySnapshot(filter)
   const rows = snapshot.data ?? []
@@ -47,7 +51,7 @@ export function InventorySnapshotList({ hotelId }: { hotelId: string }) {
       </div>
 
       <div
-        className="grid gap-3 rounded border p-4 md:grid-cols-4"
+        className="grid gap-3 rounded border p-4 md:grid-cols-5"
         style={{
           borderColor: 'var(--color-border)',
           background: 'var(--color-bg-card)',
@@ -99,6 +103,29 @@ export function InventorySnapshotList({ hotelId }: { hotelId: string }) {
           </select>
         </div>
 
+        <div>
+          <label htmlFor="inventory-warehouse" className="kpi-label mb-1 block">
+            Almacén
+          </label>
+          <select
+            id="inventory-warehouse"
+            value={warehouseId}
+            onChange={(event) => setWarehouseId(event.target.value)}
+            className="w-full rounded border px-3 py-2 text-sm"
+            style={{
+              borderColor: 'var(--color-border)',
+              background: 'var(--color-bg-input)',
+            }}
+          >
+            <option value="">Todos</option>
+            {(warehouses.data ?? []).map((warehouse) => (
+              <option key={warehouse.id} value={warehouse.id}>
+                {warehouse.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
         <label className="flex items-center gap-2 self-end text-sm">
           <input
             type="checkbox"
@@ -108,17 +135,21 @@ export function InventorySnapshotList({ hotelId }: { hotelId: string }) {
           Sólo con stock
         </label>
 
-        <div className="self-end">
+        <div className="flex flex-wrap gap-2 self-end">
           <Button
             type="button"
             variant="secondary"
             onClick={() => {
               setCategoryId('')
               setSupplierId('')
+              setWarehouseId('')
               setOnlyWithStock(true)
             }}
           >
             Limpiar filtros
+          </Button>
+          <Button asChild variant="secondary">
+            <Link href="/inventory/transfer">Transferir</Link>
           </Button>
         </div>
       </div>

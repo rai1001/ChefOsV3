@@ -131,6 +131,7 @@ export type CreateProductionOrderInput = z.infer<
 export const productionOrderIdInputSchema = z.object({
   hotel_id: uuidString(),
   production_order_id: uuidString(),
+  warehouse_id: uuidString().nullable().optional(),
 })
 
 export type ProductionOrderIdInput = z.infer<typeof productionOrderIdInputSchema>

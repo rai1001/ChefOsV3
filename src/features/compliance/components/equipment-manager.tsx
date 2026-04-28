@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Save, Thermometer } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { useWarehouses } from '@/features/warehouse'
 import {
   COMPLIANCE_EQUIPMENT_TYPES,
   EQUIPMENT_TYPE_LABELS,
@@ -14,17 +15,20 @@ import { useCreateEquipment, useUpdateEquipment } from '../application/use-equip
 
 export function EquipmentManager({ hotelId }: { hotelId: string }) {
   const equipment = useEquipmentList(hotelId, { activeOnly: false })
+  const warehouses = useWarehouses(hotelId, { activeOnly: true })
   const createMutation = useCreateEquipment()
   const updateMutation = useUpdateEquipment()
   const [name, setName] = useState('')
   const [equipmentType, setEquipmentType] = useState<ComplianceEquipmentType>('fridge')
   const [location, setLocation] = useState('')
+  const [warehouseId, setWarehouseId] = useState('')
   const [minTemperature, setMinTemperature] = useState('0')
   const [maxTemperature, setMaxTemperature] = useState('5')
 
   async function create() {
     await createMutation.mutateAsync({
       hotel_id: hotelId,
+      warehouse_id: warehouseId || null,
       name,
       equipment_type: equipmentType,
       location,
@@ -34,6 +38,7 @@ export function EquipmentManager({ hotelId }: { hotelId: string }) {
     })
     setName('')
     setLocation('')
+    setWarehouseId('')
   }
 
   return (
@@ -67,6 +72,22 @@ export function EquipmentManager({ hotelId }: { hotelId: string }) {
           <label className="block">
             <span className="kpi-label mb-1 block">Ubicación</span>
             <Input value={location} onChange={(event) => setLocation(event.target.value)} />
+          </label>
+          <label className="block">
+            <span className="kpi-label mb-1 block">Almacén</span>
+            <select
+              value={warehouseId}
+              onChange={(event) => setWarehouseId(event.target.value)}
+              className="w-full rounded border px-3 py-2 text-sm"
+              style={{ borderColor: 'var(--color-border)', background: 'var(--color-bg-input)' }}
+            >
+              <option value="">Default hotel</option>
+              {(warehouses.data ?? []).map((warehouse) => (
+                <option key={warehouse.id} value={warehouse.id}>
+                  {warehouse.name}
+                </option>
+              ))}
+            </select>
           </label>
           <div className="grid grid-cols-2 gap-3">
             <label>

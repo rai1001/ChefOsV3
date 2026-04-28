@@ -19,6 +19,7 @@ import {
 } from '../domain/snapshot'
 
 type LotRow = InventoryLot & {
+  warehouse?: { name: string | null } | null
   product?: { name: string | null; sku: string | null } | null
   unit?: { name: string | null; abbreviation: string | null } | null
   goods_receipt_line?: {
@@ -33,12 +34,18 @@ type UnitRow = {
   abbreviation: string | null
 }
 
+type WarehouseRow = {
+  id: string
+  name: string | null
+}
+
 export async function fetchInventorySnapshot(
   supabase: SupabaseClient,
   filter: InventorySnapshotFilter
 ): Promise<InventorySnapshotItem[]> {
   const { data, error } = await supabase.rpc('v3_get_inventory_snapshot', {
     p_hotel_id: filter.hotelId,
+    p_warehouse_id: filter.warehouseId ?? null,
   })
   if (error) throw mapSupabaseError(error, { resource: 'inventory_snapshot' })
 
@@ -82,6 +89,7 @@ export async function fetchProductLots(
     .select(
       `
         *,
+        warehouse:v3_warehouses!v3_inventory_lots_warehouse_hotel_fkey(name),
         product:v3_products!v3_inventory_lots_product_id_fkey(name, sku),
         unit:v3_units_of_measure!v3_inventory_lots_unit_id_fkey(name, abbreviation),
         goods_receipt_line:v3_goods_receipt_lines!v3_inventory_lots_goods_receipt_line_id_fkey(
@@ -120,7 +128,15 @@ export async function fetchProductMovements(
     inventoryMovementSchema.parse(row)
   )
   const unitIds = [...new Set(movements.map((movement) => movement.unit_id))]
+  const warehouseIds = [
+    ...new Set(
+      movements
+        .map((movement) => movement.warehouse_id)
+        .filter((warehouseId): warehouseId is string => !!warehouseId)
+    ),
+  ]
   const unitsById = new Map<string, UnitRow>()
+  const warehousesById = new Map<string, WarehouseRow>()
 
   if (unitIds.length > 0) {
     const { data: units, error: unitsError } = await supabase
@@ -135,10 +151,27 @@ export async function fetchProductMovements(
     }
   }
 
+  if (warehouseIds.length > 0) {
+    const { data: warehouses, error: warehousesError } = await supabase
+      .from('v3_warehouses')
+      .select('id, name')
+      .eq('hotel_id', hotelId)
+      .in('id', warehouseIds)
+
+    if (warehousesError) throw mapSupabaseError(warehousesError, { resource: 'warehouse' })
+    for (const warehouse of (warehouses ?? []) as WarehouseRow[]) {
+      warehousesById.set(warehouse.id, warehouse)
+    }
+  }
+
   return movements.map((movement) => {
     const unit = unitsById.get(movement.unit_id)
+    const warehouse = movement.warehouse_id
+      ? warehousesById.get(movement.warehouse_id)
+      : undefined
     return {
       ...movement,
+      warehouse_name: warehouse?.name ?? null,
       unit_name: unit?.name ?? null,
       unit_abbreviation: unit?.abbreviation ?? null,
     }
@@ -146,11 +179,12 @@ export async function fetchProductMovements(
 }
 
 function toLotDetail(row: LotRow): InventoryLotDetail {
-  const { product, unit, goods_receipt_line, ...lot } = row
+  const { warehouse, product, unit, goods_receipt_line, ...lot } = row
   const parsedLot = inventoryLotSchema.parse(lot)
 
   return {
     ...parsedLot,
+    warehouse_name: warehouse?.name ?? null,
     product_name: product?.name ?? null,
     product_sku: product?.sku ?? null,
     unit_name: unit?.name ?? null,

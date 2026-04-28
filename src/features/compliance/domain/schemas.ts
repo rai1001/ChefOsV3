@@ -62,6 +62,7 @@ export const qualityCheckSchema = z.object({
 export const equipmentSchema = z.object({
   id: uuidString(),
   hotel_id: uuidString(),
+  warehouse_id: uuidString().nullable(),
   name: z.string().min(1),
   equipment_type: equipmentTypeSchema,
   location: z.string().nullable(),
@@ -113,6 +114,7 @@ export const cleaningCheckSchema = z.object({
 
 export const equipmentInputSchema = z.object({
   hotel_id: uuidString(),
+  warehouse_id: uuidString().nullable().optional(),
   name: z.string().trim().min(1, 'Nombre obligatorio'),
   equipment_type: equipmentTypeSchema,
   location: z.string().optional().nullable().transform(emptyStringToNull),

@@ -46,6 +46,7 @@ export const inventoryMovementSchema = z.object({
   id: uuidString(),
   hotel_id: uuidString(),
   product_id: uuidString(),
+  warehouse_id: uuidString().nullable(),
   lot_id: uuidString().nullable(),
   kind: z.enum(INVENTORY_MOVEMENT_KINDS),
   quantity: z.number().positive(),
@@ -63,6 +64,7 @@ export const inventoryMovementSchema = z.object({
 export type InventoryMovement = z.infer<typeof inventoryMovementSchema>
 
 export interface InventoryMovementDetail extends InventoryMovement {
+  warehouse_name: string | null
   unit_name: string | null
   unit_abbreviation: string | null
 }
@@ -109,6 +111,7 @@ export type InventoryAdjustmentResult = z.infer<
 export interface ConsumeInventoryInput {
   hotel_id: string
   product_id: string
+  warehouse_id?: string | null
   quantity: number
   origin: Record<string, unknown>
 }
@@ -116,6 +119,7 @@ export interface ConsumeInventoryInput {
 export interface RegisterWasteInput {
   hotel_id: string
   product_id: string
+  warehouse_id?: string | null
   quantity: number
   reason: string
 }
@@ -123,6 +127,7 @@ export interface RegisterWasteInput {
 export interface RegisterAdjustmentInput {
   hotel_id: string
   product_id: string
+  warehouse_id?: string | null
   quantity_delta: number
   reason: string
 }

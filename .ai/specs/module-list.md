@@ -25,7 +25,7 @@ Este documento es normativo.
 
 ---
 
-## Módulos oficiales (17)
+## Módulos oficiales (18)
 
 | # | Módulo | Responsabilidad principal | Sprint |
 |---|---|---|---|
@@ -38,14 +38,15 @@ Este documento es normativo.
 | 7 | `catalog` | Productos, categorías, proveedores, ofertas, alias | sprint-04a / 04b / 04c (ADR-0014) |
 | 8 | `procurement` | PR / PO / GR, consolidación, OCR albaranes | sprint-05 |
 | 9 | `inventory` | Lotes FIFO, reservations, counts, waste, forensics | sprint-06 |
-| 10 | `production` | Órdenes de producción, escalado de recetas, viabilidad de stock, cascada sub-recetas y consumo FIFO | sprint-07 / sprint-08 |
-| 11 | `reporting` | KPIs, food cost, variance, dashboard, alerts, snapshots | sprint-09 |
-| 12 | `compliance` | APPCC, temperaturas, limpieza, trazabilidad y export sanitario | sprint-10 |
-| 13 | `automation` | Jobs queue, worker, triggers automatizados | sprint-10 |
-| 14 | `notifications` | In-app Realtime, email, preferencias, severity | sprint-11 |
-| 15 | `integrations` | PMS (Mews, OPERA), POS (Lightspeed, Simphony), sync | sprint-12 |
-| 16 | `hr` | Personnel, shifts, schedules, rotación | sprint-13 |
-| 17 | `agents` | 15 agentes asistidos (sugerencias, no autónomos) | sprint-14 |
+| 10 | `warehouse` | Almacenes por hotel, default warehouse, stock por almacén y transferencias entre almacenes | sprint-11 |
+| 11 | `production` | Órdenes de producción, escalado de recetas, viabilidad de stock, cascada sub-recetas y consumo FIFO | sprint-07 / sprint-08 |
+| 12 | `reporting` | KPIs, food cost, variance, dashboard, alerts, snapshots | sprint-09 |
+| 13 | `compliance` | APPCC, temperaturas, limpieza, trazabilidad y export sanitario | sprint-10 |
+| 14 | `automation` | Jobs queue, worker, triggers automatizados | sprint-10 |
+| 15 | `notifications` | In-app Realtime, email, preferencias, severity | sprint-11+ |
+| 16 | `integrations` | PMS (Mews, OPERA), POS (Lightspeed, Simphony), sync | sprint-12 |
+| 17 | `hr` | Personnel, shifts, schedules, rotación | sprint-13 |
+| 18 | `agents` | 15 agentes asistidos (sugerencias, no autónomos) | sprint-14 |
 
 > **Nota ADR-0009:** `tenant-admin` se añadió en sprint-02b. Convive con `identity` sin solape: identity resuelve sesión + active hotel context; tenant-admin mutante tenants/hoteles/memberships/invites. Ver `specs/decisions-log.md § ADR-0009`.
 
@@ -64,6 +65,8 @@ Este documento es normativo.
 > **Nota ADR-0021 (2026-04-27):** `reporting` arranca con dashboards read-only, RPCs SELECT-only y CSV nativo sin materialized views ni schedulers. Ver `specs/decisions-log.md § ADR-0021`.
 
 > **Nota ADR-0022 (2026-04-28):** `compliance` arranca con APPCC v0 acotado: recepción, temperaturas, limpieza, trazabilidad de lote y export CSV. Alérgenos, fotos, firma digital, auditor externo y consumo de eventos quedan fuera. Ver `specs/decisions-log.md § ADR-0022`.
+
+> **Nota ADR-0023 (2026-04-28):** `warehouse` se añade como módulo oficial para la dimensión de almacén por hotel. `inventory`, `procurement`, `production` y `compliance` conservan ownership de sus flujos y consumen `warehouse` por contrato público. Ver `specs/decisions-log.md § ADR-0023`.
 
 ---
 
@@ -106,6 +109,7 @@ Ver `specs/module-template.md` para la plantilla completa con cada sección a re
 - `catalog` es owner de: productos, categorías de producto, proveedores, ofertas, alias, supplier_refs.
 - `procurement` es owner de: purchase requests, purchase orders, goods receipts, consolidación, OCR.
 - `inventory` es owner de: lotes FIFO, movimientos, reservations, counts, waste, forensics.
+- `warehouse` es owner de: almacenes por hotel, default warehouse, stock agregado por almacén y transferencias entre almacenes.
 - `production` es owner de: órdenes de producción, snapshot de ingredientes escalados, viabilidad de stock, state machine productiva y orquestación del consumo FIFO de una orden.
 - `reporting` es owner de: KPIs agregados, snapshots, dashboard data, alerts operacionales.
 - `compliance` es owner de: APPCC templates + records, temperature logs, labels, trace_lot.
@@ -187,4 +191,4 @@ Este documento debe leerse junto con:
 
 Este documento enumera los módulos oficiales de ChefOS v3.
 
-Ninguna implementación puede vivir fuera de estos 17 módulos sin ADR.
+Ninguna implementación puede vivir fuera de estos 18 módulos sin ADR.

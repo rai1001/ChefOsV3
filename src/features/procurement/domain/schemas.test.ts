@@ -14,6 +14,7 @@ const unitId = '55555555-5555-5555-5555-555555555555'
 const requestId = '66666666-6666-6666-6666-666666666666'
 const orderId = '77777777-7777-7777-7777-777777777777'
 const orderLineId = '88888888-8888-8888-8888-888888888888'
+const warehouseId = '99999999-9999-4999-8999-999999999999'
 
 describe('createPurchaseRequestInputSchema', () => {
   it('acepta una PR manual con una línea válida', () => {
@@ -112,12 +113,14 @@ describe('receiveGoodsSchema', () => {
           quantity_received: 1.5,
           unit_price: 12.25,
           quality_status: 'accepted',
+          warehouse_id: warehouseId,
         },
       ],
     })
 
     expect(parsed.lines).toHaveLength(1)
     expect(parsed.lines[0]?.quality_status).toBe('accepted')
+    expect(parsed.lines[0]?.warehouse_id).toBe(warehouseId)
   })
 
   it('exige al menos una línea', () => {

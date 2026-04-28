@@ -106,6 +106,17 @@ Leyenda: ✅ puede · ⚠️ solo lectura · ❌ denegado
 | Reservar stock para evento | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ⚠️ |
 | Forensics (get_stock_forensics) | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 
+### Warehouse
+
+| Acción | superadmin | direction | admin | head_chef | sous_chef | cook | commercial | procurement | warehouse |
+|---|---|---|---|---|---|---|---|---|---|
+| Ver stock por almacén | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Crear almacén | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ |
+| Editar almacén | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ |
+| Definir almacén default | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Archivar almacén | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Transferir stock entre almacenes | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ✅ |
+
 ### Producción
 
 | Acción | superadmin | direction | admin | head_chef | sous_chef | cook | commercial | procurement | warehouse |

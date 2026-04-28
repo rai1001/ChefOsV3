@@ -68,6 +68,12 @@ export function InventoryProductDetail({
               </Link>
             </Button>
             <Button asChild variant="secondary" size="sm">
+              <Link href="/inventory/transfer">
+                <PackageCheck className="h-4 w-4" aria-hidden="true" />
+                Transferir
+              </Link>
+            </Button>
+            <Button asChild variant="secondary" size="sm">
               <Link href={`/inventory/products/${productId}/adjustment`}>
                 <SlidersHorizontal className="h-4 w-4" aria-hidden="true" />
                 Ajuste
@@ -128,6 +134,7 @@ export function InventoryProductDetail({
                 >
                   <th className="kpi-label px-3 py-2">FIFO</th>
                   <th className="kpi-label px-3 py-2">Recibido</th>
+                  <th className="kpi-label px-3 py-2">Almacén</th>
                   <th className="kpi-label px-3 py-2">Disponible</th>
                   <th className="kpi-label px-3 py-2">Coste</th>
                   <th className="kpi-label px-3 py-2">Caducidad</th>
@@ -145,6 +152,7 @@ export function InventoryProductDetail({
                     <td className="px-3 py-2 font-data">
                       {new Date(lot.received_at).toLocaleString('es-ES')}
                     </td>
+                    <td className="px-3 py-2">{lot.warehouse_name ?? '—'}</td>
                     <td className="px-3 py-2 font-data">
                       {numberFormatter.format(lot.quantity_remaining)}{' '}
                       {lot.unit_abbreviation ?? ''}
@@ -209,6 +217,7 @@ export function InventoryProductDetail({
                 >
                   <th className="kpi-label px-3 py-2">Fecha</th>
                   <th className="kpi-label px-3 py-2">Tipo</th>
+                  <th className="kpi-label px-3 py-2">Almacén</th>
                   <th className="kpi-label px-3 py-2">Cantidad</th>
                   <th className="kpi-label px-3 py-2">Coste unit.</th>
                   <th className="kpi-label px-3 py-2">Total</th>
@@ -228,6 +237,7 @@ export function InventoryProductDetail({
                     <td className="px-3 py-2">
                       <InventoryMovementBadge kind={movement.kind} />
                     </td>
+                    <td className="px-3 py-2">{movement.warehouse_name ?? '—'}</td>
                     <td className="px-3 py-2 font-data">
                       {numberFormatter.format(movement.quantity)}{' '}
                       {movement.unit_abbreviation ?? ''}

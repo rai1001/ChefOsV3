@@ -74,6 +74,7 @@ export type TransitionPurchaseOrderInput = z.infer<
 export const receiveGoodsLineSchema = z
   .object({
     purchase_order_line_id: uuidString(),
+    warehouse_id: uuidString().nullable().optional(),
     quantity_received: z.number().min(0, 'Cantidad recibida debe ser >= 0'),
     unit_price: z.number().min(0, 'Precio unitario debe ser >= 0'),
     quality_status: z.enum(GR_QUALITY_STATUSES).default('accepted'),
