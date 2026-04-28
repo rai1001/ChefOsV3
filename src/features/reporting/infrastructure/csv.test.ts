@@ -32,4 +32,25 @@ describe('formatCsv', () => {
 
     expect(csv.trimEnd()).toBe('\ufeffNombre,Valor\r\nSin dato,')
   })
+
+  it('neutraliza prefijos de fórmula para evitar inyección en hojas de cálculo', () => {
+    const csv = formatCsv({
+      columns: [
+        { key: 'recipe', header: 'recipe' },
+        { key: 'product', header: 'product' },
+        { key: 'source', header: 'source' },
+      ],
+      rows: [
+        {
+          recipe: '=HYPERLINK("https://attacker.test")',
+          product: '+SUM(1,2)',
+          source: '@cmd',
+        },
+      ],
+    })
+
+    expect(csv).toContain(`"'=HYPERLINK(""https://attacker.test"")"`)
+    expect(csv).toContain(`"'+SUM(1,2)"`)
+    expect(csv).toContain("'@cmd")
+  })
 })
