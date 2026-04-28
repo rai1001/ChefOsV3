@@ -137,7 +137,6 @@ export function MappingTable({ hotelId }: { hotelId: string }) {
               {result.failed.map((f, i) => (
                 <li key={i}>
                   {f.ingredient_name} — {f.reason}
-                  {f.error ? ` (${f.error})` : ''}
                 </li>
               ))}
             </ul>
