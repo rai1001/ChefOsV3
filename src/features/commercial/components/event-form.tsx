@@ -77,8 +77,8 @@ export function EventForm({ hotelId, event }: Props) {
         const newId = await create.mutateAsync(parsed.data)
         router.push(`/events/${newId}`)
       }
-    } catch (err) {
-      setFormError(err instanceof Error ? err.message : 'Error guardando evento')
+    } catch {
+      setFormError('No se pudo guardar el evento. Inténtalo de nuevo.')
     }
   }
 

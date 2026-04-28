@@ -48,8 +48,8 @@ export function ClientForm({ hotelId }: { hotelId: string }) {
     try {
       await create.mutateAsync(parsed.data)
       router.push('/events/clients')
-    } catch (err) {
-      setFormError(err instanceof Error ? err.message : 'Error creando cliente')
+    } catch {
+      setFormError('No se pudo crear el cliente. Inténtalo de nuevo.')
     }
   }
 
