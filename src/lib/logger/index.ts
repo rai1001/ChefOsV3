@@ -60,7 +60,7 @@ function emit(level: LogLevel, message: string, context?: LogContext): void {
   } else if (level === 'debug') {
     console.debug(serialized)
   } else {
-    console.log(serialized)
+    console.info(serialized)
   }
 }
 
