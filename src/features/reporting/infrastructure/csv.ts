@@ -18,11 +18,15 @@ function serializeCsvValue(value: unknown): string {
         ? String(value)
         : String(value)
 
-  if (/[",\r\n]/.test(serialized)) {
-    return `"${serialized.replaceAll('"', '""')}"`
+  const formulaHardened = /^[\t ]*[=+\-@]/.test(serialized)
+    ? `'${serialized}`
+    : serialized
+
+  if (/[",\r\n]/.test(formulaHardened)) {
+    return `"${formulaHardened.replaceAll('"', '""')}"`
   }
 
-  return serialized
+  return formulaHardened
 }
 
 export function formatCsv<Row extends object>({
