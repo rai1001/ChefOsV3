@@ -9,6 +9,7 @@ export const inventoryLotSchema = z
   .object({
     id: uuidString(),
     hotel_id: uuidString(),
+    warehouse_id: uuidString().nullable(),
     product_id: uuidString(),
     goods_receipt_line_id: uuidString().nullable(),
     quantity_received: z.number().positive(),
@@ -29,6 +30,7 @@ export const inventoryLotSchema = z
 export type InventoryLot = z.infer<typeof inventoryLotSchema>
 
 export interface InventoryLotDetail extends InventoryLot {
+  warehouse_name: string | null
   product_name: string | null
   product_sku: string | null
   unit_name: string | null

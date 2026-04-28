@@ -22,6 +22,7 @@ export interface InventorySnapshotFilter {
   hotelId: string
   categoryId?: string | null
   supplierId?: string | null
+  warehouseId?: string | null
   onlyWithStock?: boolean
 }
 

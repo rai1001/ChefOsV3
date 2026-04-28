@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useMemo, useState, type FormEvent } from 'react'
 import { Button } from '@/components/ui/button'
+import { useWarehouses } from '@/features/warehouse'
 import { useConsumeInventory } from '../application/use-consume-inventory'
 import { useInventorySnapshot } from '../application/use-inventory-snapshot'
 import { useRegisterAdjustment } from '../application/use-register-adjustment'
@@ -69,10 +70,16 @@ export function InventoryActionForm({
   const router = useRouter()
   const [quantity, setQuantity] = useState('')
   const [note, setNote] = useState('')
+  const [warehouseId, setWarehouseId] = useState('')
   const [formError, setFormError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
 
-  const snapshot = useInventorySnapshot({ hotelId, onlyWithStock: false })
+  const snapshot = useInventorySnapshot({
+    hotelId,
+    warehouseId: warehouseId || undefined,
+    onlyWithStock: false,
+  })
+  const warehouses = useWarehouses(hotelId, { activeOnly: true })
   const consume = useConsumeInventory()
   const waste = useRegisterWaste()
   const adjustment = useRegisterAdjustment()
@@ -109,6 +116,7 @@ export function InventoryActionForm({
         const result = await consume.mutateAsync({
           hotel_id: hotelId,
           product_id: productId,
+          warehouse_id: warehouseId || null,
           quantity: parsedQuantity,
           origin: {
             source: 'manual_inventory',
@@ -122,6 +130,7 @@ export function InventoryActionForm({
         const result = await waste.mutateAsync({
           hotel_id: hotelId,
           product_id: productId,
+          warehouse_id: warehouseId || null,
           quantity: parsedQuantity,
           reason: note.trim(),
         })
@@ -132,6 +141,7 @@ export function InventoryActionForm({
         const result = await adjustment.mutateAsync({
           hotel_id: hotelId,
           product_id: productId,
+          warehouse_id: warehouseId || null,
           quantity_delta: parsedQuantity,
           reason: note.trim(),
         })
@@ -199,7 +209,29 @@ export function InventoryActionForm({
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-3">
+        <div>
+          <label htmlFor="inventory-action-warehouse" className="kpi-label mb-1 block">
+            Almacén
+          </label>
+          <select
+            id="inventory-action-warehouse"
+            value={warehouseId}
+            onChange={(event) => setWarehouseId(event.target.value)}
+            className="w-full rounded border px-3 py-2 text-sm"
+            style={{
+              borderColor: 'var(--color-border)',
+              background: 'var(--color-bg-input)',
+            }}
+          >
+            <option value="">Global hotel</option>
+            {(warehouses.data ?? []).map((warehouse) => (
+              <option key={warehouse.id} value={warehouse.id}>
+                {warehouse.name}
+              </option>
+            ))}
+          </select>
+        </div>
         <div>
           <label htmlFor="inventory-action-quantity" className="kpi-label mb-1 block">
             {copy.quantityLabel}

@@ -1216,6 +1216,44 @@ Revisar en `compliance-advanced` si se aprueba PDF, firma digital, evidencias co
 
 ---
 
+### ADR-0023 — Warehouse como dimensión operativa sobre hotel
+
+**Fecha**: 2026-04-28
+**Estado**: aceptada
+**Módulo / área afectada**: `warehouse`, `inventory`, `procurement`, `production`, `compliance`, `supabase/migrations`
+
+#### Contexto
+
+ChefOS v3 asumía un único almacén virtual por hotel. Eurostars opera con varias ubicaciones físicas (economato, frío, congelado, catering y cocina de producción), por lo que `hotel_id` ya no basta para explicar dónde está cada lote ni desde dónde se consume producción.
+
+#### Opciones consideradas
+
+1. **Módulo `warehouse` + `warehouse_id` nullable/backfilled** — introduce una dimensión explícita sin romper callers existentes.
+2. **Duplicar inventario por almacén dentro de `inventory`** — evita módulo nuevo, pero mezcla ownership de ubicación con FIFO/movimientos.
+3. **Mantener almacén implícito y usar notas/ubicación textual** — cero migración, pero no permite filtros, transferencias ni trazabilidad fiable.
+
+#### Decisión
+
+Opción 1. Se añade `warehouse` como módulo oficial y tabla `v3_warehouses` con un default por hotel. `v3_inventory_lots`, `v3_inventory_movements` y `v3_compliance_equipment` reciben `warehouse_id` nullable con backfill al default. Las RPCs existentes aceptan `p_warehouse_id` opcional cuando aplica y conservan compatibilidad hacia atrás. Las transferencias se resuelven mediante `v3_transfer_lot_quantity`, que registra movimientos append-only y hace split de lote si la cantidad transferida es parcial.
+
+#### Razón
+
+La ubicación física es un concepto transversal, pero no debe absorber el ownership de inventory, procurement, production ni compliance. Un módulo específico permite contratos públicos claros y evita que cada módulo invente su propia representación de almacén.
+
+#### Consecuencias
+
+- `warehouse` pasa a ser módulo oficial número 18.
+- FIFO sigue siendo por hotel si `p_warehouse_id` es `null`; si se informa, se restringe al almacén indicado.
+- No hay warehouse-level access control: los permisos siguen siendo por rol dentro del hotel.
+- Archivar un almacén queda bloqueado si es default o si contiene stock activo.
+- Routing/ETA, capacity limits, auto-balancing y transferencias cross-hotel quedan fuera.
+
+#### Revisable
+
+Revisar tras uso real si se necesitan permisos por almacén, capacidades máximas o routing de transferencias. Cualquiera de esos cambios requiere ADR nueva.
+
+---
+
 ## Mantenimiento
 
 Cada ADR debe poder leerse en <5 minutos. Si una decisión requiere más, dividirla en varias ADRs.

@@ -144,6 +144,7 @@ export async function checkProductionFeasibility(
   const { data, error } = await supabase.rpc('v3_check_production_feasibility', {
     p_hotel_id: input.hotel_id,
     p_production_order_id: input.production_order_id,
+    p_warehouse_id: input.warehouse_id ?? null,
   })
 
   if (error) mapProductionRpcError(error, input.production_order_id)
@@ -157,6 +158,7 @@ export async function startProduction(
   const { data, error } = await supabase.rpc('v3_start_production', {
     p_hotel_id: input.hotel_id,
     p_production_order_id: input.production_order_id,
+    p_warehouse_id: input.warehouse_id ?? null,
   })
 
   if (error) mapProductionRpcError(error, input.production_order_id, 'in_progress')

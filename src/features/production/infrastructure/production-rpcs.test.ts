@@ -8,6 +8,7 @@ import {
 const hotelId = '22222222-2222-4222-8222-222222222222'
 const recipeId = '33333333-3333-4333-8333-333333333333'
 const orderId = '44444444-4444-4444-8444-444444444444'
+const warehouseId = '99999999-9999-4999-8999-999999999999'
 
 describe('production RPC adapters', () => {
   it('crea orden de producción con snapshot de líneas', async () => {
@@ -78,8 +79,14 @@ describe('production RPC adapters', () => {
     const result = await checkProductionFeasibility(supabase as never, {
       hotel_id: hotelId,
       production_order_id: orderId,
+      warehouse_id: warehouseId,
     })
 
+    expect(supabase.rpc).toHaveBeenCalledWith('v3_check_production_feasibility', {
+      p_hotel_id: hotelId,
+      p_production_order_id: orderId,
+      p_warehouse_id: warehouseId,
+    })
     expect(result.feasible).toBe(false)
     expect(result.deficits[0]?.missing).toBe(7.5)
   })
@@ -143,6 +150,50 @@ describe('production RPC adapters', () => {
           },
         ],
       },
+    })
+  })
+
+  it('envía warehouse_id opcional al iniciar producción', async () => {
+    const supabase = {
+      rpc: vi.fn().mockResolvedValue({
+        data: {
+          order: {
+            id: orderId,
+            hotel_id: hotelId,
+            recipe_id: recipeId,
+            recipe_name: 'Fondo oscuro',
+            servings: 80,
+            status: 'in_progress',
+            scheduled_at: null,
+            started_at: '2026-04-28T10:00:00.000Z',
+            completed_at: null,
+            cancelled_at: null,
+            cancellation_reason: null,
+            estimated_total_cost: 12,
+            actual_total_cost: 10,
+            notes: null,
+            created_by: null,
+            created_at: '2026-04-28T09:00:00.000Z',
+            updated_at: '2026-04-28T10:00:00.000Z',
+          },
+          lines: [],
+          movements: [],
+          subrecipe_productions: [],
+        },
+        error: null,
+      }),
+    }
+
+    await startProduction(supabase as never, {
+      hotel_id: hotelId,
+      production_order_id: orderId,
+      warehouse_id: warehouseId,
+    })
+
+    expect(supabase.rpc).toHaveBeenCalledWith('v3_start_production', {
+      p_hotel_id: hotelId,
+      p_production_order_id: orderId,
+      p_warehouse_id: warehouseId,
     })
   })
 })

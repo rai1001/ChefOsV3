@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { ClipboardCheck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useProducts, useUnits } from '@/features/catalog'
+import { useWarehouses } from '@/features/warehouse'
 import { usePurchaseOrder } from '../application/use-purchase-order'
 import { usePurchaseOrderLines } from '../application/use-purchase-order-lines'
 import { useReceiveGoods } from '../application/use-receive-goods'
@@ -19,6 +20,7 @@ export function ReceiveGoodsForm({ hotelId, orderId }: { hotelId: string; orderI
   const lines = usePurchaseOrderLines(hotelId, orderId)
   const products = useProducts({ hotelId, activeOnly: false }, { pageSize: 200 })
   const units = useUnits(hotelId)
+  const warehouses = useWarehouses(hotelId, { activeOnly: true })
   const receive = useReceiveGoods()
   const [qualityByLine, setQualityByLine] = useState<Record<string, GoodsReceiptQualityStatus>>({})
   const [notes, setNotes] = useState('')
@@ -39,6 +41,13 @@ export function ReceiveGoodsForm({ hotelId, orderId }: { hotelId: string; orderI
         .filter((entry) => entry.pendingQuantity > 0),
     [lines.data]
   )
+  const defaultWarehouseId = useMemo(
+    () =>
+      (warehouses.data ?? []).find((warehouse) => warehouse.is_default)?.id ??
+      warehouses.data?.[0]?.id ??
+      '',
+    [warehouses.data]
+  )
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -58,6 +67,7 @@ export function ReceiveGoodsForm({ hotelId, orderId }: { hotelId: string; orderI
         lot_number: String(formData.get(`${line.id}:lot`) ?? '').trim() || null,
         expiry_date: String(formData.get(`${line.id}:expiry`) ?? '') || null,
         notes: String(formData.get(`${line.id}:notes`) ?? '').trim() || null,
+        warehouse_id: String(formData.get(`${line.id}:warehouse`) ?? '').trim() || null,
       })),
     }
 
@@ -132,7 +142,7 @@ export function ReceiveGoodsForm({ hotelId, orderId }: { hotelId: string; orderI
                   <span className="badge-status neutral font-data">{line.id.slice(0, 8)}</span>
                 </div>
 
-                <div className="grid gap-3 md:grid-cols-6">
+                <div className="grid gap-3 md:grid-cols-7">
                   <div>
                     <label htmlFor={`${lineId}-quantity`} className="kpi-label mb-1 block">
                       Cantidad
@@ -193,6 +203,29 @@ export function ReceiveGoodsForm({ hotelId, orderId }: { hotelId: string; orderI
                       {GR_QUALITY_STATUSES.map((status) => (
                         <option key={status} value={status}>
                           {status}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label htmlFor={`${lineId}-warehouse`} className="kpi-label mb-1 block">
+                      Almacén
+                    </label>
+                    <select
+                      id={`${lineId}-warehouse`}
+                      name={`${line.id}:warehouse`}
+                      defaultValue={defaultWarehouseId}
+                      className="w-full rounded border px-3 py-2 text-sm"
+                      style={{
+                        borderColor: 'var(--color-border)',
+                        background: 'var(--color-bg-card)',
+                      }}
+                    >
+                      <option value="">Default hotel</option>
+                      {(warehouses.data ?? []).map((warehouse) => (
+                        <option key={warehouse.id} value={warehouse.id}>
+                          {warehouse.name}
                         </option>
                       ))}
                     </select>

@@ -1,16 +1,16 @@
 /**
- * Valida que los arrays de roles en migraciones compliance estén alineados
+ * Valida que los arrays de roles en migraciones cubiertas estén alineados
  * con `.ai/specs/permissions-matrix.md` (hallazgo C1 hardening-2 + parser
- * solicitado por hardening-2b).
+ * solicitado por hardening-2b, extendido en sprint-11 warehouse).
  *
  * Ejecuta:
  *   npm run validate:permissions
  *
  * Falla con exit code 1 si:
- *   - Una RPC compliance permite un rol que la matriz marca ❌
+ *   - Una RPC cubierta permite un rol que la matriz marca ❌
  *   - O usa `null` en lugar de whitelist para una acción que la matriz restringe
  *
- * Solo cubre RPCs compliance APPCC. Para extender a otros módulos, añadir
+ * Solo cubre RPCs mapeadas explícitamente. Para extender a otros módulos, añadir
  * entradas a `RPC_ACTION_MAP`.
  */
 
@@ -41,6 +41,12 @@ const RPC_ACTION_MAP: Record<string, string> = {
   v3_log_equipment_temperature: 'Log temperaturas',
   v3_complete_cleaning_check: 'Registrar APPCC',
   v3_trace_lot: 'Trace lot (auditoría)',
+  v3_get_stock_by_warehouse: 'Ver stock por almacén',
+  v3_create_warehouse: 'Crear almacén',
+  v3_update_warehouse: 'Editar almacén',
+  v3_set_default_warehouse: 'Definir almacén default',
+  v3_archive_warehouse: 'Archivar almacén',
+  v3_transfer_lot_quantity: 'Transferir stock entre almacenes',
 }
 
 function parseMatrix(matrixMarkdown: string): MatrixEntry[] {
@@ -187,10 +193,11 @@ function main() {
   const matrixPath = join(root, '.ai/specs/permissions-matrix.md')
   const matrix = parseMatrix(readFileSync(matrixPath, 'utf8'))
 
-  // Migraciones compliance a verificar (orden cronológico: la última gana).
+  // Migraciones cubiertas a verificar (orden cronológico: la última gana).
   const migrationFiles = [
     'supabase/migrations/00082_v3_compliance_appcc.sql',
     'supabase/migrations/00084_v3_compliance_permissions_fix.sql',
+    'supabase/migrations/00087_v3_warehouses.sql',
   ]
 
   // Acumulamos por RPC: la última usage observada gana (mismo orden que aplicaría
@@ -210,7 +217,7 @@ function main() {
   )
 
   if (violations.length === 0) {
-    console.log('✅ permissions-matrix.md alineado con migraciones compliance')
+    console.log('✅ permissions-matrix.md alineado con migraciones cubiertas')
     console.log(`   ${lastUsageByRpc.size} RPCs verificadas`)
     process.exit(0)
   }

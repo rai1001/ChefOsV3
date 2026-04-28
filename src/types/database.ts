@@ -4628,6 +4628,7 @@ export type Database = {
           min_temperature_c: number
           name: string
           updated_at: string
+          warehouse_id: string | null
         }
         Insert: {
           created_at?: string
@@ -4641,6 +4642,7 @@ export type Database = {
           min_temperature_c: number
           name: string
           updated_at?: string
+          warehouse_id?: string | null
         }
         Update: {
           created_at?: string
@@ -4654,6 +4656,7 @@ export type Database = {
           min_temperature_c?: number
           name?: string
           updated_at?: string
+          warehouse_id?: string | null
         }
         Relationships: [
           {
@@ -4662,6 +4665,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v3_hotels"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_compliance_equipment_warehouse_hotel_fkey"
+            columns: ["hotel_id", "warehouse_id"]
+            isOneToOne: false
+            referencedRelation: "v3_warehouses"
+            referencedColumns: ["hotel_id", "id"]
           },
         ]
       }
@@ -5439,6 +5449,7 @@ export type Database = {
           unit_cost: number
           unit_id: string
           updated_at: string
+          warehouse_id: string | null
         }
         Insert: {
           created_at?: string
@@ -5456,6 +5467,7 @@ export type Database = {
           unit_cost: number
           unit_id: string
           updated_at?: string
+          warehouse_id?: string | null
         }
         Update: {
           created_at?: string
@@ -5473,6 +5485,7 @@ export type Database = {
           unit_cost?: number
           unit_id?: string
           updated_at?: string
+          warehouse_id?: string | null
         }
         Relationships: [
           {
@@ -5531,6 +5544,13 @@ export type Database = {
             referencedRelation: "v3_units_of_measure"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "v3_inventory_lots_warehouse_hotel_fkey"
+            columns: ["hotel_id", "warehouse_id"]
+            isOneToOne: false
+            referencedRelation: "v3_warehouses"
+            referencedColumns: ["hotel_id", "id"]
+          },
         ]
       }
       v3_inventory_movements: {
@@ -5550,6 +5570,7 @@ export type Database = {
           total_cost: number | null
           unit_cost: number
           unit_id: string
+          warehouse_id: string | null
         }
         Insert: {
           created_at?: string
@@ -5567,6 +5588,7 @@ export type Database = {
           total_cost?: number | null
           unit_cost: number
           unit_id: string
+          warehouse_id?: string | null
         }
         Update: {
           created_at?: string
@@ -5584,6 +5606,7 @@ export type Database = {
           total_cost?: number | null
           unit_cost?: number
           unit_id?: string
+          warehouse_id?: string | null
         }
         Relationships: [
           {
@@ -5662,6 +5685,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v3_units_of_measure"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_inventory_movements_warehouse_hotel_fkey"
+            columns: ["hotel_id", "warehouse_id"]
+            isOneToOne: false
+            referencedRelation: "v3_warehouses"
+            referencedColumns: ["hotel_id", "id"]
           },
         ]
       }
@@ -7674,6 +7704,50 @@ export type Database = {
           },
         ]
       }
+      v3_warehouses: {
+        Row: {
+          created_at: string
+          hotel_id: string
+          id: string
+          is_active: boolean
+          is_default: boolean
+          name: string
+          notes: string | null
+          updated_at: string
+          warehouse_type: string
+        }
+        Insert: {
+          created_at?: string
+          hotel_id: string
+          id?: string
+          is_active?: boolean
+          is_default?: boolean
+          name: string
+          notes?: string | null
+          updated_at?: string
+          warehouse_type: string
+        }
+        Update: {
+          created_at?: string
+          hotel_id?: string
+          id?: string
+          is_active?: boolean
+          is_default?: boolean
+          name?: string
+          notes?: string | null
+          updated_at?: string
+          warehouse_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "v3_warehouses_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "v3_hotels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       waste_records: {
         Row: {
           created_at: string
@@ -9051,6 +9125,10 @@ export type Database = {
         Args: { p_hotel_id: string; p_recipe_id: string }
         Returns: undefined
       }
+      v3_archive_warehouse: {
+        Args: { p_hotel_id: string; p_warehouse_id: string }
+        Returns: Json
+      }
       v3_calculate_event_cost_estimate: {
         Args: { p_event_id: string; p_hotel_id: string }
         Returns: number
@@ -9089,7 +9167,11 @@ export type Database = {
             Returns: Database["public"]["Enums"]["v3_app_role"]
           }
       v3_check_production_feasibility: {
-        Args: { p_hotel_id: string; p_production_order_id: string }
+        Args: {
+          p_hotel_id: string
+          p_production_order_id: string
+          p_warehouse_id?: string
+        }
         Returns: Json
       }
       v3_complete_cleaning_check: {
@@ -9115,6 +9197,7 @@ export type Database = {
           p_hotel_id: string
           p_recipe_id: string
           p_target_servings: number
+          p_warehouse_id?: string
         }
         Returns: {
           available: number
@@ -9138,6 +9221,7 @@ export type Database = {
           p_origin: Json
           p_product_id: string
           p_quantity: number
+          p_warehouse_id?: string
         }
         Returns: Json
       }
@@ -9217,6 +9301,15 @@ export type Database = {
         }
         Returns: Json
       }
+      v3_create_warehouse: {
+        Args: {
+          p_hotel_id: string
+          p_name: string
+          p_notes?: string
+          p_warehouse_type: string
+        }
+        Returns: Json
+      }
       v3_decrement_inventory_fifo: {
         Args: {
           p_created_by?: string
@@ -9226,6 +9319,7 @@ export type Database = {
           p_origin?: Json
           p_product_id: string
           p_quantity: number
+          p_warehouse_id?: string
         }
         Returns: Json
       }
@@ -9308,6 +9402,7 @@ export type Database = {
           total_cost: number | null
           unit_cost: number
           unit_id: string
+          warehouse_id: string | null
         }[]
         SetofOptions: {
           from: "*"
@@ -9317,7 +9412,7 @@ export type Database = {
         }
       }
       v3_get_inventory_snapshot: {
-        Args: { p_hotel_id: string }
+        Args: { p_hotel_id: string; p_warehouse_id?: string }
         Returns: {
           category_id: string
           last_received_at: string
@@ -9339,6 +9434,10 @@ export type Database = {
       }
       v3_get_recipe_tech_sheet: {
         Args: { p_hotel_id: string; p_recipe_id: string }
+        Returns: Json
+      }
+      v3_get_stock_by_warehouse: {
+        Args: { p_hotel_id: string; p_product_id?: string }
         Returns: Json
       }
       v3_get_team_members: { Args: { p_hotel_id: string }; Returns: Json }
@@ -9401,6 +9500,7 @@ export type Database = {
           p_origin?: Json
           p_recipe_id: string
           p_target_quantity: number
+          p_warehouse_id?: string
         }
         Returns: Json
       }
@@ -9432,11 +9532,16 @@ export type Database = {
           p_product_id: string
           p_quantity_delta: number
           p_reason: string
+          p_warehouse_id?: string
         }
         Returns: Json
       }
       v3_register_lot_from_receipt: {
-        Args: { p_goods_receipt_line_id: string; p_hotel_id: string }
+        Args: {
+          p_goods_receipt_line_id: string
+          p_hotel_id: string
+          p_warehouse_id?: string
+        }
         Returns: string
       }
       v3_register_waste: {
@@ -9445,6 +9550,7 @@ export type Database = {
           p_product_id: string
           p_quantity: number
           p_reason: string
+          p_warehouse_id?: string
         }
         Returns: Json
       }
@@ -9533,6 +9639,14 @@ export type Database = {
         Args: { p_hotel_id: string; p_mapping: Json }
         Returns: Json
       }
+      v3_resolve_warehouse_id: {
+        Args: {
+          p_hotel_id: string
+          p_require_active?: boolean
+          p_warehouse_id?: string
+        }
+        Returns: string
+      }
       v3_review_ocr_job: {
         Args: { p_hotel_id: string; p_job_id: string; p_reviewed_payload: Json }
         Returns: undefined
@@ -9560,6 +9674,10 @@ export type Database = {
               unit_id: string
             }[]
           }
+      v3_set_default_warehouse: {
+        Args: { p_hotel_id: string; p_warehouse_id: string }
+        Returns: Json
+      }
       v3_set_ocr_job_extracted: {
         Args: { p_hotel_id: string; p_job_id: string; p_payload: Json }
         Returns: undefined
@@ -9574,7 +9692,11 @@ export type Database = {
         Returns: undefined
       }
       v3_start_production: {
-        Args: { p_hotel_id: string; p_production_order_id: string }
+        Args: {
+          p_hotel_id: string
+          p_production_order_id: string
+          p_warehouse_id?: string
+        }
         Returns: Json
       }
       v3_submit_recipe_for_review: {
@@ -9591,6 +9713,16 @@ export type Database = {
       }
       v3_trace_lot: {
         Args: { p_hotel_id: string; p_lot_id: string }
+        Returns: Json
+      }
+      v3_transfer_lot_quantity: {
+        Args: {
+          p_hotel_id: string
+          p_lot_id: string
+          p_notes?: string
+          p_quantity: number
+          p_to_warehouse_id: string
+        }
         Returns: Json
       }
       v3_transition_event: {
@@ -9628,6 +9760,10 @@ export type Database = {
           p_hotel_id: string
         }
         Returns: undefined
+      }
+      v3_update_warehouse: {
+        Args: { p_hotel_id: string; p_payload: Json; p_warehouse_id: string }
+        Returns: Json
       }
       v3_validate_event_transition: {
         Args: {

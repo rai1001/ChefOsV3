@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { CheckCircle2, ClipboardCheck, Play, XCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { useWarehouses } from '@/features/warehouse'
 import { ProductionInsufficientStockError } from '../domain/errors'
 import {
   canCancelProductionOrder,
@@ -37,7 +38,10 @@ export function ProductionOrderDetail({
   const feasibility = useCheckFeasibility()
   const startProduction = useStartProduction()
   const completeProduction = useCompleteProduction()
+  const warehouses = useWarehouses(hotelId, { activeOnly: true })
   const [startError, setStartError] = useState<ProductionInsufficientStockError | null>(null)
+  const [warehouseId, setWarehouseId] = useState<string | null>(null)
+  const [checkedWarehouseId, setCheckedWarehouseId] = useState<string | null>(null)
 
   if (detail.isLoading) return <p className="kpi-label">Cargando orden...</p>
   if (detail.error) return <p className="text-danger">Error: {detail.error.message}</p>
@@ -49,14 +53,24 @@ export function ProductionOrderDetail({
   const subrecipeChain =
     startError?.feasibility?.subrecipe_chain ?? feasibilityData?.subrecipe_chain ?? []
   const canStart = canStartProductionOrder(order.status)
-  const canStartNow = canStart && feasibilityData?.feasible === true
+  const defaultWarehouseId =
+    (warehouses.data ?? []).find((warehouse) => warehouse.is_default)?.id ??
+    warehouses.data?.[0]?.id ??
+    ''
+  const selectedWarehouseId = warehouseId ?? defaultWarehouseId
+  const canStartNow =
+    canStart &&
+    feasibilityData?.feasible === true &&
+    checkedWarehouseId === selectedWarehouseId
 
   const checkStock = async () => {
     setStartError(null)
     await feasibility.mutateAsync({
       hotel_id: hotelId,
       production_order_id: orderId,
+      warehouse_id: selectedWarehouseId || null,
     })
+    setCheckedWarehouseId(selectedWarehouseId)
   }
 
   const start = async () => {
@@ -65,6 +79,7 @@ export function ProductionOrderDetail({
       await startProduction.mutateAsync({
         hotel_id: hotelId,
         production_order_id: orderId,
+        warehouse_id: selectedWarehouseId || null,
       })
     } catch (error) {
       if (error instanceof ProductionInsufficientStockError) {
@@ -112,6 +127,36 @@ export function ProductionOrderDetail({
             </p>
           </div>
         </div>
+
+        {canStart ? (
+          <div className="mt-4 max-w-sm">
+            <label htmlFor="production-start-warehouse" className="kpi-label mb-1 block">
+              Almacén origen
+            </label>
+            <select
+              id="production-start-warehouse"
+              value={selectedWarehouseId}
+              onChange={(event) => {
+                setWarehouseId(event.target.value)
+                setCheckedWarehouseId(null)
+                setStartError(null)
+                feasibility.reset()
+              }}
+              className="w-full rounded border px-3 py-2 text-sm"
+              style={{
+                borderColor: 'var(--color-border)',
+                background: 'var(--color-bg-input)',
+              }}
+            >
+              <option value="">Global hotel</option>
+              {(warehouses.data ?? []).map((warehouse) => (
+                <option key={warehouse.id} value={warehouse.id}>
+                  {warehouse.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        ) : null}
 
         <div className="mt-4 flex flex-wrap gap-2">
           {canStart ? (

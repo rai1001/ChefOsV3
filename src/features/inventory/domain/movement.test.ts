@@ -24,6 +24,7 @@ describe('inventoryMovementSchema', () => {
       id: '11111111-1111-1111-1111-111111111111',
       hotel_id: '22222222-2222-2222-2222-222222222222',
       product_id: '33333333-3333-3333-3333-333333333333',
+      warehouse_id: '99999999-9999-4999-8999-999999999999',
       lot_id: '44444444-4444-4444-4444-444444444444',
       kind: 'consume',
       quantity: 2,
@@ -38,6 +39,7 @@ describe('inventoryMovementSchema', () => {
       created_at: '2026-04-26T10:00:00.000Z',
     })
 
+    expect(movement.warehouse_id).toBe('99999999-9999-4999-8999-999999999999')
     expect(movement.total_cost).toBe(20)
   })
 })

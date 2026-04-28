@@ -35,6 +35,7 @@ export async function consumeInventory(
     p_product_id: input.product_id,
     p_quantity: input.quantity,
     p_origin: input.origin,
+    p_warehouse_id: input.warehouse_id ?? null,
   })
 
   if (error) {
@@ -56,6 +57,7 @@ export async function registerWaste(
     p_product_id: input.product_id,
     p_quantity: input.quantity,
     p_reason: input.reason,
+    p_warehouse_id: input.warehouse_id ?? null,
   })
 
   if (error) {
@@ -77,6 +79,7 @@ export async function registerAdjustment(
     p_product_id: input.product_id,
     p_quantity_delta: input.quantity_delta,
     p_reason: input.reason,
+    p_warehouse_id: input.warehouse_id ?? null,
   })
 
   if (error) {

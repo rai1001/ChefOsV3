@@ -2,7 +2,7 @@
 
 Control operativo de cocina multi-servicio. Reescritura DDD del dominio validado en v2.
 
-> Estado 2026-04-28: procurement PR/PO/GR/OCR en v3, inventory FIFO operativo, production orders/sub-recetas, reporting Sprint-09 y compliance APPCC Sprint-10 aplicados en Supabase.
+> Estado 2026-04-28: procurement PR/PO/GR/OCR en v3, inventory FIFO operativo con multi-almacén Sprint-11, production orders/sub-recetas, reporting Sprint-09 y compliance APPCC Sprint-10 aplicados en Supabase.
 
 ## Capability matrix (2026-04-28)
 
@@ -17,11 +17,12 @@ Control operativo de cocina multi-servicio. Reescritura DDD del dominio validado
 | catalog       | producción   | sprint-04   | productos, unidades, conversiones, suppliers, offers, mapping ingredients |
 | procurement   | producción   | sprint-05   | PR/PO/GR/OCR ✓; lotes vía hook inventory |
 | inventory     | producción   | sprint-06   | lotes FIFO, movimientos, consumo, merma y ajustes |
+| warehouse     | producción   | sprint-11   | almacenes por hotel, default warehouse, stock por almacén y transferencias |
 | production    | producción   | sprint-07/08 | órdenes monoreceta, escalado, viabilidad, cascada sub-recetas y consumo FIFO atómico |
 | reporting     | producción   | sprint-09   | dashboards read-only, food cost, mermas, top productos, precio y stock health |
 | compliance    | producción   | sprint-10   | APPCC: recepción, temperaturas, limpieza, trazabilidad y export CSV |
 | automation    | pendiente    | sprint-10   | workflows, alertas |
-| notifications | pendiente    | sprint-11   | in-app, push, email |
+| notifications | pendiente    | sprint-11+  | in-app, push, email |
 | integrations  | pendiente    | sprint-12   | TPV, ERP, delivery |
 | hr            | pendiente    | sprint-13   | turnos, fichaje |
 | agents        | pendiente    | sprint-14   | asistentes IA |
@@ -101,12 +102,24 @@ Flujo operativo sprint-06:
 - `/inventory` muestra snapshot por producto.
 - `/inventory/products/[id]` muestra lotes activos y movimientos.
 - Acciones manuales: consumo, merma y ajuste.
+- Sprint-11 añade filtro por almacén y `/inventory/transfer` para transferir cantidad entre almacenes.
 
 Smoke live:
 
 ```bash
 INVENTORY_E2E_LIVE=1 npm run test:e2e -- e2e/tests/inventory-fifo-flow.spec.ts --project=chromium
 ```
+
+## Warehouse
+
+Flujo operativo sprint-11:
+
+- `/warehouses` lista almacenes del hotel, default y archivados.
+- `/warehouses/new` crea almacenes operativos.
+- `/warehouses/[id]` muestra stock por almacén y acciones de default/archive.
+- `/inventory` permite filtrar snapshot por almacén.
+- `/inventory/transfer` hace transfer parcial o total de lotes, con movimientos `transfer_out` y `transfer_in`.
+- Recepción de mercancía, producción y equipos APPCC aceptan almacén opcional.
 
 ## Production
 

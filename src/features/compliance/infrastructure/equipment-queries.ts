@@ -46,6 +46,7 @@ export async function createEquipment(
     .from('v3_compliance_equipment')
     .insert({
       hotel_id: parsed.hotel_id,
+      warehouse_id: parsed.warehouse_id ?? null,
       name: parsed.name,
       equipment_type: parsed.equipment_type,
       location: parsed.location,
