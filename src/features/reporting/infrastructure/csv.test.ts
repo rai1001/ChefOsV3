@@ -53,4 +53,13 @@ describe('formatCsv', () => {
     expect(csv).toContain(`"'+SUM(1,2)"`)
     expect(csv).toContain("'@cmd")
   })
+
+  it('mantiene los números negativos como valores numéricos', () => {
+    const csv = formatCsv({
+      columns: [{ key: 'delta', header: 'delta' }],
+      rows: [{ delta: -12.5 }],
+    })
+
+    expect(csv.trimEnd()).toBe('\ufeffdelta\r\n-12.5')
+  })
 })

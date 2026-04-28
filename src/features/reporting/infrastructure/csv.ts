@@ -18,7 +18,7 @@ function serializeCsvValue(value: unknown): string {
         ? String(value)
         : String(value)
 
-  const formulaHardened = /^[\t ]*[=+\-@]/.test(serialized)
+  const formulaHardened = shouldHardenCsvFormula(serialized)
     ? `'${serialized}`
     : serialized
 
@@ -27,6 +27,13 @@ function serializeCsvValue(value: unknown): string {
   }
 
   return formulaHardened
+}
+
+function shouldHardenCsvFormula(value: string): boolean {
+  if (/^[\t ]*[=+@]/.test(value)) return true
+  if (!/^[\t ]*-/.test(value)) return false
+
+  return !/^[\t ]*-\d+(?:\.\d+)?(?:[eE][+-]?\d+)?[\t ]*$/.test(value)
 }
 
 export function formatCsv<Row extends object>({
