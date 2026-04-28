@@ -1,8 +1,8 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getActiveHotelOrNull } from '@/features/identity/server'
-import { createClient as createServerClient } from '@/lib/supabase/server'
-import type { Product } from '@/features/catalog'
+import { getProductServer } from '@/features/catalog/server'
+import { ProductNotFoundError } from '@/features/catalog'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@radix-ui/react-tabs'
 import { ProductForm } from '@/features/catalog/components/product-form'
 import { AliasManager } from '@/features/catalog/components/alias-manager'
@@ -18,15 +18,13 @@ export default async function ProductDetailPage({
   const activeHotel = await getActiveHotelOrNull()
   if (!activeHotel) return null
 
-  const supabase = await createServerClient()
-  const { data, error } = await supabase
-    .from('v3_products')
-    .select('*')
-    .eq('id', id)
-    .eq('hotel_id', activeHotel.hotel_id)
-    .maybeSingle()
-  if (error || !data) notFound()
-  const product = data as Product
+  let product
+  try {
+    product = await getProductServer(activeHotel.hotel_id, id)
+  } catch (error) {
+    if (error instanceof ProductNotFoundError) notFound()
+    throw error
+  }
 
   return (
     <main className="min-h-screen p-8">

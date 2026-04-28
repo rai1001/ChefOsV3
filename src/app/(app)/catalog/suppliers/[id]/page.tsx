@@ -1,8 +1,8 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getActiveHotelOrNull } from '@/features/identity/server'
-import { createClient as createServerClient } from '@/lib/supabase/server'
-import type { Supplier } from '@/features/catalog'
+import { getSupplierServer } from '@/features/catalog/server'
+import { SupplierNotFoundError } from '@/features/catalog'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@radix-ui/react-tabs'
 import { SupplierForm } from '@/features/catalog/components/supplier-form'
 import { SupplierConfigForm } from '@/features/catalog/components/supplier-config-form'
@@ -19,15 +19,13 @@ export default async function SupplierDetailPage({
   const activeHotel = await getActiveHotelOrNull()
   if (!activeHotel) return null
 
-  const supabase = await createServerClient()
-  const { data, error } = await supabase
-    .from('v3_suppliers')
-    .select('*')
-    .eq('id', id)
-    .eq('hotel_id', activeHotel.hotel_id)
-    .maybeSingle()
-  if (error || !data) notFound()
-  const supplier = data as Supplier
+  let supplier
+  try {
+    supplier = await getSupplierServer(activeHotel.hotel_id, id)
+  } catch (error) {
+    if (error instanceof SupplierNotFoundError) notFound()
+    throw error
+  }
 
   return (
     <main className="min-h-screen p-8">
