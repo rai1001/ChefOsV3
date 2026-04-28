@@ -50,7 +50,7 @@ describe('commercial components backend error disclosure', () => {
       data: { rows: [], hasMore: false },
       isLoading: false,
       error: null,
-    } as ReturnType<typeof useClients>)
+    } as unknown as ReturnType<typeof useClients>)
     vi.mocked(useCreateClient).mockReturnValue({
       isPending: false,
       mutateAsync: vi.fn().mockResolvedValue(undefined),
