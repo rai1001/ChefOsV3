@@ -105,7 +105,6 @@ declare
   v_total_count int := 0;
   v_errors jsonb := '[]'::jsonb;
   v_row_index int := 0;
-  v_error_message text;
 begin
   -- Validación membership: solo admin/direction/superadmin pueden importar.
   v_role := public.get_member_role(p_hotel_id);
@@ -180,12 +179,11 @@ begin
 
     exception when others then
       v_failed_count := v_failed_count + 1;
-      v_error_message := SQLERRM;
       v_errors := v_errors || jsonb_build_array(jsonb_build_object(
         'kind', 'recipe',
         'row_index', v_row_index,
         'name', v_recipe_name,
-        'error', v_error_message
+        'error', 'recipe row import failed'
       ));
     end;
   end loop;
@@ -232,12 +230,11 @@ begin
 
     exception when others then
       v_failed_count := v_failed_count + 1;
-      v_error_message := SQLERRM;
       v_errors := v_errors || jsonb_build_array(jsonb_build_object(
         'kind', 'ingredient',
         'row_index', v_row_index,
         'name', coalesce(v_ingredient->>'ingredient_name', ''),
-        'error', v_error_message
+        'error', 'ingredient row import failed'
       ));
     end;
   end loop;
