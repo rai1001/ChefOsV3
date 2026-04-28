@@ -157,6 +157,7 @@ declare
   v_ok_count int := 0;
   v_failed_count int := 0;
   v_failed jsonb := '[]'::jsonb;
+  v_error_message text;
 begin
   v_role := public.get_member_role(p_hotel_id);
   if v_role is null then
@@ -283,10 +284,12 @@ begin
 
     exception when others then
       v_failed_count := v_failed_count + 1;
+      v_error_message := SQLERRM;
       v_failed := v_failed || jsonb_build_array(jsonb_build_object(
         'recipe_id', v_recipe_id,
         'ingredient_name', v_ingredient_name_raw,
-        'reason', 'exception'
+        'reason', 'exception',
+        'error', v_error_message
       ));
     end;
   end loop;
