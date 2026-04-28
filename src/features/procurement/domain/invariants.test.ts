@@ -119,6 +119,16 @@ describe('groupPurchaseOrderLinesBySupplier', () => {
     expect(grouped.s1?.map((line) => line.id)).toEqual(['l1', 'l3'])
     expect(grouped.s2?.map((line) => line.id)).toEqual(['l2'])
   })
+
+  it('maneja claves especiales del prototipo sin lanzar errores', () => {
+    const grouped = groupPurchaseOrderLinesBySupplier([
+      { id: 'l1', supplier_id: '__proto__' },
+      { id: 'l2', supplier_id: 'constructor' },
+    ])
+
+    expect(grouped['__proto__']?.map((line) => line.id)).toEqual(['l1'])
+    expect(grouped['constructor']?.map((line) => line.id)).toEqual(['l2'])
+  })
 })
 
 describe('labels', () => {
