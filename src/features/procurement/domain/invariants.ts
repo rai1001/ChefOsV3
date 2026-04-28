@@ -125,7 +125,7 @@ export function calculatePOStatusAfterReceipt(
 export function groupPurchaseOrderLinesBySupplier<
   T extends { supplier_id: string | null },
 >(lines: ReadonlyArray<T>): Record<string, T[]> {
-  const grouped: Record<string, T[]> = {}
+  const grouped: Record<string, T[]> = Object.create(null) as Record<string, T[]>
   for (const line of lines) {
     const supplierId = line.supplier_id ?? 'unassigned'
     const bucket = grouped[supplierId] ?? (grouped[supplierId] = [])
