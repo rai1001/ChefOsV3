@@ -68,7 +68,7 @@ describe('mapSupabaseError', () => {
   it('maps Postgres unique_violation (23505) to ConflictError', () => {
     const result = mapSupabaseError({ code: '23505', message: 'duplicate key' })
     expect(result).toBeInstanceOf(ConflictError)
-    expect(result.message).toBe('duplicate key')
+    expect(result.message).toBe('Conflicto con el estado actual del recurso')
   })
 
   it('maps Postgres FK violation (23503) to ConflictError', () => {
@@ -154,7 +154,7 @@ describe('mapSupabaseError', () => {
   it('extracts message from native Error instances gracefully', () => {
     const result = mapSupabaseError(new Error('native error extracted'))
     expect(result).toBeInstanceOf(InfrastructureError)
-    expect(result.message).toBe('native error extracted')
+    expect(result.message).toBe('Error de infraestructura')
   })
 
   it('handles native Error instances with missing message gracefully', () => {
@@ -162,19 +162,19 @@ describe('mapSupabaseError', () => {
     Object.defineProperty(err, 'message', { value: undefined })
     const result = mapSupabaseError(err)
     expect(result).toBeInstanceOf(InfrastructureError)
-    expect(result.message).toBe('Error desconocido')
+    expect(result.message).toBe('Error de infraestructura')
   })
 
   it('handles non-object input gracefully', () => {
     const result = mapSupabaseError('string error')
     expect(result).toBeInstanceOf(InfrastructureError)
-    expect(result.message).toBe('Error desconocido')
+    expect(result.message).toBe('Error de infraestructura')
   })
 
   it('handles empty object input gracefully', () => {
     const result = mapSupabaseError({})
     expect(result).toBeInstanceOf(InfrastructureError)
-    expect(result.message).toBe('Error desconocido')
+    expect(result.message).toBe('Error de infraestructura')
   })
 
   it('preserves the raw error as cause', () => {
