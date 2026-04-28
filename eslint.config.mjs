@@ -3,7 +3,7 @@ import nextVitals from 'eslint-config-next/core-web-vitals'
 import nextTs from 'eslint-config-next/typescript'
 
 /**
- * Boundaries entre features (ANTIGR-QW1, sprint-hardening).
+ * Boundaries entre features (ANTIGR-QW1, sprint-hardening + hardening-2 C5).
  *
  * Ningún módulo debe importar internals (`domain/`, `application/`, `infrastructure/`,
  * `components/`) de OTRO módulo. La frontera oficial es `index.ts` (client safe) y
@@ -14,13 +14,36 @@ import nextTs from 'eslint-config-next/typescript'
  * Excepciones:
  *   - Las páginas en `src/app/**` PUEDEN importar `components/` de un módulo (caso
  *     común: poner un component client específico de feature en una página). NO pueden
- *     importar `infrastructure/` ni `domain/` directamente.
+ *     importar `infrastructure/` ni `domain/` directamente. Esta excepción se aplica
+ *     vía la regla `featureBoundaryStrict` que NO bloquea `components/` para `src/app/`.
+ *   - Otros módulos `src/features/Y/**` NO pueden importar `components/` de un feature
+ *     externo (regla `featureBoundaryStrict` les aplica el bloqueo completo). Si una
+ *     UI compartida es necesaria, vive en `src/components/`.
  *   - Dentro del mismo módulo, los imports relativos `../infrastructure/...` son válidos
  *     (no usan `@/features/X/...`).
  */
+const FEATURE_INTERNAL_PATTERNS = [
+  {
+    group: ['@/features/*/domain', '@/features/*/domain/*'],
+    message:
+      'No importar `domain/` de otro módulo directamente. Usa el contrato público `@/features/X` (index.ts).',
+  },
+  {
+    group: ['@/features/*/application', '@/features/*/application/*'],
+    message:
+      'No importar `application/` de otro módulo directamente. Usa `@/features/X` (hooks client) o `@/features/X/server` (server helpers).',
+  },
+  {
+    group: ['@/features/*/infrastructure', '@/features/*/infrastructure/*'],
+    message:
+      'No importar `infrastructure/` (queries, services, supabase) de otro módulo. Usa el server contract `@/features/X/server`.',
+  },
+]
+
+// Regla suave (sin bloquear `components/`) — para `src/app/**`, `src/lib/**`,
+// `src/components/**`. Las pages pueden seguir poniendo un component de feature.
 const featureBoundaryRule = {
   files: [
-    'src/features/**/*.{ts,tsx}',
     'src/app/**/*.{ts,tsx}',
     'src/lib/**/*.{ts,tsx}',
     'src/components/**/*.{ts,tsx}',
@@ -28,22 +51,24 @@ const featureBoundaryRule = {
   rules: {
     'no-restricted-imports': [
       'error',
+      { patterns: FEATURE_INTERNAL_PATTERNS },
+    ],
+  },
+}
+
+// Regla estricta — para `src/features/**`. Aquí SÍ bloquea `components/` cruzados.
+const featureBoundaryStrict = {
+  files: ['src/features/**/*.{ts,tsx}'],
+  rules: {
+    'no-restricted-imports': [
+      'error',
       {
         patterns: [
+          ...FEATURE_INTERNAL_PATTERNS,
           {
-            group: ['@/features/*/domain', '@/features/*/domain/*'],
+            group: ['@/features/*/components', '@/features/*/components/*'],
             message:
-              'No importar `domain/` de otro módulo directamente. Usa el contrato público `@/features/X` (index.ts).',
-          },
-          {
-            group: ['@/features/*/application', '@/features/*/application/*'],
-            message:
-              'No importar `application/` de otro módulo directamente. Usa `@/features/X` (hooks client) o `@/features/X/server` (server helpers).',
-          },
-          {
-            group: ['@/features/*/infrastructure', '@/features/*/infrastructure/*'],
-            message:
-              'No importar `infrastructure/` (queries, services, supabase) de otro módulo. Usa el server contract `@/features/X/server`.',
+              'No importar `components/` de otro módulo desde un feature. La frontera de UI compartida es `src/components/`. Si una página app necesita un component de feature, sí puede importarlo desde `src/app/**`.',
           },
         ],
       },
@@ -71,6 +96,7 @@ const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
   featureBoundaryRule,
+  featureBoundaryStrict,
   authActionsException,
   globalIgnores([
     '.next/**',

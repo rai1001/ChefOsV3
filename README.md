@@ -14,7 +14,7 @@ Control operativo de cocina multi-servicio. Reescritura DDD del dominio validado
 | recipes       | producción   | sprint-03/08 | fichas, ingredientes, pasos, sub-recetas stockables, escandallo live |
 | menus         | producción   | sprint-03b  | composición comercial, sections, recipes nested |
 | import        | producción   | sprint-03c  | bulk import Excel: recetas + ingredientes (mapping productos NULL pendiente) |
-| catalog       | pendiente    | sprint-04   | productos, conversiones unidad — desbloquea mapping post-import |
+| catalog       | producción   | sprint-04   | productos, unidades, conversiones, suppliers, offers, mapping ingredients |
 | procurement   | producción   | sprint-05   | PR/PO/GR/OCR ✓; lotes vía hook inventory |
 | inventory     | producción   | sprint-06   | lotes FIFO, movimientos, consumo, merma y ajustes |
 | production    | producción   | sprint-07/08 | órdenes monoreceta, escalado, viabilidad, cascada sub-recetas y consumo FIFO atómico |
@@ -26,12 +26,14 @@ Control operativo de cocina multi-servicio. Reescritura DDD del dominio validado
 | hr            | pendiente    | sprint-13   | turnos, fichaje |
 | agents        | pendiente    | sprint-14   | asistentes IA |
 
-Pre-features pendientes: `sprint-03c-import-excel` (importación Excel para recipes/menus).
-
 Hardening cerrado en sprint-hardening: errores auth normalizados, rate limit Upstash,
 paginación cursor en queries de lista, headers HTTP (CSP, HSTS), origin allowlist
 para invitaciones, server contracts en commercial/recipes/menus, ESLint boundaries,
 tests cross-tenant. Ver `.ai/sprints/sprint-hardening.md`.
+
+Hardening-2 (2026-04-28): search_path + revoke from anon en 70 funciones v3,
+permisos compliance alineados con `permissions-matrix.md`, RLS initplan perf en
+v3_profiles/v3_tenants. Migraciones 00083/00084/00085 (PR #90).
 
 ## Quick start
 
