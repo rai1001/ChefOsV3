@@ -2,6 +2,22 @@
 
 Todos los cambios notables del proyecto se documentan aquí. Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.1.0/). Versionado: [SemVer](https://semver.org/lang/es/).
 
+## [0.10.0] - 2026-04-28
+
+### Sprint-10 — Compliance APPCC
+
+### Added
+
+- Módulo `src/features/compliance` con schemas Zod, errores de dominio, adapters RPC, hooks TanStack Query y frontera pública.
+- UI `/compliance` con dashboard APPCC, recepción, temperaturas, limpieza, trazabilidad, equipos y áreas.
+- Export APPCC CSV en `/api/compliance/export/[name]` para `quality`, `temperature`, `cleaning` y `full-monthly`, con guard de roles y límite 10.000 filas.
+- Tests unitarios de schemas/adapters, tests de componentes para temperatura obligatoria y checklist optimista, y E2E live gated `COMPLIANCE_E2E_LIVE=1`.
+
+### Changed
+
+- Dashboard principal añade acceso a APPCC.
+- README y `.ai` documentan ADR-0022, alcance v0 y fallback CSV sin `pdf-lib`.
+
 ## [0.9.0] - 2026-04-27
 
 ### Sprint-09 — Reporting / Dashboards
