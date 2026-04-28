@@ -142,8 +142,29 @@ function downloadErrorsCsv(result: ImportResult) {
 }
 
 function escapeCsv(value: string): string {
-  if (value.includes(',') || value.includes('"') || value.includes('\n')) {
-    return `"${value.replace(/"/g, '""')}"`
+  const spreadsheetSafeValue = neutralizeSpreadsheetFormula(value)
+  if (
+    spreadsheetSafeValue.includes(',') ||
+    spreadsheetSafeValue.includes('"') ||
+    spreadsheetSafeValue.includes('\n')
+  ) {
+    return `"${spreadsheetSafeValue.replace(/"/g, '""')}"`
   }
+  return spreadsheetSafeValue
+}
+
+function neutralizeSpreadsheetFormula(value: string): string {
+  const trimmedStart = value.trimStart()
+  if (!trimmedStart) return value
+
+  const first = trimmedStart[0]
+  if (first === '=' || first === '+' || first === '-' || first === '@') {
+    return `'${value}`
+  }
+
+  if (value.startsWith('\t') || value.startsWith('\r')) {
+    return `'${value}`
+  }
+
   return value
 }
