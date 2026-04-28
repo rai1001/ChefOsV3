@@ -15,6 +15,16 @@ const MAX_TOKENS = 4096
 const RATE_LIMIT_MAX = 10
 const RATE_LIMIT_WINDOW_SECONDS = 3600
 
+const EXTRACT_ALLOWED_ROLES = new Set([
+  'superadmin',
+  'direction',
+  'admin',
+  'head_chef',
+  'sous_chef',
+  'procurement',
+  'warehouse',
+])
+
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -105,20 +115,22 @@ Deno.serve(async (request: Request) => {
       })
     }
 
-    const { data: isMember, error: membershipError } = await userClient.rpc(
-      'v3_is_member_of',
-      { p_hotel_id: hotelId }
-    )
-    if (membershipError || isMember !== true) {
+    const { data: memberRole, error: membershipError } = await userClient.rpc('v3_get_member_role', {
+      p_hotel_id: hotelId,
+    })
+    if (
+      membershipError
+      || typeof memberRole !== 'string'
+      || !EXTRACT_ALLOWED_ROLES.has(memberRole)
+    ) {
       return jsonResponse(403, {
         error_code: 'forbidden',
-        message: 'No active membership for this hotel',
+        message: 'Insufficient role for OCR extraction',
       })
     }
 
     const rateLimit = await enforceRateLimit(env, hotelId)
     if (!rateLimit.allowed) {
-      await markJobFailed(serviceClient, hotelId, jobId, 'rate_limited', 'OCR rate limit exceeded')
       return jsonResponse(
         429,
         {
