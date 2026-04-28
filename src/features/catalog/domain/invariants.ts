@@ -60,8 +60,10 @@ export function normalizeAllergens(raw: unknown): string[] {
   if (raw && typeof raw === 'object') {
     // Compatibilidad: si viene como { gluten: true, lactose: false }
     const result: string[] = []
-    for (const key in raw as Record<string, unknown>) {
-      if ((raw as Record<string, unknown>)[key] === true) {
+    const rawRecord = raw as Record<string, unknown>
+    for (const key in rawRecord) {
+      if (!Object.hasOwn(rawRecord, key)) continue
+      if (rawRecord[key] === true) {
         result.push(key)
       }
     }

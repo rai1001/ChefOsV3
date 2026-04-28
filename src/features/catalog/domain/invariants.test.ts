@@ -29,6 +29,14 @@ describe('normalizeAllergens', () => {
     ])
   })
 
+  it('ignora propiedades heredadas enumerables', () => {
+    const proto = { inherited_allergen: true }
+    const raw = Object.create(proto) as Record<string, unknown>
+    raw.gluten = true
+
+    expect(normalizeAllergens(raw)).toEqual(['gluten'])
+  })
+
   it('null/undefined/string → []', () => {
     expect(normalizeAllergens(null)).toEqual([])
     expect(normalizeAllergens(undefined)).toEqual([])
