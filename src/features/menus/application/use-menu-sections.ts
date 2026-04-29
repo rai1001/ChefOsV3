@@ -1,6 +1,7 @@
 'use client'
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { hasPermission, useActiveHotel } from '@/features/identity'
 import { createClient } from '@/lib/supabase/client'
 import {
   addMenuSection,
@@ -30,8 +31,11 @@ export function useMenuSections(
 
 export function useAddMenuSection(hotelId: string | undefined) {
   const qc = useQueryClient()
+  const activeHotel = useActiveHotel()
   return useMutation({
     mutationFn: async (input: CreateMenuSectionInput) => {
+      const role = activeHotel.data?.role
+      if (!role || !hasPermission(role, 'menu.manage')) throw new Error('Sin permisos para gestionar menús')
       if (!hotelId) throw new Error('hotelId requerido')
       const supabase = createClient()
       return addMenuSection(supabase, hotelId, input)
@@ -42,6 +46,7 @@ export function useAddMenuSection(hotelId: string | undefined) {
 
 export function useUpdateMenuSection(hotelId: string | undefined, menuId: string) {
   const qc = useQueryClient()
+  const activeHotel = useActiveHotel()
   return useMutation({
     mutationFn: async ({
       sectionId,
@@ -50,6 +55,8 @@ export function useUpdateMenuSection(hotelId: string | undefined, menuId: string
       sectionId: string
       patch: { name?: string; sort_order?: number }
     }) => {
+      const role = activeHotel.data?.role
+      if (!role || !hasPermission(role, 'menu.manage')) throw new Error('Sin permisos para gestionar menús')
       if (!hotelId) throw new Error('hotelId requerido')
       const supabase = createClient()
       return updateMenuSection(supabase, hotelId, sectionId, patch)
@@ -60,8 +67,11 @@ export function useUpdateMenuSection(hotelId: string | undefined, menuId: string
 
 export function useRemoveMenuSection(hotelId: string | undefined, menuId: string) {
   const qc = useQueryClient()
+  const activeHotel = useActiveHotel()
   return useMutation({
     mutationFn: async (sectionId: string) => {
+      const role = activeHotel.data?.role
+      if (!role || !hasPermission(role, 'menu.manage')) throw new Error('Sin permisos para gestionar menús')
       if (!hotelId) throw new Error('hotelId requerido')
       const supabase = createClient()
       await removeMenuSection(supabase, hotelId, sectionId)
