@@ -37,7 +37,6 @@ describe('warehouse schemas', () => {
       warehouse_id: warehouseId,
       name: 'Cocina fría',
       warehouse_type: 'cold',
-      is_active: true,
       notes: null,
     })
 

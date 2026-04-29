@@ -286,7 +286,6 @@ declare
   v_name text;
   v_type text;
   v_notes text;
-  v_is_active boolean;
   v_row public.v3_warehouses%rowtype;
 begin
   perform public.v3_check_membership(
@@ -301,6 +300,11 @@ begin
 
   if p_payload ? 'is_default' then
     raise exception 'use v3_set_default_warehouse to change default warehouse'
+      using errcode = 'P0003';
+  end if;
+
+  if p_payload ? 'is_active' then
+    raise exception 'use v3_archive_warehouse to change warehouse active status'
       using errcode = 'P0003';
   end if;
 
@@ -324,8 +328,6 @@ begin
     when p_payload ? 'notes' then nullif(btrim(coalesce(p_payload ->> 'notes', '')), '')
     else v_current.notes
   end;
-  v_is_active := coalesce((p_payload ->> 'is_active')::boolean, v_current.is_active);
-
   if v_name is null or length(v_name) < 2 then
     raise exception 'warehouse name must contain at least 2 characters' using errcode = 'P0003';
   end if;
@@ -334,15 +336,10 @@ begin
     raise exception 'invalid warehouse_type: %', v_type using errcode = 'P0003';
   end if;
 
-  if v_current.is_default and v_is_active = false then
-    raise exception 'default warehouse must remain active' using errcode = 'P0018';
-  end if;
-
   update public.v3_warehouses
   set name = v_name,
       warehouse_type = v_type,
       notes = v_notes,
-      is_active = v_is_active,
       updated_at = now()
   where id = p_warehouse_id
     and hotel_id = p_hotel_id
