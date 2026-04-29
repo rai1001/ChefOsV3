@@ -42,7 +42,6 @@ export const updateWarehouseSchema = z.object({
   warehouse_id: uuidString(),
   name: z.string().trim().min(2).max(120).optional(),
   warehouse_type: z.enum(WAREHOUSE_TYPES).optional(),
-  is_active: z.boolean().optional(),
   notes: z.string().max(2000).optional().nullable().transform(emptyStringToNull),
 })
 
