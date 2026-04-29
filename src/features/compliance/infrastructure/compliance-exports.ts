@@ -221,8 +221,11 @@ async function fetchCleaningExportRows(
 function serializeCsvValue(value: unknown): string {
   if (value === null || value === undefined) return ''
   const serialized = value instanceof Date ? value.toISOString() : String(value)
-  if (/[",\r\n]/.test(serialized)) return `"${serialized.replaceAll('"', '""')}"`
-  return serialized
+  const formulaHardened = /^[\t\r ]*[=+\-@]|^[\t\r]/.test(serialized)
+    ? `'${serialized}`
+    : serialized
+  if (/[",\r\n]/.test(formulaHardened)) return `"${formulaHardened.replaceAll('"', '""')}"`
+  return formulaHardened
 }
 
 function formatCsv(rows: ExportRow[], columns: readonly ColumnSpec[]): string {
