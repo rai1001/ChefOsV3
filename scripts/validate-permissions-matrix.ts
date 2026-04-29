@@ -47,6 +47,8 @@ const RPC_ACTION_MAP: Record<string, string> = {
   v3_set_default_warehouse: 'Definir almacén default',
   v3_archive_warehouse: 'Archivar almacén',
   v3_transfer_lot_quantity: 'Transferir stock entre almacenes',
+  v3_register_adjustment: 'Ajustes manuales de stock',
+  v3_receive_goods: 'Recibir mercancía (GR)',
 }
 
 function parseMatrix(matrixMarkdown: string): MatrixEntry[] {
@@ -195,6 +197,8 @@ function main() {
 
   // Migraciones cubiertas a verificar (orden cronológico: la última gana).
   const migrationFiles = [
+    'supabase/migrations/00065_v3_procurement_gr_rpcs.sql',
+    'supabase/migrations/00074_v3_inventory_rpcs.sql',
     'supabase/migrations/00082_v3_compliance_appcc.sql',
     'supabase/migrations/00084_v3_compliance_permissions_fix.sql',
     'supabase/migrations/00087_v3_warehouses.sql',
