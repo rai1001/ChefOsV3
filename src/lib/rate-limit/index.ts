@@ -91,19 +91,9 @@ export async function checkRateLimit(
   }
 }
 
-// Identificador para rate limit. Evita confiar en `x-forwarded-for` porque puede
-// ser controlado por cliente en despliegues comunes. Usa headers de IP inyectados
-// por el proxy de borde y hace fallback a "anonymous".
-// Para flows autenticados, combinar con el user id externamente: `${ip}:${userId}`.
-export function identifierFromHeaders(headers: Headers): string {
-  const vercelIp = headers.get('x-vercel-ip')
-  if (vercelIp) return vercelIp
-
-  const cfConnectingIp = headers.get('cf-connecting-ip')
-  if (cfConnectingIp) return cfConnectingIp
-
-  const realIp = headers.get('x-real-ip')
-  if (realIp) return realIp
-
+// Identificador para rate limit en middleware no autenticado.
+// No confiamos en headers de IP porque pueden ser reenviados/suplantados
+// dependiendo del despliegue. Usamos una clave constante defensiva.
+export function identifierFromHeaders(_headers: Headers): string {
   return 'anonymous'
 }

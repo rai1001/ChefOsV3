@@ -26,32 +26,17 @@ describe('checkRateLimit (skip mode without Upstash vars)', () => {
 })
 
 describe('identifierFromHeaders', () => {
-  it('uses x-vercel-ip when present', () => {
-    const headers = new Headers({ 'x-vercel-ip': '203.0.113.5' })
-    expect(identifierFromHeaders(headers)).toBe('203.0.113.5')
-  })
-
-  it('uses cf-connecting-ip when x-vercel-ip is missing', () => {
-    const headers = new Headers({ 'cf-connecting-ip': '198.51.100.11' })
-    expect(identifierFromHeaders(headers)).toBe('198.51.100.11')
-  })
-
-  it('falls back to x-real-ip when edge headers are missing', () => {
-    const headers = new Headers({ 'x-real-ip': '198.51.100.7' })
-    expect(identifierFromHeaders(headers)).toBe('198.51.100.7')
-  })
-
-  it('ignores x-forwarded-for because it is spoofable', () => {
-    const headers = new Headers({ 'x-forwarded-for': '203.0.113.5, 10.0.0.1' })
+  it('always returns anonymous when IP-like headers are present', () => {
+    const headers = new Headers({
+      'x-vercel-ip': '203.0.113.5',
+      'cf-connecting-ip': '198.51.100.11',
+      'x-real-ip': '198.51.100.7',
+      'x-forwarded-for': '203.0.113.5, 10.0.0.1',
+    })
     expect(identifierFromHeaders(headers)).toBe('anonymous')
   })
 
-  it('returns "anonymous" when no IP headers are set', () => {
+  it('returns anonymous when no IP headers are set', () => {
     expect(identifierFromHeaders(new Headers())).toBe('anonymous')
-  })
-
-  it('handles empty trusted ip headers', () => {
-    const headers = new Headers({ 'x-vercel-ip': '' })
-    expect(identifierFromHeaders(headers)).toBe('anonymous')
   })
 })
