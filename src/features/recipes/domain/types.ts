@@ -95,6 +95,7 @@ export interface RecipeStep {
 export interface RecipeSubRecipe {
   id: string
   recipe_id: string
+  hotel_id: string
   sub_recipe_id: string
   quantity: number
   unit_id: string | null

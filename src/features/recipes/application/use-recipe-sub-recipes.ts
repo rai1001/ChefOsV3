@@ -14,13 +14,17 @@ import { CircularSubRecipeError } from '../domain/errors'
 const key = (recipeId: string | null | undefined) =>
   ['recipes', 'sub-recipes', recipeId] as const
 
-export function useRecipeSubRecipes(recipeId: string | null | undefined) {
+export function useRecipeSubRecipes(
+  hotelId: string | undefined,
+  recipeId: string | null | undefined
+) {
   return useQuery<RecipeSubRecipe[]>({
     queryKey: key(recipeId),
-    enabled: !!recipeId,
+    enabled: !!hotelId && !!recipeId,
     queryFn: async () => {
       const supabase = createClient()
-      return fetchSubRecipes(supabase, recipeId!)
+      if (!hotelId) throw new Error('hotelId is required')
+      return fetchSubRecipes(supabase, hotelId, recipeId!)
     },
   })
 }
@@ -33,7 +37,8 @@ export function useAddSubRecipe(hotelId: string | undefined) {
         throw new CircularSubRecipeError(input.recipe_id, input.sub_recipe_id)
       }
       const supabase = createClient()
-      return addSubRecipe(supabase, input)
+      if (!hotelId) throw new Error('hotelId is required')
+      return addSubRecipe(supabase, hotelId, input)
     },
     onSuccess: (_, vars) => {
       qc.invalidateQueries({ queryKey: key(vars.recipe_id) })
@@ -42,12 +47,13 @@ export function useAddSubRecipe(hotelId: string | undefined) {
   })
 }
 
-export function useRemoveSubRecipe(recipeId: string) {
+export function useRemoveSubRecipe(hotelId: string | undefined, recipeId: string) {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (subRecipeLinkId: string) => {
       const supabase = createClient()
-      await removeSubRecipe(supabase, subRecipeLinkId)
+      if (!hotelId) throw new Error('hotelId is required')
+      await removeSubRecipe(supabase, hotelId, subRecipeLinkId)
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: key(recipeId) }),
   })
