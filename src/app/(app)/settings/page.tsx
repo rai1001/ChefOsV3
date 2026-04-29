@@ -50,6 +50,21 @@ export default async function SettingsPage() {
               Miembros del hotel, roles, invitaciones por email.
             </p>
           </Link>
+
+          <Link
+            href="/settings/notifications"
+            className="block rounded-lg border p-6 transition-colors hover:bg-[color:var(--color-bg-hover)]"
+            style={{
+              borderColor: 'var(--color-border)',
+              background: 'var(--color-bg-card)',
+            }}
+          >
+            <p className="kpi-label mb-2">sprint-12 · notifications</p>
+            <h2>Notificaciones</h2>
+            <p className="mt-2 text-sm text-[color:var(--color-text-secondary)]">
+              Activa o desactiva las notificaciones in-app por categoría operativa.
+            </p>
+          </Link>
         </section>
       </div>
     </main>

@@ -49,6 +49,12 @@ const RPC_ACTION_MAP: Record<string, string> = {
   v3_transfer_lot_quantity: 'Transferir stock entre almacenes',
   v3_register_adjustment: 'Ajustes manuales de stock',
   v3_receive_goods: 'Recibir mercancía (GR)',
+  v3_get_notifications: 'Recibir notificaciones in-app',
+  v3_get_unread_notifications_count: 'Recibir notificaciones in-app',
+  v3_mark_notification_read: 'Mark all as read',
+  v3_mark_all_notifications_read: 'Mark all as read',
+  v3_get_notification_preferences: 'Preferencias de notificación',
+  v3_upsert_notification_preference: 'Preferencias de notificación',
 }
 
 function parseMatrix(matrixMarkdown: string): MatrixEntry[] {
@@ -202,6 +208,7 @@ function main() {
     'supabase/migrations/00082_v3_compliance_appcc.sql',
     'supabase/migrations/00084_v3_compliance_permissions_fix.sql',
     'supabase/migrations/00087_v3_warehouses.sql',
+    'supabase/migrations/00088_v3_notifications.sql',
   ]
 
   // Acumulamos por RPC: la última usage observada gana (mismo orden que aplicaría

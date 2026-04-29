@@ -3,6 +3,7 @@ import { getCurrentUserOrNull, getActiveHotelOrNull } from '@/features/identity/
 import { UserBadge } from '@/components/shell/user-badge'
 import { HotelSwitcher } from '@/components/shell/hotel-switcher'
 import { LogoutButton } from '@/components/shell/logout-button'
+import { NotificationBellShell } from '@/components/shell/notification-bell-shell'
 import { Button } from '@/components/ui/button'
 
 export default async function DashboardPage() {
@@ -26,6 +27,7 @@ export default async function DashboardPage() {
           <UserBadge fullName={fullName ?? null} email={user.email ?? ''} role={activeHotel.role} />
           <div className="flex items-center gap-2">
             <HotelSwitcher />
+            <NotificationBellShell />
             <LogoutButton />
           </div>
         </header>
@@ -211,6 +213,28 @@ export default async function DashboardPage() {
               </Button>
               <Button asChild variant="secondary" size="sm">
                 <Link href="/compliance/cleaning">Limpieza</Link>
+              </Button>
+            </div>
+          </div>
+
+          <div
+            className="rounded-lg border p-6"
+            style={{
+              borderColor: 'var(--color-border)',
+              background: 'var(--color-bg-card)',
+            }}
+          >
+            <p className="kpi-label mb-2">sprint-12 · notifications</p>
+            <h2>Notificaciones</h2>
+            <p className="mt-2 text-[color:var(--color-text-secondary)]">
+              Avisos in-app por evento operativo (temperaturas, lotes, recepción, producción).
+            </p>
+            <div className="mt-4 flex gap-2 flex-wrap">
+              <Button asChild size="sm">
+                <Link href="/notifications">Abrir</Link>
+              </Button>
+              <Button asChild variant="secondary" size="sm">
+                <Link href="/settings/notifications">Preferencias</Link>
               </Button>
             </div>
           </div>
