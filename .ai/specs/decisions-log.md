@@ -1254,6 +1254,46 @@ Revisar tras uso real si se necesitan permisos por almacén, capacidades máxima
 
 ---
 
+### ADR-0024 — Notificaciones in-app vía fan-out síncrono sobre `v3_domain_events`
+
+#### Contexto
+
+ChefOS v3 emite eventos operativos a `v3_domain_events` (sprint-04+). Un operario solo los ve cuando entra al dashboard y consulta los datos correspondientes. Casos de uso reales en Eurostars (temperatura fuera de rango, recepción rechazada, lote a punto de caducar, producción terminada) requieren un canal in-app que reaccione al evento, sin esperar a que el usuario navegue a la sección concreta.
+
+#### Opciones consideradas
+
+1. **Fan-out síncrono via trigger `after insert on v3_domain_events`**, mapping `event_type → {category, severity, target_roles, title, body, link}` en SQL, insert por miembro activo del hotel cuyo rol esté en target.
+2. **Worker async (queue/edge function)** que procese eventos pendientes y haga fan-out fuera del path crítico.
+3. **Realtime via Supabase channels**, broadcast por hotel y filtrado client-side por rol.
+
+#### Decisión
+
+Opción 1 para v0. Trigger `v3_domain_events_notify_after_insert` invoca `v3__notifications_create_from_event(event_id)`, que evalúa `v3_event_to_notification` y hace insert en `v3_notifications` por cada miembro activo cuyo rol esté en `target_roles[]` y cuyas preferencias no lo deshabiliten. Idempotencia vía unique `(event_id, user_id)`.
+
+#### Razón
+
+- Latencia 0 entre evento y notificación: el operario ve el badge en su próximo poll de 60s sin trabajos extra.
+- Cardinalidad real <50 miembros por hotel — el coste del fan-out síncrono es despreciable frente a la complejidad de orquestar una queue.
+- Mantiene `v3_domain_events` como única fuente de verdad sin invertir el flujo.
+- Realtime channels filtraría client-side, lo que implica enviar a clientes datos que no deben ver — RLS server-side es más estricto.
+
+#### Consecuencias
+
+- Cualquier `event_type` nuevo requiere extender `v3_event_to_notification`. Documentado como contrato.
+- Trigger SECURITY DEFINER con `set search_path = public` y sin grant a authenticated.
+- Si crece la cardinalidad por hotel, sprint-13+ migra a queue async — el trigger queda como fallback síncrono y la queue procesa cuando excede umbral.
+- Polling 60s en unread count: 100 usuarios = 100 reqs/min. Aceptable. Realtime channels llega cuando lo justifique la métrica.
+- No hay dedup window v0: temperaturas mal calibradas pueden generar spam. Mitigación pendiente vía índice unique parcial por `(user_id, event_type, payload->>'equipment_id')` cuando Eurostars lo pida.
+
+#### Revisable
+
+Revisar cuando:
+- Algún hotel supere 50 miembros activos y la latencia del trigger se note en la transacción que persiste el evento.
+- Eurostars reporte spam por equipo mal calibrado → sprint-12b dedup window.
+- Llegue requisito de push web/email/SMS — entonces el fan-out síncrono debería emitir a un bus (queue) y no insertar directo.
+
+---
+
 ## Mantenimiento
 
 Cada ADR debe poder leerse en <5 minutos. Si una decisión requiere más, dividirla en varias ADRs.

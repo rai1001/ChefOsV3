@@ -267,7 +267,7 @@ declare
   v_limit int := least(coalesce(p_limit, 50), 200);
   v_rows jsonb;
 begin
-  perform public.v3_check_membership(v_user, p_hotel_id, null);
+  perform public.v3_check_membership(auth.uid(), p_hotel_id, null);
 
   select coalesce(jsonb_agg(row_to_json(n)::jsonb order by n.created_at desc), '[]'::jsonb)
   into v_rows
@@ -298,7 +298,7 @@ declare
   v_user uuid := auth.uid();
   v_count int;
 begin
-  perform public.v3_check_membership(v_user, p_hotel_id, null);
+  perform public.v3_check_membership(auth.uid(), p_hotel_id, null);
 
   select count(*) into v_count
   from public.v3_notifications
@@ -321,7 +321,7 @@ declare
   v_user uuid := auth.uid();
   v_row public.v3_notifications%rowtype;
 begin
-  perform public.v3_check_membership(v_user, p_hotel_id, null);
+  perform public.v3_check_membership(auth.uid(), p_hotel_id, null);
 
   update public.v3_notifications
   set read_at = coalesce(read_at, now())
@@ -348,7 +348,7 @@ declare
   v_user uuid := auth.uid();
   v_count int;
 begin
-  perform public.v3_check_membership(v_user, p_hotel_id, null);
+  perform public.v3_check_membership(auth.uid(), p_hotel_id, null);
 
   update public.v3_notifications
   set read_at = now()
@@ -375,7 +375,7 @@ declare
   v_cat text;
   v_enabled boolean;
 begin
-  perform public.v3_check_membership(v_user, p_hotel_id, null);
+  perform public.v3_check_membership(auth.uid(), p_hotel_id, null);
 
   foreach v_cat in array v_categories loop
     select coalesce(in_app_enabled, true) into v_enabled
@@ -403,7 +403,7 @@ declare
   v_user uuid := auth.uid();
   v_row public.v3_notification_preferences%rowtype;
 begin
-  perform public.v3_check_membership(v_user, p_hotel_id, null);
+  perform public.v3_check_membership(auth.uid(), p_hotel_id, null);
 
   if p_category not in ('compliance', 'inventory', 'production', 'procurement', 'system') then
     raise exception 'invalid category: %', p_category using errcode = 'P0003';

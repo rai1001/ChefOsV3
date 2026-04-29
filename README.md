@@ -2,9 +2,9 @@
 
 Control operativo de cocina multi-servicio. Reescritura DDD del dominio validado en v2.
 
-> Estado 2026-04-28: procurement PR/PO/GR/OCR en v3, inventory FIFO operativo con multi-almacén Sprint-11, production orders/sub-recetas, reporting Sprint-09 y compliance APPCC Sprint-10 aplicados en Supabase.
+> Estado 2026-04-29: procurement PR/PO/GR/OCR en v3, inventory FIFO operativo con multi-almacén Sprint-11, production orders/sub-recetas, reporting Sprint-09, compliance APPCC Sprint-10 y notificaciones in-app Sprint-12 aplicados en Supabase.
 
-## Capability matrix (2026-04-28)
+## Capability matrix (2026-04-29)
 
 | Módulo        | Estado       | Sprint      | Notas |
 |---------------|--------------|-------------|-------|
@@ -22,8 +22,8 @@ Control operativo de cocina multi-servicio. Reescritura DDD del dominio validado
 | reporting     | producción   | sprint-09   | dashboards read-only, food cost, mermas, top productos, precio y stock health |
 | compliance    | producción   | sprint-10   | APPCC: recepción, temperaturas, limpieza, trazabilidad y export CSV |
 | automation    | pendiente    | sprint-10   | workflows, alertas |
-| notifications | pendiente    | sprint-11+  | in-app, push, email |
-| integrations  | pendiente    | sprint-12   | TPV, ERP, delivery |
+| notifications | producción   | sprint-12   | fan-out síncrono desde `v3_domain_events`, badge in-app, mark-read, preferencias por categoría |
+| integrations  | pendiente    | sprint-13   | TPV, ERP, delivery |
 | hr            | pendiente    | sprint-13   | turnos, fichaje |
 | agents        | pendiente    | sprint-14   | asistentes IA |
 
