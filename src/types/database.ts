@@ -5959,6 +5959,101 @@ export type Database = {
           },
         ]
       }
+      v3_notification_preferences: {
+        Row: {
+          category: string
+          hotel_id: string
+          in_app_enabled: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category: string
+          hotel_id: string
+          in_app_enabled?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          hotel_id?: string
+          in_app_enabled?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "v3_notification_preferences_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "v3_hotels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v3_notifications: {
+        Row: {
+          body: string
+          category: string
+          created_at: string
+          event_id: string | null
+          event_type: string
+          hotel_id: string
+          id: string
+          link: string | null
+          payload: Json
+          read_at: string | null
+          severity: Database["public"]["Enums"]["v3_notification_severity"]
+          title: string
+          user_id: string
+        }
+        Insert: {
+          body: string
+          category: string
+          created_at?: string
+          event_id?: string | null
+          event_type: string
+          hotel_id: string
+          id?: string
+          link?: string | null
+          payload?: Json
+          read_at?: string | null
+          severity?: Database["public"]["Enums"]["v3_notification_severity"]
+          title: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          category?: string
+          created_at?: string
+          event_id?: string | null
+          event_type?: string
+          hotel_id?: string
+          id?: string
+          link?: string | null
+          payload?: Json
+          read_at?: string | null
+          severity?: Database["public"]["Enums"]["v3_notification_severity"]
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "v3_notifications_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "v3_domain_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "v3_notifications_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "v3_hotels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       v3_price_change_log: {
         Row: {
           created_at: string
@@ -8705,6 +8800,10 @@ export type Database = {
         Args: { p_hotel_id: string; p_products: Json }
         Returns: number
       }
+      import_recipes_bulk: {
+        Args: { p_hotel_id: string; p_payload: Json }
+        Returns: Json
+      }
       invite_member: {
         Args: {
           p_hotel_id: string
@@ -9116,6 +9215,10 @@ export type Database = {
         }
         Returns: Json
       }
+      v3__notifications_create_from_event: {
+        Args: { p_event_id: string }
+        Returns: number
+      }
       v3_accept_invite: { Args: { p_token: string }; Returns: Json }
       v3_apply_ocr_job: {
         Args: { p_hotel_id: string; p_job_id: string }
@@ -9342,6 +9445,10 @@ export type Database = {
         }
         Returns: string
       }
+      v3_event_to_notification: {
+        Args: { p_event_type: string; p_payload: Json }
+        Returns: Json
+      }
       v3_generate_event_operational_impact: {
         Args: { p_event_id: string; p_hotel_id: string }
         Returns: number
@@ -9428,6 +9535,14 @@ export type Database = {
         Args: { p_hotel_id: string }
         Returns: Database["public"]["Enums"]["v3_app_role"]
       }
+      v3_get_notification_preferences: {
+        Args: { p_hotel_id: string }
+        Returns: Json
+      }
+      v3_get_notifications: {
+        Args: { p_hotel_id: string; p_limit?: number; p_unread_only?: boolean }
+        Returns: Json
+      }
       v3_get_production_order: {
         Args: { p_hotel_id: string; p_id: string }
         Returns: Json
@@ -9441,6 +9556,10 @@ export type Database = {
         Returns: Json
       }
       v3_get_team_members: { Args: { p_hotel_id: string }; Returns: Json }
+      v3_get_unread_notifications_count: {
+        Args: { p_hotel_id: string }
+        Returns: number
+      }
       v3_get_user_hotels: { Args: never; Returns: Json }
       v3_import_recipes_bulk: {
         Args: { p_hotel_id: string; p_payload: Json }
@@ -9483,6 +9602,14 @@ export type Database = {
           p_notes?: string
           p_temperature_c: number
         }
+        Returns: Json
+      }
+      v3_mark_all_notifications_read: {
+        Args: { p_hotel_id: string }
+        Returns: number
+      }
+      v3_mark_notification_read: {
+        Args: { p_hotel_id: string; p_notification_id: string }
         Returns: Json
       }
       v3_mark_offer_preferred: {
@@ -9763,6 +9890,14 @@ export type Database = {
       }
       v3_update_warehouse: {
         Args: { p_hotel_id: string; p_payload: Json; p_warehouse_id: string }
+        Returns: Json
+      }
+      v3_upsert_notification_preference: {
+        Args: {
+          p_category: string
+          p_hotel_id: string
+          p_in_app_enabled: boolean
+        }
         Returns: Json
       }
       v3_validate_event_transition: {
@@ -10121,6 +10256,7 @@ export type Database = {
         | "transfer_out"
         | "produce"
       v3_menu_type: "buffet" | "seated" | "cocktail" | "tasting" | "daily"
+      v3_notification_severity: "info" | "success" | "warning" | "critical"
       v3_ocr_job_status:
         | "pending"
         | "extracted"
@@ -10648,6 +10784,7 @@ export const Constants = {
         "produce",
       ],
       v3_menu_type: ["buffet", "seated", "cocktail", "tasting", "daily"],
+      v3_notification_severity: ["info", "success", "warning", "critical"],
       v3_ocr_job_status: [
         "pending",
         "extracted",
