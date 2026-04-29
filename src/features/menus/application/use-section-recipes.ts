@@ -1,6 +1,7 @@
 'use client'
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { hasPermission, useActiveHotel } from '@/features/identity'
 import { createClient } from '@/lib/supabase/client'
 import {
   addRecipeToSection,
@@ -29,8 +30,11 @@ export function useSectionRecipes(
 
 export function useAddRecipeToSection(hotelId: string | undefined) {
   const qc = useQueryClient()
+  const activeHotel = useActiveHotel()
   return useMutation({
     mutationFn: async (input: AddRecipeToSectionInput) => {
+      const role = activeHotel.data?.role
+      if (!role || !hasPermission(role, 'menu.manage')) throw new Error('Sin permisos para gestionar menús')
       if (!hotelId) throw new Error('hotelId requerido')
       const supabase = createClient()
       return addRecipeToSection(supabase, hotelId, input)
@@ -44,8 +48,11 @@ export function useRemoveRecipeFromSection(
   sectionId: string
 ) {
   const qc = useQueryClient()
+  const activeHotel = useActiveHotel()
   return useMutation({
     mutationFn: async (sectionRecipeId: string) => {
+      const role = activeHotel.data?.role
+      if (!role || !hasPermission(role, 'menu.manage')) throw new Error('Sin permisos para gestionar menús')
       if (!hotelId) throw new Error('hotelId requerido')
       const supabase = createClient()
       await removeRecipeFromSection(supabase, hotelId, sectionRecipeId)

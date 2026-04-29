@@ -17,6 +17,7 @@ export const PERMISSIONS = {
   'event.create': ['commercial', 'direction', 'admin', 'superadmin'],
   'event.confirm': ['commercial', 'direction', 'admin', 'superadmin'],
   'event.cancel': ['direction', 'admin', 'superadmin'],
+  'menu.manage': ['superadmin', 'direction', 'admin', 'head_chef', 'commercial'],
 
   // Recipes
   'recipe.create': ['head_chef', 'sous_chef', 'cook', 'direction', 'admin', 'superadmin'],

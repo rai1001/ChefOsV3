@@ -25,6 +25,10 @@ describe('hasPermission', () => {
   it('commercial NO puede procurement.create', () => {
     expect(hasPermission('commercial', 'procurement.create')).toBe(false)
   })
+
+  it('sous_chef NO puede menu.manage', () => {
+    expect(hasPermission('sous_chef', 'menu.manage')).toBe(false)
+  })
 })
 
 describe('PERMISSIONS matrix integrity', () => {
