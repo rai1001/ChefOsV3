@@ -154,6 +154,11 @@ declare
 begin
   perform public.v3_check_membership(auth.uid(), p_hotel_id, null);
 
+  if coalesce(p_depth, 0) < 0 or coalesce(p_depth, 0) >= 5 then
+    raise exception 'subrecipe cascade depth must be between 0 and 4'
+      using errcode = 'P0003';
+  end if;
+
   if p_target_servings is null or p_target_servings <= 0 then
     raise exception 'target servings must be > 0' using errcode = 'P0003';
   end if;
