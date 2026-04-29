@@ -360,7 +360,7 @@ begin
   perform public.v3_check_membership(
     auth.uid(),
     p_hotel_id,
-    array['superadmin','direction','admin','head_chef']::public.v3_app_role[]
+    array['superadmin','direction','admin','warehouse']::public.v3_app_role[]
   );
 
   if v_reason is null then
