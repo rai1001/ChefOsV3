@@ -82,13 +82,51 @@ const featureBoundaryStrict = {
  * dueño (schemas Zod, auth-errors mapper) sin pasar por index.ts, igual que un
  * componente interno del módulo lo haría.
  */
+const AUTH_ONBOARD_CROSS_FEATURE_PATTERNS = [
+  {
+    group: [
+      '@/features/!(identity|tenant-admin)/domain',
+      '@/features/!(identity|tenant-admin)/domain/*',
+    ],
+    message:
+      'Desde auth/onboard solo se permiten internals de `identity` y `tenant-admin`.',
+  },
+  {
+    group: [
+      '@/features/!(identity|tenant-admin)/application',
+      '@/features/!(identity|tenant-admin)/application/*',
+    ],
+    message:
+      'Desde auth/onboard solo se permiten internals de `identity` y `tenant-admin`.',
+  },
+  {
+    group: [
+      '@/features/!(identity|tenant-admin)/infrastructure',
+      '@/features/!(identity|tenant-admin)/infrastructure/*',
+    ],
+    message:
+      'Desde auth/onboard solo se permiten internals de `identity` y `tenant-admin`.',
+  },
+  {
+    group: [
+      '@/features/!(identity|tenant-admin)/components',
+      '@/features/!(identity|tenant-admin)/components/*',
+    ],
+    message:
+      'Desde auth/onboard solo se permiten internals de `identity` y `tenant-admin`.',
+  },
+]
+
 const authActionsException = {
   files: [
     'src/app/(auth)/**/*.{ts,tsx}',
     'src/app/(onboard)/**/*.{ts,tsx}',
   ],
   rules: {
-    'no-restricted-imports': 'off',
+    'no-restricted-imports': [
+      'error',
+      { patterns: AUTH_ONBOARD_CROSS_FEATURE_PATTERNS },
+    ],
   },
 }
 
